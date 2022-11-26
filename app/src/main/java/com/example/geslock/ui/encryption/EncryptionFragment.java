@@ -1,4 +1,4 @@
-package com.example.geslock.ui.dashboard;
+package com.example.geslock.ui.encryption;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,22 +10,22 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.geslock.databinding.FragmentDashboardBinding;
+import com.example.geslock.databinding.FragmentEncryptionBinding;
 
-public class DashboardFragment extends Fragment {
+public class EncryptionFragment extends Fragment {
 
-    private FragmentDashboardBinding binding;
+    private FragmentEncryptionBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        DashboardViewModel dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
+        EncryptionViewModel encryptionViewModel =
+                new ViewModelProvider(this).get(EncryptionViewModel.class);
 
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
+        binding = FragmentEncryptionBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        final TextView textView = binding.textHome;
+        encryptionViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Geslock</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_encryption">Encryption</string>
+    <string name="title_decryption">Decryption</string>
+    <string name="title_settings">Settings</string>
 </resources>
