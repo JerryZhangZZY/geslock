@@ -43,7 +43,7 @@ public class EncryptionFragment extends Fragment {
         ball.setOnTouchListener(new View.OnTouchListener() {
             boolean triggered = false;
             final int maxMove = 300;
-            private int startX, startY;
+            private int startX, startY, moveX, moveY;
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
@@ -52,8 +52,8 @@ public class EncryptionFragment extends Fragment {
                         startY = (int)motionEvent.getRawY();
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        int moveX = (int) motionEvent.getRawX();
-                        int moveY = (int) motionEvent.getRawY();
+                        moveX = (int) motionEvent.getRawX();
+                        moveY = (int) motionEvent.getRawY();
                         int deltaX = moveX - startX;
                         int deltaY = moveY - startY;
                         int left = initLayout[0] + deltaX;
@@ -93,7 +93,9 @@ public class EncryptionFragment extends Fragment {
                                 if (top - initLayout[1] < 0) {
                                     if (!triggered) {
                                         triggered = true;
+
                                         // trigger single up !!!
+
                                         testText.setText("single up");
                                         vibrator.vibrate(20);
                                         ball.layout(initLayout[0], initLayout[1] - maxMove, initLayout[2], initLayout[3] - maxMove);
@@ -101,7 +103,9 @@ public class EncryptionFragment extends Fragment {
                                 } else {
                                     if (!triggered) {
                                         triggered = true;
+
                                         // trigger single down !!!
+
                                         testText.setText("single down");
                                         vibrator.vibrate(20);
                                         ball.layout(initLayout[0], initLayout[1] + maxMove, initLayout[2], initLayout[3] + maxMove);
@@ -116,6 +120,14 @@ public class EncryptionFragment extends Fragment {
 
                     case MotionEvent.ACTION_UP:
                         triggered = false;
+                        if (dist(startX, startY, (int)motionEvent.getRawX(), (int)motionEvent.getRawY()) < 2) {
+
+                            // trigger single tap !!!
+
+                            testText.setText("single tap");
+                            vibrator.vibrate(20);
+                        }
+
                         TranslateAnimation ta = new TranslateAnimation(0, initLayout[0] - ball.getLeft(), 0, initLayout[1] - ball.getTop());
                         ta.setDuration(50);
                         ta.setAnimationListener(new Animation.AnimationListener() {
@@ -135,5 +147,9 @@ public class EncryptionFragment extends Fragment {
                 return true;
             }
         });
+    }
+
+    public double dist(int x1, int y1, int x2, int y2) {
+        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 }
