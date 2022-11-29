@@ -17,24 +17,9 @@ public class DecryptionFragment extends Fragment {
 
     private FragmentDecryptionBinding binding;
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        //DecryptionViewModel decryptionViewModel =
-        //        new ViewModelProvider(this).get(DecryptionViewModel.class);
-
-        //binding = FragmentDecryptionBinding.inflate(inflater, container, false);
-        //View root = binding.getRoot();
-
-        //final TextView textView = binding.textDashboard;
-        //decryptionViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-        //return root;
-
         return inflater.inflate(R.layout.fragment_decryption, container, false);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 }
