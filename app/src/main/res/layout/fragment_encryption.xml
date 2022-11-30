@@ -7,7 +7,7 @@
     tools:context=".ui.encryption.EncryptionFragment">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/cross"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:src="@drawable/ic_cross"
@@ -19,9 +19,10 @@
         app:layout_constraintWidth_percent="0.8" />
 
     <ImageView
-        android:id="@+id/basketball"
+        android:id="@+id/ball"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:tag="origin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +36,7 @@
         android:layout_width="200dp"
         android:layout_height="40dp"
         android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@+id/imageView"
+        app:layout_constraintBottom_toTopOf="@+id/cross"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"

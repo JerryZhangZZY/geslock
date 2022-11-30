@@ -1,10 +1,9 @@
 package com.example.geslock.ui.encryption;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.view.GestureDetector;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,12 +15,10 @@ import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.geslock.MainActivity;
 import com.example.geslock.R;
 
 public class EncryptionFragment extends Fragment {
@@ -39,7 +36,7 @@ public class EncryptionFragment extends Fragment {
 
         TextView testText = (TextView) getActivity().findViewById(R.id.testT);
 
-        ImageView ball = (ImageView) getActivity().findViewById(R.id.basketball);
+        ImageView ball = (ImageView) getActivity().findViewById(R.id.ball);
         ball.post(new Runnable() {
             @Override
             public void run() {
@@ -53,6 +50,7 @@ public class EncryptionFragment extends Fragment {
             final int MAX_MOVE = 300;
             final int TAP_MOVE = 10;
             final float MAX_SCALE = 1.5F;
+            final float SPIN_MOVE_RATIO = 0.2F;
 
             boolean triggered = false;
             int mode = 0;
@@ -81,41 +79,56 @@ public class EncryptionFragment extends Fragment {
                         if (fingerNum == 1) {
                             int deltaX = moveX1 - startX1;
                             int deltaY = moveY1 - startY1;
-                            int left = initLayout[0] + deltaX;
-                            int top = initLayout[1] + deltaY;
+                            int left, top, right, bottom;
                             if (Math.abs(deltaX) - Math.abs(deltaY) > 0) {
                                 // on X axis
-                                if (Math.abs(left - initLayout[0]) < MAX_MOVE) {
-                                    int right = left + ball.getWidth();
-                                    ball.layout(left, initLayout[1], right, initLayout[3]);
-                                }
-                                else {
-                                    if (left - initLayout[0] < 0) {
+                                top = initLayout[1];
+                                bottom = initLayout[3];
+                                if (Math.abs(moveX1 - startX1) < MAX_MOVE) {
+                                    if (Math.abs(deltaX) >= TAP_MOVE) {
+                                        left = initLayout[0] + deltaX;
+                                        right = initLayout[2] + deltaX;
+                                        ball.layout(left, top, right, bottom);
+                                    }
+                                } else {
+                                    if (deltaX < 0) {
                                         if (!triggered) {
                                             triggered = true;
+
                                             // trigger single left !!!
+
                                             testText.setText("single left");
                                             vibrator.vibrate(20);
-                                            ball.layout(initLayout[0] - MAX_MOVE, initLayout[1], initLayout[2] - MAX_MOVE, initLayout[3]);
+                                            left = initLayout[0] - MAX_MOVE;
+                                            right = initLayout[2] - MAX_MOVE;
+                                            ball.layout(left, top, right, bottom);
                                         }
                                     } else {
                                         if (!triggered) {
                                             triggered = true;
+
                                             // trigger single right !!!
+
                                             testText.setText("single right");
                                             vibrator.vibrate(20);
-                                            ball.layout(initLayout[0] + MAX_MOVE, initLayout[1], initLayout[2] + MAX_MOVE, initLayout[3]);
+                                            left = initLayout[0] + MAX_MOVE;
+                                            right = initLayout[2] + MAX_MOVE;
+                                            ball.layout(left, top, right, bottom);
                                         }
                                     }
                                 }
                             } else {
                                 // on Y axis
-                                if (Math.abs(top - initLayout[1]) < MAX_MOVE) {
-                                    int bottom = top + ball.getHeight();
-                                    ball.layout(initLayout[0], top, initLayout[2], bottom);
-                                }
-                                else {
-                                    if (top - initLayout[1] < 0) {
+                                left = initLayout[0];
+                                right = initLayout[2];
+                                if (Math.abs(moveY1 - startY1) < MAX_MOVE) {
+                                    if (Math.abs(deltaY) >= TAP_MOVE) {
+                                        top = initLayout[1] + deltaY;
+                                        bottom = initLayout[3] + deltaY;
+                                        ball.layout(left, top, right, bottom);
+                                    }
+                                } else {
+                                    if (deltaY < 0) {
                                         if (!triggered) {
                                             triggered = true;
 
@@ -123,7 +136,9 @@ public class EncryptionFragment extends Fragment {
 
                                             testText.setText("single up");
                                             vibrator.vibrate(20);
-                                            ball.layout(initLayout[0], initLayout[1] - MAX_MOVE, initLayout[2], initLayout[3] - MAX_MOVE);
+                                            top = initLayout[1] - MAX_MOVE;
+                                            bottom = initLayout[3] - MAX_MOVE;
+                                            ball.layout(left, top, right, bottom);
                                         }
                                     } else {
                                         if (!triggered) {
@@ -133,7 +148,9 @@ public class EncryptionFragment extends Fragment {
 
                                             testText.setText("single down");
                                             vibrator.vibrate(20);
-                                            ball.layout(initLayout[0], initLayout[1] + MAX_MOVE, initLayout[2], initLayout[3] + MAX_MOVE);
+                                            top = initLayout[1] + MAX_MOVE;
+                                            bottom = initLayout[3] + MAX_MOVE;
+                                            ball.layout(left, top, right, bottom);
                                         }
                                     }
                                 }
@@ -155,49 +172,147 @@ public class EncryptionFragment extends Fragment {
                             int moveCenterY = (moveY1 + moveY2) / 2;
                             float deltaCenter = dist(startCenterX, startCenterY, moveCenterX, moveCenterY);
 
+                            switch (mode) {
+                                // unjudged
+                                case 0:
+                                    if (Math.abs(deltaGap) > 20) {
+                                        if (deltaCenter < 20) {
+                                            // judge as zoom in/out
+                                            mode = 1;
+                                        }
+                                    } else if (deltaCenter > 20)
+                                        // judge as double fingers swipe
+                                        mode = 2;
+                                    break;
+                                // zoom in/out
+                                case 1:
+                                    float rotation = (float) Math.toDegrees(Math.atan2(moveY2 - moveY1, moveX2 - moveX1)) - angle;
+                                    if (rotation > 180)
+                                        rotation = rotation - 360;
+                                    if (rotation < -180)
+                                        rotation = rotation + 360;
+                                    ball.setRotation(rotation);
+                                    float scale = moveGap / startGap;
+                                    if (scale >= MAX_SCALE) {
+                                        if (!triggered) {
+                                            triggered = true;
 
+                                            // trigger zoom in !!!
 
-                            // zoom in/out
-                            if (Math.abs(deltaGap) > 10 && deltaCenter < 20) {
-                                mode = 1;
-                            }
+                                            testText.setText("zoom in");
+                                            vibrator.vibrate(20);
+                                            ball.setScaleX(MAX_SCALE);
+                                            ball.setScaleY(MAX_SCALE);
+                                        }
+                                    } else if (scale <= 1 / MAX_SCALE) {
+                                        if (!triggered) {
+                                            triggered = true;
 
-                            if (mode == 1) {
-                                float rotation = (float) Math.toDegrees(Math.atan2(moveY2 - moveY1, moveX2 - moveX1)) - angle;
-                                if (rotation > 180)
-                                    rotation = rotation - 360;
-                                if (rotation < -180)
-                                    rotation = rotation + 360;
-                                ball.setRotation(rotation);
-                                float scale = moveGap / startGap;
-                                if (scale >= MAX_SCALE) {
-                                    if (!triggered) {
-                                        triggered = true;
+                                            // trigger zoom out !!!
 
-                                        // trigger zoom in !!!
-
-                                        testText.setText("zoom in");
-                                        vibrator.vibrate(20);
-                                        ball.setScaleX(MAX_SCALE);
-                                        ball.setScaleY(MAX_SCALE);
+                                            testText.setText("zoom out");
+                                            vibrator.vibrate(20);
+                                            ball.setScaleX(1 / MAX_SCALE);
+                                            ball.setScaleY(1 / MAX_SCALE);
+                                        }
+                                    } else {
+                                        ball.setScaleX(scale);
+                                        ball.setScaleY(scale);
                                     }
-                                } else if (scale <= 1 / MAX_SCALE) {
-                                    if (!triggered) {
-                                        triggered = true;
+                                    break;
+                                // double fingers swipe
+                                case 2:
+                                    int deltaCenterX = moveCenterX - startCenterX;
+                                    int deltaCenterY = moveCenterY - startCenterY;
+                                    int spinLeft, spinTop, spinRight, spinBottom;
+                                    float spinMaxMove = MAX_MOVE * SPIN_MOVE_RATIO;
+                                    if (Math.abs(deltaCenterX) > Math.abs(deltaCenterY)) {
+                                        // on X axis
+                                        spinTop = initLayout[1];
+                                        spinBottom = initLayout[3];
+                                        if (Math.abs(deltaCenterX) < MAX_MOVE) {
+                                            if (Math.abs(deltaCenterX) >= TAP_MOVE) {
+                                                spinLeft = (int) (initLayout[0] + (deltaCenterX * SPIN_MOVE_RATIO));
+                                                spinRight = (int) (initLayout[2] + (deltaCenterX * SPIN_MOVE_RATIO));
+                                                ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                            }
+                                        } else {
+                                            if (deltaCenterX < 0) {
+                                                if (!triggered) {
+                                                    triggered = true;
 
-                                        // trigger zoom out !!!
+                                                    // trigger double left !!!
 
-                                        testText.setText("zoom out");
-                                        vibrator.vibrate(20);
-                                        ball.setScaleX(1 / MAX_SCALE);
-                                        ball.setScaleY(1 / MAX_SCALE);
+                                                    testText.setText("double left");
+                                                    vibrator.vibrate(20);
+                                                    spinLeft = (int) (initLayout[0] - spinMaxMove);
+                                                    spinRight = (int) (initLayout[2] - spinMaxMove);
+                                                    ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                                }
+                                            } else {
+                                                if (!triggered) {
+                                                    triggered = true;
+
+                                                    // trigger double left !!!
+
+                                                    testText.setText("double right");
+                                                    vibrator.vibrate(20);
+                                                    spinLeft = (int) (initLayout[0] + spinMaxMove);
+                                                    spinRight = (int) (initLayout[2] + spinMaxMove);
+                                                    ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                                }
+                                            }
+                                        }
+
+                                        ball.setImageResource(R.drawable.ic_soccer_spin_x);
+                                        ball.setTag("spin_x");
+                                    } else {
+                                        // on Y axis
+                                        spinLeft = initLayout[0];
+                                        spinRight = initLayout[2];
+                                        if (Math.abs(deltaCenterY) < MAX_MOVE) {
+                                            if (Math.abs(deltaCenterY) >= TAP_MOVE) {
+                                                spinTop = (int) (initLayout[1] + (deltaCenterY * SPIN_MOVE_RATIO));
+                                                spinBottom = (int) (initLayout[3] + (deltaCenterY * SPIN_MOVE_RATIO));
+                                                ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                            }
+                                        } else {
+                                            if (deltaCenterY < 0) {
+                                                if (!triggered) {
+                                                    triggered = true;
+
+                                                    // trigger double up !!!
+
+                                                    testText.setText("double up");
+                                                    vibrator.vibrate(20);
+                                                    spinTop = (int) (initLayout[1] - spinMaxMove);
+                                                    spinBottom = (int) (initLayout[3] - spinMaxMove);
+                                                    ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                                }
+                                            } else {
+                                                if (!triggered) {
+                                                    triggered = true;
+
+                                                    // trigger double down !!!
+
+                                                    testText.setText("double down");
+                                                    vibrator.vibrate(20);
+                                                    spinTop = (int) (initLayout[1] + spinMaxMove);
+                                                    spinBottom = (int) (initLayout[3] + spinMaxMove);
+                                                    ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                                }
+                                            }
+                                        }
+
+
+                                        ball.setImageResource(R.drawable.ic_soccer_spin_y);
+                                        ball.setTag("spin_y");
+
+
+
                                     }
-                                } else {
-                                    ball.setScaleX(scale);
-                                    ball.setScaleY(scale);
-                                }
+                                    break;
                             }
-
                         }
                         break;
 
@@ -220,6 +335,9 @@ public class EncryptionFragment extends Fragment {
 
                             // trigger single tap !!!
 
+                            ScaleAnimation ta = new ScaleAnimation(1, 1.1F, 1, 1.1F, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+                            ta.setDuration(50);
+                            ball.startAnimation(ta);
                             testText.setText("single tap");
                             vibrator.vibrate(20);
                         }
@@ -245,7 +363,8 @@ public class EncryptionFragment extends Fragment {
                                 public void onAnimationRepeat(Animation animation) {}
                             });
                             ball.startAnimation(ta);
-                        } else if (ball.getRotation() != 0 || ball.getScaleX() != 1) {
+                        }
+                        if (ball.getRotation() != 0 || ball.getScaleX() != 1) {
                             RotateAnimation ra = new RotateAnimation(0, -ball.getRotation(), Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                             ra.setDuration(100);
                             ra.setAnimationListener(new Animation.AnimationListener() {
@@ -284,6 +403,10 @@ public class EncryptionFragment extends Fragment {
                                 public void onAnimationRepeat(Animation animation) {}
                             });
                             ball.startAnimation(as);
+                        }
+                        if (!ball.getTag().equals("origin")) {
+                            ball.setImageResource(R.drawable.ic_soccer);
+                            ball.setTag("origin");
                         }
                         break;
                 }
