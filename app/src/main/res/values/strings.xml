@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Geslock</string>
+    <string name="app_name">GesLock</string>
     <string name="title_encryption">Encryption</string>
     <string name="title_decryption">Decryption</string>
     <string name="title_settings">Settings</string>

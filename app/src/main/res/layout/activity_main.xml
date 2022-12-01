@@ -9,12 +9,22 @@
         android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/purple_500"
+        android:background="?attr/colorPrimary"
+        android:elevation="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:titleTextColor="#FFFFFF"
-        tools:ignore="MissingConstraints" />
+        app:title=" "
+        tools:ignore="MissingConstraints">
+        <ImageView
+            android:id="@+id/tool_bar_title_image"
+            android:layout_width="200dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_title"
+            tools:layout_editor_absoluteX="25dp"
+            tools:layout_editor_absoluteY="28dp" />
+    </androidx.appcompat.widget.Toolbar>
 
     <fragment
         android:id="@+id/nav_host_fragment_activity_main"
@@ -33,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="?android:attr/windowBackground"
+        android:background="?android:attr/navigationBarColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
