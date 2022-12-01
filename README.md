@@ -18,7 +18,7 @@ This project is about developing a smart phone app to protect sensitive files on
 
 ```mermaid
 gantt
-title Pooject Timeline
+title Project Timeline
 dateFormat YYYY-MM-DD
 section Task 1
 Gather user requirements for the app to be developed: 2022-11-01, 2022-11-15
