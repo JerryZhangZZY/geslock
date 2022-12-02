@@ -23,10 +23,64 @@
             <TextView
                 android:id="@+id/settingsTitle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center_vertical"
                 android:padding="20dp"
                 android:text="Settings"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+                android:textColor="?attr/colorPrimary"
+                android:textSize="48sp" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+
+                <ImageButton
+                    android:id="@+id/imgBtnSoccer"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/round_btn_border"
+                    android:padding="10dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_soccer_small"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnFace"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.2" />
+
+                <ImageButton
+                    android:id="@+id/imgBtnFace"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/round_btn_border"
+                    android:padding="10dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_face_small"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.2" />
+
+                <ImageButton
+                    android:id="@+id/imgBtnBasketball"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/round_btn_border"
+                    android:padding="10dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_basketball_small"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imgBtnFace"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.2" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Switch
                 android:id="@+id/switch1"
@@ -55,36 +109,6 @@
                 android:entries="@android:array/emailAddressTypes"
                 android:minHeight="64dp"
                 android:padding="20dp" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="200dp">
-
-                <ImageButton
-                    android:id="@+id/imgBtnSoccer"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:background="@drawable/round_btn_border"
-                    android:padding="10dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_soccer"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageButton
-                    android:id="@+id/imgBtnBasketball"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:background="@drawable/round_btn_border"
-                    android:padding="10dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_basketball"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
     </ScrollView>

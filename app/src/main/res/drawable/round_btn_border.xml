@@ -6,5 +6,5 @@
     android:useLevel="false" >
     <solid android:color="@android:color/transparent" />
     <stroke android:width="7dp"
-        android:color="?attr/colorSecondary"/>
+        android:color="@color/yellow_500"/>
 </shape>

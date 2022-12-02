@@ -1,15 +1,25 @@
 package com.example.geslock.ui.encryption;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
@@ -17,13 +27,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.dynamicanimation.animation.SpringAnimation;
+import androidx.dynamicanimation.animation.SpringForce;
 import androidx.fragment.app.Fragment;
 
 import com.example.geslock.R;
 
-import java.util.Date;
-
 public class EncryptionFragment extends Fragment {
+
+    final int MAX_MOVE = 300;
+    final int TAP_MOVE = 10;
+    final float MAX_SCALE = 1.5F;
+    final float SPIN_MOVE_RATIO = 0.2F;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -33,11 +50,10 @@ public class EncryptionFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final int[] initLayout = {0, 0, 0, 0, 0};
+        final int[] initLayout = {0, 0, 0, 0};
         Vibrator vibrator = (Vibrator)getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
 
         TextView testText = (TextView) getActivity().findViewById(R.id.testT);
-
         ImageView ball = (ImageView) getActivity().findViewById(R.id.ball);
         ball.post(new Runnable() {
             @Override
@@ -49,11 +65,6 @@ public class EncryptionFragment extends Fragment {
             }
         });
         ball.setOnTouchListener(new View.OnTouchListener() {
-            final int MAX_MOVE = 300;
-            final int TAP_MOVE = 10;
-            final float MAX_SCALE = 1.5F;
-            final float SPIN_MOVE_RATIO = 0.2F;
-
             boolean triggered = false;
             int mode = 0;
             int fingerNum = 0;
@@ -356,6 +367,7 @@ public class EncryptionFragment extends Fragment {
                         if (ball.getLeft() != initLayout[0] || ball.getTop() != initLayout[1]) {
                             TranslateAnimation ta = new TranslateAnimation(0, initLayout[0] - ball.getLeft(), 0, initLayout[1] - ball.getTop());
                             ta.setDuration(100);
+                            ta.setInterpolator(new OvershootInterpolator(3));
                             ta.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
                                 public void onAnimationEnd(Animation animation) {
@@ -372,6 +384,7 @@ public class EncryptionFragment extends Fragment {
                         if (ball.getRotation() != 0 || ball.getScaleX() != 1) {
                             RotateAnimation ra = new RotateAnimation(0, -ball.getRotation(), Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                             ra.setDuration(100);
+                            ra.setInterpolator(new OvershootInterpolator(3));
                             ra.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
                                 public void onAnimationStart(Animation animation) {}
@@ -383,6 +396,7 @@ public class EncryptionFragment extends Fragment {
 
                             ScaleAnimation sa = new ScaleAnimation(1, 1 / ball.getScaleX(), 1, 1 / ball.getScaleY(), Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
                             sa.setDuration(100);
+                            sa.setInterpolator(new OvershootInterpolator(3));
                             sa.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
                                 public void onAnimationStart(Animation animation) {}

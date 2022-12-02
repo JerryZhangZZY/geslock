@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:left="84dp"
-        android:right="84dp"
-        android:top="84dp"
-        android:bottom="84dp">
+    <item>
         <shape android:shape="oval">
             <solid android:color="@android:color/white" />
         </shape>
