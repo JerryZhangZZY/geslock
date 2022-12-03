@@ -1,5 +1,6 @@
 package com.example.geslock;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;

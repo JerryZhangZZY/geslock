@@ -1,6 +1,8 @@
 package com.example.geslock.ui.encryption;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -50,11 +52,28 @@ public class EncryptionFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+        int iconIndex = pref.getInt("icon", 0);
+
+        int[][] icons = new int[3][3];
+        icons[0][0] = R.drawable.ic_soccer;
+        icons[0][1] = R.drawable.ic_soccer_spin_x;
+        icons[0][2] = R.drawable.ic_soccer_spin_y;
+        icons[1][0] = R.drawable.ic_face;
+        icons[1][1] = R.drawable.ic_face_spin_x;
+        icons[1][2] = R.drawable.ic_face_spin_y;
+        icons[2][0] = R.drawable.ic_basketball;
+        icons[2][1] = R.drawable.ic_basketball_spin_x;
+        icons[2][2] = R.drawable.ic_basketball_spin_y;
+
+
         final int[] initLayout = {0, 0, 0, 0};
         Vibrator vibrator = (Vibrator)getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
 
         TextView testText = (TextView) getActivity().findViewById(R.id.testT);
         ImageView ball = (ImageView) getActivity().findViewById(R.id.ball);
+        ball.setImageResource(icons[iconIndex][0]);
         ball.post(new Runnable() {
             @Override
             public void run() {
@@ -280,7 +299,7 @@ public class EncryptionFragment extends Fragment {
                                                 }
                                             }
 
-                                            ball.setImageResource(R.drawable.ic_soccer_spin_x);
+                                            ball.setImageResource(icons[iconIndex][1]);
                                             ball.setTag("spin_x");
                                         } else {
                                             // on Y axis
@@ -319,7 +338,7 @@ public class EncryptionFragment extends Fragment {
                                                     }
                                                 }
                                             }
-                                            ball.setImageResource(R.drawable.ic_soccer_spin_y);
+                                            ball.setImageResource(icons[iconIndex][2]);
                                             ball.setTag("spin_y");
                                         }
                                         break;
@@ -424,7 +443,7 @@ public class EncryptionFragment extends Fragment {
                             ball.startAnimation(as);
                         }
                         if (!ball.getTag().equals("origin")) {
-                            ball.setImageResource(R.drawable.ic_soccer);
+                            ball.setImageResource(icons[iconIndex][0]);
                             ball.setTag("origin");
                         }
                         break;

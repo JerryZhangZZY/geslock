@@ -2,6 +2,8 @@ package com.example.geslock.ui.settings;
 
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,9 +34,14 @@ public class SettingsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_settings, container, false);
     }
 
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+
         Vibrator vibrator = (Vibrator)getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
 
         ImageButton[] dragIcons = new ImageButton[3];
@@ -43,29 +51,23 @@ public class SettingsFragment extends Fragment {
 
         Drawable border = getResources().getDrawable(R.drawable.round_btn_border);
 
-        for (ImageButton imageButton : dragIcons) {
-            imageButton.setBackground(null);
-            imageButton.setOnClickListener(new View.OnClickListener() {
+        for (int index = 0; index < dragIcons.length; index++) {
+            dragIcons[index].setBackground(pref.getInt("icon", 0) == index ? border : null);
+            int finalIndex = index;
+            dragIcons[index].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    for (ImageButton imageButton : dragIcons)
-                        imageButton.setBackground(null);
-
+                    for (ImageButton btn : dragIcons)
+                        btn.setBackground(null);
                     ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(border, PropertyValuesHolder.ofInt("alpha", 0, 255));
                     animator.setTarget(border);
                     animator.setDuration(200);
                     animator.start();
-                    imageButton.setBackground(border);
+                    dragIcons[finalIndex].setBackground(border);
+                    editor.putInt("icon", finalIndex);
+                    editor.apply();
                 }
             });
-
         }
-
-
-
-
-//        dragIcons[0].setBackground();
-
-
     }
 }
