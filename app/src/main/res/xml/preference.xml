@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        android:layout="@layout/pref_heading" />
+
+    <PreferenceCategory app:title="DJI账户">
+        <Preference
+            android:title="Acts like a button"
+            android:key="myCoolButton"
+            android:summary="This is a cool button" />
+        <Preference
+            app:key="login_dji_account"
+            app:summary="点击事件"
+            app:title="点我呀" />
+        <Preference
+            app:enabled="false"
+            app:key="logout_dji_account"
+            app:title="不可点击" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:initialExpandedChildrenCount="0"
+        app:title="Dialog类型组件">
+        <EditTextPreference
+            app:enableCopying="true"
+            app:key="rtmp_url_pre"
+            app:summary="请设置"
+            app:title="直播推流地址"
+            app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            app:enableCopying="true"
+            app:entries="@array/finishedAction"
+            app:entryValues="@array/finishedAction_values"
+            app:key="uav_finishedAction"
+            app:summary="返航"
+            app:title="任务结束动作"
+            app:useSimpleSummaryProvider="true" />
+        <MultiSelectListPreference
+            app:entries="@array/failSafe"
+            app:entryValues="@array/failSafe_values"
+            app:key="multi_select_list"
+            app:summary="悬停"
+            app:title="失控动作" />
+    </PreferenceCategory>
+    <PreferenceCategory app:title="其他的组件">
+        <Preference
+            app:summary="点击可以跳转到百度欸"
+            app:title="跳转Preference">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://www.baidu.com" />
+        </Preference>
+        <SwitchPreferenceCompat
+            app:key="uav_maxFlightRadiusEnabled"
+            app:selectable="true"
+            app:summary="设置无人机最大可飞行半径距离"
+            app:summaryOn="建议关闭此功能,否则将限制设备最大飞行距离"
+            app:title="限远开关" />
+        <EditTextPreference
+            app:dependency="uav_maxFlightRadiusEnabled"
+            app:key="uav_maxFlightRadius"
+            app:summary="2000"
+            app:title="限远(米)"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            app:icon="@mipmap/ic_launcher"
+            app:key="icon"
+            app:summary="可以带Icon的Preference"
+            app:title="图标" />
+
+        <Preference
+            app:key="single_line_title"
+            app:singleLineTitle="true"
+            app:summary="但是下面的summary就不行了，它依然还是可以换行的，毕竟是注释信息嘛"
+            app:title="这个超级长,并且他不会换行，自带省略号的Preference" />
+        <DropDownPreference
+            app:entries="@array/finishedAction"
+            app:entryValues="@array/finishedAction_values"
+            app:key="dropdown"
+            app:title="点我！点我！点我！"
+            app:useSimpleSummaryProvider="true" />
+
+        <SeekBarPreference
+            app:defaultValue="20"
+            app:key="seekbar"
+            app:title="基本飞行速度(m/s)" />
+    </PreferenceCategory>
+</PreferenceScreen>

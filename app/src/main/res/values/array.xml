@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="finishedAction">
+        <item>返航</item>
+        <item>悬停</item>
+        <item>最后一航点降落</item>
+        <item>返回第一航点悬停</item>
+    </string-array>
+    <string-array name="finishedAction_values">
+        <item>GO_HOME</item>
+        <item>NO_ACTION</item>
+        <item>AUTO_LAND</item>
+        <item>GO_FIRST_WAYPOINT</item>
+    </string-array>
+    <string-array name="failSafe">
+        <item>悬停</item>
+        <item>降落</item>
+        <item>返航</item>
+    </string-array>
+    <string-array name="failSafe_values">
+        <item>HOVER</item>
+        <item>LANDING</item>
+        <item>GO_HOME</item>
+    </string-array>
+</resources>

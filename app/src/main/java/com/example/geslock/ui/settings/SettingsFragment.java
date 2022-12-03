@@ -1,71 +1,50 @@
 package com.example.geslock.ui.settings;
 
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
-import android.graphics.drawable.Drawable;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Vibrator;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.annotation.Nullable;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
 import com.example.geslock.R;
-import com.example.geslock.databinding.FragmentSettingsBinding;
 
-public class SettingsFragment extends Fragment {
-
-    private FragmentSettingsBinding binding;
+public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
+    private SharedPreferences sharedPreferences = null;
+    private Preference loginDjiAccount;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_settings, container, false);
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+        setPreferencesFromResource(R.xml.preference, rootKey);
+        //用于取值的SharedPreferences 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        initView();
+    }
+
+    private void initView() {
+        loginDjiAccount = findPreference("login_dji_account");
+        if (loginDjiAccount != null) {
+            loginDjiAccount.setOnPreferenceClickListener(this);
+        }
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Vibrator vibrator = (Vibrator)getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
-
-        ImageButton[] dragIcons = new ImageButton[3];
-        dragIcons[0] = (ImageButton) getActivity().findViewById(R.id.imgBtnSoccer);
-        dragIcons[1] = (ImageButton) getActivity().findViewById(R.id.imgBtnFace);
-        dragIcons[2] = (ImageButton) getActivity().findViewById(R.id.imgBtnBasketball);
-
-        Drawable border = getResources().getDrawable(R.drawable.round_btn_border);
-
-        for (ImageButton imageButton : dragIcons) {
-            imageButton.setBackground(null);
-            imageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    for (ImageButton imageButton : dragIcons)
-                        imageButton.setBackground(null);
-
-                    ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(border, PropertyValuesHolder.ofInt("alpha", 0, 255));
-                    animator.setTarget(border);
-                    animator.setDuration(200);
-                    animator.start();
-                    imageButton.setBackground(border);
+    public boolean onPreferenceClick(@NonNull Preference preference) {
+        switch (preference.getKey()) {
+            case "login_dji_account":
+                String rtmpUrlStr = sharedPreferences.getString("rtmp_url_pre", "");
+                if ("".equals(rtmpUrlStr)) {
+                    Toast.makeText(getActivity(), "请在直播推流地址中随意填写值,再来点我...", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "填写了:" + rtmpUrlStr, Toast.LENGTH_SHORT).show();
                 }
-            });
-
+                break;
+            default:
+                break;
         }
-
-
-
-
-//        dragIcons[0].setBackground();
-
-
+        return false;
     }
 }

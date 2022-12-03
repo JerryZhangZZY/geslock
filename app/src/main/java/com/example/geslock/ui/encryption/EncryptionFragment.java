@@ -52,7 +52,6 @@ public class EncryptionFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         final int[] initLayout = {0, 0, 0, 0};
         Vibrator vibrator = (Vibrator)getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
-
         TextView testText = (TextView) getActivity().findViewById(R.id.testT);
         ImageView ball = (ImageView) getActivity().findViewById(R.id.ball);
         ball.post(new Runnable() {
