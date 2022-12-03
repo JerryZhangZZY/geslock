@@ -3,4 +3,6 @@
     <string name="title_encryption">Encryption</string>
     <string name="title_decryption">Decryption</string>
     <string name="title_settings">Settings</string>
+    <string name="settings_category_appearance">Appearance</string>
+    <string name="settings_content_theme">Theme</string>
 </resources>

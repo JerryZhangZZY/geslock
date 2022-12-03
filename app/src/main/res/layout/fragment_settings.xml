@@ -31,9 +31,18 @@
                 android:textColor="?attr/colorSecondary"
                 android:textSize="48sp" />
 
+            <TextView
+                android:id="@+id/cetagoryAppearance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:text="@string/settings_category_appearance"
+                android:textColor="?attr/colorSecondary"
+                android:textSize="16sp" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp">
+                android:layout_height="wrap_content">
 
                 <ImageButton
                     android:id="@+id/imgBtnSoccer"
@@ -82,6 +91,29 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="20dp"
+                    android:text="@string/settings_content_theme"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:entries="@array/theme"
+                    android:padding="20dp" />
+            </LinearLayout>
+
             <Switch
                 android:id="@+id/switch1"
                 android:layout_width="match_parent"
@@ -89,7 +121,7 @@
                 android:minHeight="64dp"
                 android:padding="20dp"
                 android:text="Switch demo"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <EditText
                 android:id="@+id/editTextNumber"
@@ -100,15 +132,7 @@
                 android:inputType="number"
                 android:minHeight="64dp"
                 android:padding="20dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-
-            <Spinner
-                android:id="@+id/spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:entries="@android:array/emailAddressTypes"
-                android:minHeight="64dp"
-                android:padding="20dp" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         </LinearLayout>
     </ScrollView>
