@@ -10,16 +10,10 @@ import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.BounceInterpolator;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.geslock.R;
 import com.example.geslock.databinding.FragmentSettingsBinding;
@@ -46,7 +40,7 @@ public class SettingsFragment extends Fragment {
 
         ImageButton[] dragIcons = new ImageButton[3];
         dragIcons[0] = (ImageButton) getActivity().findViewById(R.id.imgBtnSoccer);
-        dragIcons[1] = (ImageButton) getActivity().findViewById(R.id.imgBtnFace);
+        dragIcons[1] = (ImageButton) getActivity().findViewById(R.id.imgBtnDonut);
         dragIcons[2] = (ImageButton) getActivity().findViewById(R.id.imgBtnBasketball);
 
         Drawable border = getResources().getDrawable(R.drawable.round_btn_border);

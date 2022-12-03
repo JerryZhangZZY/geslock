@@ -45,19 +45,19 @@
                     android:src="@drawable/ic_soccer_small"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="1"
-                    app:layout_constraintEnd_toStartOf="@+id/imgBtnFace"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnDonut"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintWidth_percent="0.2" />
 
                 <ImageButton
-                    android:id="@+id/imgBtnFace"
+                    android:id="@+id/imgBtnDonut"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@drawable/round_btn_border"
                     android:padding="10dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_face_small"
+                    android:src="@drawable/ic_donut_small"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="1"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -76,7 +76,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="1"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imgBtnFace"
+                    app:layout_constraintStart_toEndOf="@+id/imgBtnDonut"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintWidth_percent="0.2" />
 
