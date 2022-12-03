@@ -3,17 +3,17 @@
 
     <item
         android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_encryption_black_24dp"
+        android:icon="@drawable/selector_nav_encryption"
         android:title="@string/title_encryption" />
 
     <item
         android:id="@+id/navigation_dashboard"
-        android:icon="@drawable/ic_decryption_black_24dp"
+        android:icon="@drawable/selector_nav_decryption"
         android:title="@string/title_decryption" />
 
     <item
         android:id="@+id/navigation_notifications"
-        android:icon="@drawable/ic_settings_black_24dp"
+        android:icon="@drawable/selector_nav_settings"
         android:title="@string/title_settings" />
 
 </menu>
