@@ -1,8 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GesLock</string>
     <string name="title_encryption">Encryption</string>
     <string name="title_decryption">Decryption</string>
     <string name="title_settings">Settings</string>
     <string name="settings_category_appearance">Appearance</string>
+    <string name="drag_icon_1">Soccer</string>
+    <string name="drag_icon_2">Donut</string>
+    <string name="drag_icon_3">Basketball</string>
     <string name="settings_content_theme">Theme</string>
+    <string name="spinner_theme_1">Light</string>
+    <string name="spinner_theme_2">Dark</string>
+    <string name="spinner_theme_3">System</string>
+    <string name="settings_content_language">Language</string>
+    <string name="spinner_language_1">English</string>
+    <string name="spinner_language_2">简体中文</string>
+    <string name="spinner_language_3">System</string>
+    <string name="settings_category_interaction">Interaction</string>
+    <string name="settings_content_vibration">Vibration</string>
 </resources>

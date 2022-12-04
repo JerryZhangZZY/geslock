@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GesLock</string>
+    <string name="title_encryption">加密</string>
+    <string name="title_decryption">解密</string>
+    <string name="title_settings">设置</string>
+    <string name="settings_category_appearance">外观</string>
+    <string name="drag_icon_1">足球</string>
+    <string name="drag_icon_2">甜甜圈</string>
+    <string name="drag_icon_3">篮球</string>
+    <string name="settings_content_theme">主题</string>
+    <string name="spinner_theme_1">浅色</string>
+    <string name="spinner_theme_2">深色</string>
+    <string name="spinner_theme_3">跟随系统</string>
+    <string name="settings_content_language">语言</string>
+    <string name="spinner_language_1">English</string>
+    <string name="spinner_language_2">简体中文</string>
+    <string name="spinner_language_3">跟随系统</string>
+    <string name="settings_category_interaction">交互</string>
+    <string name="settings_content_vibration">振动</string>
+</resources>

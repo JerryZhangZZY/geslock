@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="theme">
-        <item>Light</item>
-        <item>Dark</item>
-        <item>System</item>
+        <item>@string/spinner_theme_1</item>
+        <item>@string/spinner_theme_2</item>
+        <item>@string/spinner_theme_3</item>
+    </string-array>
+    <string-array name="language">
+        <item>@string/spinner_language_1</item>
+        <item>@string/spinner_language_2</item>
+        <item>@string/spinner_language_3</item>
     </string-array>
 </resources>

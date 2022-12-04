@@ -1,6 +1,7 @@
 package com.example.geslock.ui.encryption;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -24,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.geslock.R;
+import com.example.geslock.tool.MyVibrator;
 
 public class EncryptionFragment extends Fragment {
 
@@ -42,7 +44,9 @@ public class EncryptionFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+        Activity activity = getActivity();
+
+        SharedPreferences pref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
         int iconIndex = pref.getInt("icon", 0);
 
         int[][] icons = new int[3][3];
@@ -57,10 +61,10 @@ public class EncryptionFragment extends Fragment {
         icons[2][2] = R.drawable.ic_basketball_spin_y;
 
         final int[] initLayout = {0, 0, 0, 0};
-        Vibrator vibrator = (Vibrator)getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
+        Vibrator vibrator = (Vibrator)activity.getSystemService(activity.VIBRATOR_SERVICE);
 
-        TextView testText = getActivity().findViewById(R.id.testT);
-        ImageView ball = getActivity().findViewById(R.id.ball);
+        TextView testText = activity.findViewById(R.id.testT);
+        ImageView ball = activity.findViewById(R.id.ball);
         ball.setImageResource(icons[iconIndex][0]);
         ball.post(new Runnable() {
             @Override
@@ -118,7 +122,7 @@ public class EncryptionFragment extends Fragment {
                                             // trigger single left !!!
 
                                             testText.setText("single left");
-                                            tick(vibrator);
+                                            MyVibrator.tick(requireActivity());
                                             left = initLayout[0] - MAX_MOVE;
                                             right = initLayout[2] - MAX_MOVE;
                                             ball.layout(left, top, right, bottom);
@@ -130,7 +134,7 @@ public class EncryptionFragment extends Fragment {
                                             // trigger single right !!!
 
                                             testText.setText("single right");
-                                            tick(vibrator);
+                                            MyVibrator.tick(requireActivity());
                                             left = initLayout[0] + MAX_MOVE;
                                             right = initLayout[2] + MAX_MOVE;
                                             ball.layout(left, top, right, bottom);
@@ -155,7 +159,7 @@ public class EncryptionFragment extends Fragment {
                                             // trigger single up !!!
 
                                             testText.setText("single up");
-                                            tick(vibrator);
+                                            MyVibrator.tick(requireActivity());
                                             top = initLayout[1] - MAX_MOVE;
                                             bottom = initLayout[3] - MAX_MOVE;
                                             ball.layout(left, top, right, bottom);
@@ -167,7 +171,7 @@ public class EncryptionFragment extends Fragment {
                                             // trigger single down !!!
 
                                             testText.setText("single down");
-                                            tick(vibrator);
+                                            MyVibrator.tick(requireActivity());
                                             top = initLayout[1] + MAX_MOVE;
                                             bottom = initLayout[3] + MAX_MOVE;
                                             ball.layout(left, top, right, bottom);
@@ -223,7 +227,7 @@ public class EncryptionFragment extends Fragment {
                                                 // trigger zoom in !!!
 
                                                 testText.setText("zoom in");
-                                                tick(vibrator);
+                                                MyVibrator.tick(requireActivity());
                                                 ball.setScaleX(MAX_SCALE);
                                                 ball.setScaleY(MAX_SCALE);
                                             }
@@ -234,7 +238,7 @@ public class EncryptionFragment extends Fragment {
                                                 // trigger zoom out !!!
 
                                                 testText.setText("zoom out");
-                                                tick(vibrator);
+                                                MyVibrator.tick(requireActivity());
                                                 ball.setScaleX(1 / MAX_SCALE);
                                                 ball.setScaleY(1 / MAX_SCALE);
                                             }
@@ -267,7 +271,7 @@ public class EncryptionFragment extends Fragment {
                                                         // trigger double left !!!
 
                                                         testText.setText("double left");
-                                                        tick(vibrator);
+                                                        MyVibrator.tick(requireActivity());
                                                         spinLeft = (int) (initLayout[0] - spinMaxMove);
                                                         spinRight = (int) (initLayout[2] - spinMaxMove);
                                                         ball.layout(spinLeft, spinTop, spinRight, spinBottom);
@@ -279,7 +283,7 @@ public class EncryptionFragment extends Fragment {
                                                         // trigger double left !!!
 
                                                         testText.setText("double right");
-                                                        tick(vibrator);
+                                                        MyVibrator.tick(requireActivity());
                                                         spinLeft = (int) (initLayout[0] + spinMaxMove);
                                                         spinRight = (int) (initLayout[2] + spinMaxMove);
                                                         ball.layout(spinLeft, spinTop, spinRight, spinBottom);
@@ -307,7 +311,7 @@ public class EncryptionFragment extends Fragment {
                                                         // trigger double up !!!
 
                                                         testText.setText("double up");
-                                                        tick(vibrator);
+                                                        MyVibrator.tick(requireActivity());
                                                         spinTop = (int) (initLayout[1] - spinMaxMove);
                                                         spinBottom = (int) (initLayout[3] - spinMaxMove);
                                                         ball.layout(spinLeft, spinTop, spinRight, spinBottom);
@@ -319,7 +323,7 @@ public class EncryptionFragment extends Fragment {
                                                         // trigger double down !!!
 
                                                         testText.setText("double down");
-                                                        tick(vibrator);
+                                                        MyVibrator.tick(requireActivity());
                                                         spinTop = (int) (initLayout[1] + spinMaxMove);
                                                         spinBottom = (int) (initLayout[3] + spinMaxMove);
                                                         ball.layout(spinLeft, spinTop, spinRight, spinBottom);
@@ -362,7 +366,7 @@ public class EncryptionFragment extends Fragment {
                             ta.setDuration(50);
                             ball.startAnimation(ta);
                             testText.setText("single tap");
-                            tick(vibrator);
+                            MyVibrator.tick(requireActivity());
                         }
 
                         // reset params
@@ -452,13 +456,5 @@ public class EncryptionFragment extends Fragment {
         result[0] = (int) ((x1) * Math.cos(Math.PI / 180.0 * rotation) - (y1) * Math.sin(Math.PI / 180.0 * rotation));
         result[1] = (int) ((x1) * Math.sin(Math.PI / 180.0 * rotation) + (y1) * Math.cos(Math.PI / 180.0 * rotation));
         return result;
-    }
-
-    private void tick(Vibrator vibrator) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            vibrator.vibrate(VibrationEffect.EFFECT_TICK);
-        } else {
-            vibrator.vibrate(20);
-        }
     }
 }

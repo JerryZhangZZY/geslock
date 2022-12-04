@@ -2,9 +2,14 @@ package com.example.geslock;
 
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -14,6 +19,11 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.geslock.databinding.ActivityMainBinding;
+import com.example.geslock.tool.MyVibrator;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,18 +33,40 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // get app preferences
         SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
+
+        // set saved theme
         AppCompatDelegate.setDefaultNightMode(pref.getInt("theme", MODE_NIGHT_FOLLOW_SYSTEM));
+
+        // set saved language
+        int languageIndex = pref.getInt("language", 2);
+        Locale language;
+        switch (languageIndex) {
+            case 0:
+                language = Locale.ENGLISH;
+                break;
+            case 1:
+                language = Locale.CHINESE;
+                break;
+            default:
+                language = Locale.getDefault();
+        }
+        Resources resources = getResources();
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        Configuration configuration = resources.getConfiguration();
+        configuration.setLocale(language);
+        resources.updateConfiguration(configuration, displayMetrics);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupWithNavController(binding.navView, navController);
-
         Toolbar toolbar = binding.toolBar;
         setSupportActionBar(toolbar);
 
-        binding.navView.setItemIconTintList(null);
+        BottomNavigationView nav = binding.navView;
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        NavigationUI.setupWithNavController(nav, navController);
+        nav.setItemIconTintList(null);
     }
 }
