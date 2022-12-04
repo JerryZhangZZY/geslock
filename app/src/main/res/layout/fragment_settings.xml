@@ -21,7 +21,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/settingsTitle"
+                android:id="@+id/tvSettingsTitle"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:fontFamily="sans-serif-medium"
@@ -32,96 +32,110 @@
                 android:textSize="48sp" />
 
             <TextView
-                android:id="@+id/cetagoryAppearance"
+                android:id="@+id/tvCategoryAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="20dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
                 android:text="@string/settings_category_appearance"
                 android:textColor="?attr/colorSecondary"
                 android:textSize="16sp" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="10dp"
+                app:cardUseCompatPadding="true"
+                app:contentPadding="10dp">
 
-                <ImageButton
-                    android:id="@+id/imgBtnSoccer"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:background="@drawable/round_btn_border"
-                    android:padding="10dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_soccer_small"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintDimensionRatio="1"
-                    app:layout_constraintEnd_toStartOf="@+id/imgBtnDonut"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintWidth_percent="0.2" />
-
-                <ImageButton
-                    android:id="@+id/imgBtnDonut"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:background="@drawable/round_btn_border"
-                    android:padding="10dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_donut_small"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintDimensionRatio="1"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintWidth_percent="0.2" />
-
-                <ImageButton
-                    android:id="@+id/imgBtnBasketball"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:background="@drawable/round_btn_border"
-                    android:padding="10dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_basketball_small"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintDimensionRatio="1"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imgBtnDonut"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintWidth_percent="0.2" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="20dp"
-                    android:text="@string/settings_content_theme"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:divider="@drawable/horizontal_divider"
+                    android:orientation="vertical"
+                    android:showDividers="middle">
 
-                <Spinner
-                    android:id="@+id/spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:entries="@array/theme"
-                    android:padding="20dp" />
-            </LinearLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp">
 
-            <Switch
-                android:id="@+id/switch1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="64dp"
-                android:padding="20dp"
-                android:text="Switch demo"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                        <ImageButton
+                            android:id="@+id/imgBtnSoccer"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:background="@drawable/round_btn_border"
+                            android:padding="7dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_soccer_small"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintDimensionRatio="1"
+                            app:layout_constraintEnd_toStartOf="@+id/imgBtnDonut"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintWidth_percent="0.2" />
+
+                        <ImageButton
+                            android:id="@+id/imgBtnDonut"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:background="@drawable/round_btn_border"
+                            android:padding="7dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_donut_small"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintDimensionRatio="1"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintWidth_percent="0.2" />
+
+                        <ImageButton
+                            android:id="@+id/imgBtnBasketball"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:background="@drawable/round_btn_border"
+                            android:padding="7dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_basketball_small"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintDimensionRatio="1"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imgBtnDonut"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintWidth_percent="0.2" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvTheme"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:padding="10dp"
+                            android:text="@string/settings_content_theme"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                            android:textColor="?android:attr/textColorPrimary" />
+
+                        <Spinner
+                            android:id="@+id/spinnerTheme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:backgroundTint="?attr/colorSecondary"
+                            android:entries="@array/theme"
+                            android:textAlignment="textEnd" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <EditText
                 android:id="@+id/editTextNumber"
@@ -133,6 +147,14 @@
                 android:minHeight="64dp"
                 android:padding="20dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <Switch
+                android:id="@+id/switch1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Switch demo"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:attr/textColorPrimary" />
 
         </LinearLayout>
     </ScrollView>

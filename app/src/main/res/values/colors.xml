@@ -12,6 +12,8 @@
     <color name="black">#FF000000</color>
 
     <color name="gray_200">#FFF0F0F3</color>
-    <color name="gray_500">#FFE2DBD0</color>
-    <color name="gray_700">#FF1D1F20</color>
+    <color name="gray_300">#FFE2DBD0</color>
+    <color name="gray_400">#FFD7DEE4</color>
+    <color name="gray_500">#FF808080</color>
+    <color name="gray_900">#FF1D1F20</color>
 </resources>

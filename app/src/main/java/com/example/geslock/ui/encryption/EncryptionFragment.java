@@ -56,7 +56,6 @@ public class EncryptionFragment extends Fragment {
         icons[2][1] = R.drawable.ic_basketball_spin_x;
         icons[2][2] = R.drawable.ic_basketball_spin_y;
 
-
         final int[] initLayout = {0, 0, 0, 0};
         Vibrator vibrator = (Vibrator)getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
 

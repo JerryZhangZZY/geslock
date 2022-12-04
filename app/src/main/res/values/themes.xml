@@ -14,7 +14,9 @@
         <!-- Customize your theme here. -->
         <item name="android:windowBackground">@color/gray_200</item>
         <item name="android:navigationBarColor">?attr/colorOnPrimary</item>
-        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">@color/gray_500</item>
+        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">@color/gray_300</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="android:textColorPrimary">@color/gray_900</item>
+        <item name="dividerColor">@color/gray_400</item>
     </style>
 </resources>

@@ -16,18 +16,17 @@ import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.example.geslock.R;
-import com.example.geslock.databinding.FragmentSettingsBinding;
 
 public class SettingsFragment extends Fragment {
-
-    private FragmentSettingsBinding binding;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -68,16 +67,48 @@ public class SettingsFragment extends Fragment {
                     dragIcons[finalIndex].setBackground(border);
                     editor.putInt("icon", finalIndex);
                     editor.apply();
-
-                    if (finalIndex == 0)
-                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
-                    else if (finalIndex == 1)
-                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
-                    else
-                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM);
                 }
             });
         }
+
+        Spinner theme = getActivity().findViewById(R.id.spinnerTheme);
+        switch (pref.getInt("theme", MODE_NIGHT_FOLLOW_SYSTEM)) {
+            case MODE_NIGHT_NO:
+                theme.setSelection(0);
+                break;
+            case MODE_NIGHT_YES:
+                theme.setSelection(1);
+                break;
+            case MODE_NIGHT_FOLLOW_SYSTEM:
+                theme.setSelection(2);
+                break;
+        }
+        theme.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i) {
+                    case 0:
+                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
+                        editor.putInt("theme", MODE_NIGHT_NO);
+                        editor.apply();
+                        break;
+                    case 1:
+                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+                        editor.putInt("theme", MODE_NIGHT_YES);
+                        editor.apply();
+                        break;
+                    case 2:
+                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM);
+                        editor.putInt("theme", MODE_NIGHT_FOLLOW_SYSTEM);
+                        editor.apply();
+                        break;
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     private void tick(Vibrator vibrator) {
