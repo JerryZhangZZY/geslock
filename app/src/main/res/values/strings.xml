@@ -17,5 +17,9 @@
     <string name="spinner_language_2">简体中文</string>
     <string name="spinner_language_3">System</string>
     <string name="settings_category_interaction">Interaction</string>
+    <string name="settings_content_dragdist">Dragging distance</string>
+    <string name="spinner_dragdist_1">Short</string>
+    <string name="spinner_dragdist_2">Middle</string>
+    <string name="spinner_dragdist_3">Long</string>
     <string name="settings_content_vibration">Vibration</string>
 </resources>

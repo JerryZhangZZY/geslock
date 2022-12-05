@@ -15,6 +15,7 @@
         <item name="android:windowBackground">@color/gray_900</item>
         <item name="android:navigationBarColor">?attr/colorOnPrimary</item>
         <item name="android:textColorPrimary">@color/gray_300</item>
+        <item name="android:titleTextColor">?attr/colorSecondary</item>
         <item name="dividerColor">@color/gray_500</item>
     </style>
 </resources>

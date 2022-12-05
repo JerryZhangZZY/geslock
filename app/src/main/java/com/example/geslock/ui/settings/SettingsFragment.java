@@ -9,15 +9,11 @@ import android.animation.PropertyValuesHolder;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -31,16 +27,12 @@ import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.example.geslock.MainActivity;
 import com.example.geslock.R;
 import com.example.geslock.tool.MyVibrator;
 
 import java.util.Locale;
-import java.util.Objects;
 
 public class SettingsFragment extends Fragment {
 
@@ -58,8 +50,6 @@ public class SettingsFragment extends Fragment {
 
         SharedPreferences pref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-
-        Vibrator vibrator = (Vibrator)activity.getSystemService(activity.VIBRATOR_SERVICE);
 
         ImageButton[] dragIcons = new ImageButton[3];
         dragIcons[0] = activity.findViewById(R.id.imgBtnSoccer);
@@ -168,6 +158,30 @@ public class SettingsFragment extends Fragment {
                     }
                 }
 
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+
+        Spinner dragDist = activity.findViewById(R.id.spinnerDragDist);
+        dragDist.setSelection(pref.getInt("drag-dist", 1));
+        dragDist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i) {
+                    case 0:
+                        editor.putInt("drag-dist", 0);
+                        editor.apply();
+                        break;
+                    case 1:
+                        editor.putInt("drag-dist", 1);
+                        editor.apply();
+                        break;
+                    case 2:
+                        editor.putInt("drag-dist", 2);
+                        editor.apply();
+                        break;
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}

@@ -17,6 +17,7 @@
         <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">@color/gray_300</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
         <item name="android:textColorPrimary">@color/gray_900</item>
+        <item name="android:titleTextColor">?attr/colorSecondary</item>
         <item name="dividerColor">@color/gray_400</item>
     </style>
 </resources>

@@ -28,7 +28,7 @@
                 android:gravity="center_vertical"
                 android:padding="15dp"
                 android:text="@string/title_settings"
-                android:textColor="?attr/colorSecondary"
+                android:textColor="?android:attr/titleTextColor"
                 android:textSize="48sp" />
 
             <TextView
@@ -38,7 +38,7 @@
                 android:paddingLeft="25dp"
                 android:paddingRight="25dp"
                 android:text="@string/settings_category_appearance"
-                android:textColor="?attr/colorSecondary"
+                android:textColor="?android:attr/titleTextColor"
                 android:textSize="16sp" />
 
             <androidx.cardview.widget.CardView
@@ -204,6 +204,32 @@
                     android:orientation="vertical"
                     android:showDividers="middle">
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvDragDist"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:padding="10dp"
+                            android:text="@string/settings_content_dragdist"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                            android:textColor="?android:attr/textColorPrimary" />
+
+                        <Spinner
+                            android:id="@+id/spinnerDragDist"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:backgroundTint="?attr/colorSecondary"
+                            android:entries="@array/dragdist"
+                            android:textAlignment="textEnd"
+                            tools:ignore="TouchTargetSizeCheck" />
+                    </LinearLayout>
+
                     <Switch
                         android:id="@+id/switchVibration"
                         android:layout_width="match_parent"
@@ -212,6 +238,7 @@
                         android:text="@string/settings_content_vibration"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         tools:ignore="TouchTargetSizeCheck" />
+
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

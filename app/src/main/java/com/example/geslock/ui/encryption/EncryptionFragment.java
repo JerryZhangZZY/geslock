@@ -4,10 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,15 +20,16 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
 
 import com.example.geslock.R;
 import com.example.geslock.tool.MyVibrator;
 
 public class EncryptionFragment extends Fragment {
 
-    final int MAX_MOVE = 300;
+    int MAX_MOVE = 300;
+    float MAX_SCALE = 1.5F;
     final int TAP_MOVE = 10;
-    final float MAX_SCALE = 1.5F;
     final float SPIN_MOVE_RATIO = 0.2F;
 
     @Override
@@ -49,6 +47,14 @@ public class EncryptionFragment extends Fragment {
         SharedPreferences pref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
         int iconIndex = pref.getInt("icon", 0);
 
+        // get fragment measurements
+        int[] fragmentSize = new int[2];
+        requireView().post(() -> {
+            fragmentSize[0] = requireView().getWidth();
+            fragmentSize[1] = requireView().getHeight();
+            setDragParams(fragmentSize, pref);
+        });
+
         int[][] icons = new int[3][3];
         icons[0][0] = R.drawable.ic_soccer;
         icons[0][1] = R.drawable.ic_soccer_spin_x;
@@ -61,19 +67,15 @@ public class EncryptionFragment extends Fragment {
         icons[2][2] = R.drawable.ic_basketball_spin_y;
 
         final int[] initLayout = {0, 0, 0, 0};
-        Vibrator vibrator = (Vibrator)activity.getSystemService(activity.VIBRATOR_SERVICE);
 
         TextView testText = activity.findViewById(R.id.testT);
         ImageView ball = activity.findViewById(R.id.ball);
         ball.setImageResource(icons[iconIndex][0]);
-        ball.post(new Runnable() {
-            @Override
-            public void run() {
-                initLayout[0] = ball.getLeft();
-                initLayout[1] = ball.getTop();
-                initLayout[2] = ball.getRight();
-                initLayout[3] = ball.getBottom();
-            }
+        ball.post(() -> {
+            initLayout[0] = ball.getLeft();
+            initLayout[1] = ball.getTop();
+            initLayout[2] = ball.getRight();
+            initLayout[3] = ball.getBottom();
         });
         ball.setOnTouchListener(new View.OnTouchListener() {
             boolean triggered = false;
@@ -185,6 +187,7 @@ public class EncryptionFragment extends Fragment {
                             try {
                                 moveX2 = (int) motionEvent.getX(1) + ball.getLeft();
                                 moveY2 = (int) motionEvent.getY(1) + ball.getTop();
+                                // recover coordinate
                                 int[] moveXY = transformCor(new int[]{moveX1, moveY1}, (int) ball.getRotation(), ball.getScaleX());
                                 moveX1 = moveXY[0];
                                 moveY1 = moveXY[1];
@@ -199,17 +202,21 @@ public class EncryptionFragment extends Fragment {
                                 int moveCenterY = (moveY1 + moveY2) / 2;
                                 float deltaCenter = dist(startCenterX, startCenterY, moveCenterX, moveCenterY);
 
+                                double maxJudgementMove = 0.04 * Math.min(fragmentSize[0], fragmentSize[1]);
+
                                 switch (mode) {
                                     // unjudged
                                     case 0:
-                                        if (Math.abs(deltaGap) > 20) {
-                                            if (deltaCenter < 100) {
-                                                // judge as zoom in/out
+                                        if (Math.abs(deltaCenter) > maxJudgementMove || Math.abs(deltaGap) > maxJudgementMove) {
+                                            int deltaX1 = moveX1 - startX1;
+                                            int deltaY1 = moveY1 - startY1;
+                                            int deltaX2 = moveX2 - startX2;
+                                            int deltaY2 = moveY2 - startY2;
+                                            if (Math.abs(deltaGap) > maxJudgementMove && isHetero(deltaX1, deltaX2) && isHetero(deltaY1, deltaY2))
                                                 mode = 1;
-                                            }
-                                        } else if (deltaCenter > 20)
-                                            // judge as double fingers swipe
-                                            mode = 2;
+                                            else
+                                                mode = 2;
+                                        }
                                         break;
                                     // zoom in/out
                                     case 1:
@@ -445,16 +452,47 @@ public class EncryptionFragment extends Fragment {
         });
     }
 
+    public void setDragParams(int[] fragmentSize, SharedPreferences pref) {
+        int dragDistIndex = pref.getInt("drag-dist", 1);
+        switch (dragDistIndex) {
+            case 0:
+                setMaxMove((int) (Math.min(fragmentSize[0], fragmentSize[1]) * 0.1));
+                setMaxScale(1.2F);
+                break;
+            case 1:
+                setMaxMove((int) (Math.min(fragmentSize[0], fragmentSize[1]) * 0.2));
+                setMaxScale(1.5F);
+                break;
+            case 2:
+                setMaxMove((int) (Math.min(fragmentSize[0], fragmentSize[1]) * 0.3));
+                setMaxScale(2F);
+                break;
+        }
+    }
+
+    public void setMaxMove(int maxMove) {
+        MAX_MOVE = maxMove;
+    }
+
+    public void setMaxScale(float maxScale) {
+        MAX_SCALE = maxScale;
+    }
+
     public float dist(int x1, int y1, int x2, int y2) {
         return (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 
-    private int[] transformCor(int[] xy, int rotation, float scale) {
+    public int[] transformCor(int[] xy, int rotation, float scale) {
         int[] result = new int[2];
         int x1 = (int) (xy[0] * scale);
         int y1 = (int) (xy[1] * scale);
         result[0] = (int) ((x1) * Math.cos(Math.PI / 180.0 * rotation) - (y1) * Math.sin(Math.PI / 180.0 * rotation));
         result[1] = (int) ((x1) * Math.sin(Math.PI / 180.0 * rotation) + (y1) * Math.cos(Math.PI / 180.0 * rotation));
         return result;
+    }
+
+    public boolean isHetero(int a, int b) {
+//        return a * b <= 0;
+        return (a ^ b) >>> 31 == 1 || a == 0 || b == 0;
     }
 }

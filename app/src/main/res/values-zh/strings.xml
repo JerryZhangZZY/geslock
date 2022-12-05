@@ -17,5 +17,9 @@
     <string name="spinner_language_2">简体中文</string>
     <string name="spinner_language_3">跟随系统</string>
     <string name="settings_category_interaction">交互</string>
+    <string name="settings_content_dragdist">拖移距离</string>
+    <string name="spinner_dragdist_1">短距</string>
+    <string name="spinner_dragdist_2">中距</string>
+    <string name="spinner_dragdist_3">长距</string>
     <string name="settings_content_vibration">振动</string>
 </resources>
