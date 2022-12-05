@@ -20,21 +20,27 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.preference.Preference;
 
 import com.example.geslock.R;
 import com.example.geslock.tool.MyVibrator;
 
 public class EncryptionFragment extends Fragment {
 
-    int MAX_MOVE = 300;
-    float MAX_SCALE = 1.5F;
-    final int TAP_MOVE = 10;
-    final float SPIN_MOVE_RATIO = 0.2F;
+    private int MAX_MOVE = 300;
+    private float MAX_SCALE = 1.5F;
+    private int ICON_INDEX = 0;
+
+    private final int TAP_MOVE = 10;
+    private final float SPIN_MOVE_RATIO = 0.2F;
+
+    private final int[] fragmentSize = new int[2];
+    private final int[][] rockerIcons = new int[3][3];
+    private final int[] rockerInitLayout = new int[4];
+    private TextView testText;
+    private ImageView rocker;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_encryption, container, false);
     }
     @SuppressLint("ClickableViewAccessibility")
@@ -42,42 +48,46 @@ public class EncryptionFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // set activity
         Activity activity = getActivity();
-
+        // get preferences
+        assert activity != null;
         SharedPreferences pref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        int iconIndex = pref.getInt("icon", 0);
 
-        // get fragment measurements
-        int[] fragmentSize = new int[2];
+        // set icon selection
+        ICON_INDEX = pref.getInt("icon", 0);
+
         requireView().post(() -> {
+            // set fragment measurements
             fragmentSize[0] = requireView().getWidth();
             fragmentSize[1] = requireView().getHeight();
+            // set drag params
             setDragParams(fragmentSize, pref);
         });
 
-        int[][] icons = new int[3][3];
-        icons[0][0] = R.drawable.ic_soccer;
-        icons[0][1] = R.drawable.ic_soccer_spin_x;
-        icons[0][2] = R.drawable.ic_soccer_spin_y;
-        icons[1][0] = R.drawable.ic_donut;
-        icons[1][1] = R.drawable.ic_donut_spin_x;
-        icons[1][2] = R.drawable.ic_donut_spin_y;
-        icons[2][0] = R.drawable.ic_basketball;
-        icons[2][1] = R.drawable.ic_basketball_spin_x;
-        icons[2][2] = R.drawable.ic_basketball_spin_y;
+        // set all icons
+        rockerIcons[0][0] = R.drawable.ic_soccer;
+        rockerIcons[0][1] = R.drawable.ic_soccer_spin_x;
+        rockerIcons[0][2] = R.drawable.ic_soccer_spin_y;
+        rockerIcons[1][0] = R.drawable.ic_donut;
+        rockerIcons[1][1] = R.drawable.ic_donut_spin_x;
+        rockerIcons[1][2] = R.drawable.ic_donut_spin_y;
+        rockerIcons[2][0] = R.drawable.ic_basketball;
+        rockerIcons[2][1] = R.drawable.ic_basketball_spin_x;
+        rockerIcons[2][2] = R.drawable.ic_basketball_spin_y;
 
-        final int[] initLayout = {0, 0, 0, 0};
+        // get widgets
+        testText = activity.findViewById(R.id.testT);
+        rocker = activity.findViewById(R.id.rocker);
 
-        TextView testText = activity.findViewById(R.id.testT);
-        ImageView ball = activity.findViewById(R.id.ball);
-        ball.setImageResource(icons[iconIndex][0]);
-        ball.post(() -> {
-            initLayout[0] = ball.getLeft();
-            initLayout[1] = ball.getTop();
-            initLayout[2] = ball.getRight();
-            initLayout[3] = ball.getBottom();
+        rocker.setImageResource(rockerIcons[ICON_INDEX][0]);
+        rocker.post(() -> {
+            rockerInitLayout[0] = rocker.getLeft();
+            rockerInitLayout[1] = rocker.getTop();
+            rockerInitLayout[2] = rocker.getRight();
+            rockerInitLayout[3] = rocker.getBottom();
         });
-        ball.setOnTouchListener(new View.OnTouchListener() {
+        rocker.setOnTouchListener(new View.OnTouchListener() {
             boolean triggered = false;
             int mode = 0;
             int fingerNum = 0;
@@ -92,15 +102,15 @@ public class EncryptionFragment extends Fragment {
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
                     // first finger contact
                     case MotionEvent.ACTION_DOWN:
-                        startX1 = (int) motionEvent.getX() + ball.getLeft();
-                        startY1 = (int) motionEvent.getY() + ball.getTop();
+                        startX1 = (int) motionEvent.getX() + rocker.getLeft();
+                        startY1 = (int) motionEvent.getY() + rocker.getTop();
                         fingerNum = 1;
                         break;
 
                     // any finger moves
                     case MotionEvent.ACTION_MOVE:
-                        moveX1 = (int) motionEvent.getX() + ball.getLeft();
-                        moveY1 = (int) motionEvent.getY() + ball.getTop();
+                        moveX1 = (int) motionEvent.getX() + rocker.getLeft();
+                        moveY1 = (int) motionEvent.getY() + rocker.getTop();
                         // single finger drag
                         if (fingerNum == 1) {
                             int deltaX = moveX1 - startX1;
@@ -108,13 +118,13 @@ public class EncryptionFragment extends Fragment {
                             int left, top, right, bottom;
                             if (Math.abs(deltaX) - Math.abs(deltaY) > 0) {
                                 // on X axis
-                                top = initLayout[1];
-                                bottom = initLayout[3];
+                                top = rockerInitLayout[1];
+                                bottom = rockerInitLayout[3];
                                 if (Math.abs(moveX1 - startX1) < MAX_MOVE) {
                                     if (Math.abs(deltaX) >= TAP_MOVE) {
-                                        left = initLayout[0] + deltaX;
-                                        right = initLayout[2] + deltaX;
-                                        ball.layout(left, top, right, bottom);
+                                        left = rockerInitLayout[0] + deltaX;
+                                        right = rockerInitLayout[2] + deltaX;
+                                        rocker.layout(left, top, right, bottom);
                                     }
                                 } else {
                                     if (deltaX < 0) {
@@ -125,9 +135,9 @@ public class EncryptionFragment extends Fragment {
 
                                             testText.setText("single left");
                                             MyVibrator.tick(requireActivity());
-                                            left = initLayout[0] - MAX_MOVE;
-                                            right = initLayout[2] - MAX_MOVE;
-                                            ball.layout(left, top, right, bottom);
+                                            left = rockerInitLayout[0] - MAX_MOVE;
+                                            right = rockerInitLayout[2] - MAX_MOVE;
+                                            rocker.layout(left, top, right, bottom);
                                         }
                                     } else {
                                         if (!triggered) {
@@ -137,21 +147,21 @@ public class EncryptionFragment extends Fragment {
 
                                             testText.setText("single right");
                                             MyVibrator.tick(requireActivity());
-                                            left = initLayout[0] + MAX_MOVE;
-                                            right = initLayout[2] + MAX_MOVE;
-                                            ball.layout(left, top, right, bottom);
+                                            left = rockerInitLayout[0] + MAX_MOVE;
+                                            right = rockerInitLayout[2] + MAX_MOVE;
+                                            rocker.layout(left, top, right, bottom);
                                         }
                                     }
                                 }
                             } else {
                                 // on Y axis
-                                left = initLayout[0];
-                                right = initLayout[2];
+                                left = rockerInitLayout[0];
+                                right = rockerInitLayout[2];
                                 if (Math.abs(moveY1 - startY1) < MAX_MOVE) {
                                     if (Math.abs(deltaY) >= TAP_MOVE) {
-                                        top = initLayout[1] + deltaY;
-                                        bottom = initLayout[3] + deltaY;
-                                        ball.layout(left, top, right, bottom);
+                                        top = rockerInitLayout[1] + deltaY;
+                                        bottom = rockerInitLayout[3] + deltaY;
+                                        rocker.layout(left, top, right, bottom);
                                     }
                                 } else {
                                     if (deltaY < 0) {
@@ -162,9 +172,9 @@ public class EncryptionFragment extends Fragment {
 
                                             testText.setText("single up");
                                             MyVibrator.tick(requireActivity());
-                                            top = initLayout[1] - MAX_MOVE;
-                                            bottom = initLayout[3] - MAX_MOVE;
-                                            ball.layout(left, top, right, bottom);
+                                            top = rockerInitLayout[1] - MAX_MOVE;
+                                            bottom = rockerInitLayout[3] - MAX_MOVE;
+                                            rocker.layout(left, top, right, bottom);
                                         }
                                     } else {
                                         if (!triggered) {
@@ -174,9 +184,9 @@ public class EncryptionFragment extends Fragment {
 
                                             testText.setText("single down");
                                             MyVibrator.tick(requireActivity());
-                                            top = initLayout[1] + MAX_MOVE;
-                                            bottom = initLayout[3] + MAX_MOVE;
-                                            ball.layout(left, top, right, bottom);
+                                            top = rockerInitLayout[1] + MAX_MOVE;
+                                            bottom = rockerInitLayout[3] + MAX_MOVE;
+                                            rocker.layout(left, top, right, bottom);
                                         }
                                     }
                                 }
@@ -185,13 +195,13 @@ public class EncryptionFragment extends Fragment {
                             // still possible to have only one finger
                             // catch exception to make sure the app wouldn't crash
                             try {
-                                moveX2 = (int) motionEvent.getX(1) + ball.getLeft();
-                                moveY2 = (int) motionEvent.getY(1) + ball.getTop();
+                                moveX2 = (int) motionEvent.getX(1) + rocker.getLeft();
+                                moveY2 = (int) motionEvent.getY(1) + rocker.getTop();
                                 // recover coordinate
-                                int[] moveXY = transformCor(new int[]{moveX1, moveY1}, (int) ball.getRotation(), ball.getScaleX());
+                                int[] moveXY = transformCor(new int[]{moveX1, moveY1}, (int) rocker.getRotation(), rocker.getScaleX());
                                 moveX1 = moveXY[0];
                                 moveY1 = moveXY[1];
-                                moveXY = transformCor(new int[]{moveX2, moveY2}, (int) ball.getRotation(), ball.getScaleX());
+                                moveXY = transformCor(new int[]{moveX2, moveY2}, (int) rocker.getRotation(), rocker.getScaleX());
                                 moveX2 = moveXY[0];
                                 moveY2 = moveXY[1];
 
@@ -225,7 +235,7 @@ public class EncryptionFragment extends Fragment {
                                             rotation = rotation - 360;
                                         if (rotation < -180)
                                             rotation = rotation + 360;
-                                        ball.setRotation(rotation);
+                                        rocker.setRotation(rotation);
                                         float scale = moveGap / startGap;
                                         if (scale >= MAX_SCALE) {
                                             if (!triggered) {
@@ -235,8 +245,8 @@ public class EncryptionFragment extends Fragment {
 
                                                 testText.setText("zoom in");
                                                 MyVibrator.tick(requireActivity());
-                                                ball.setScaleX(MAX_SCALE);
-                                                ball.setScaleY(MAX_SCALE);
+                                                rocker.setScaleX(MAX_SCALE);
+                                                rocker.setScaleY(MAX_SCALE);
                                             }
                                         } else if (scale <= 1 / MAX_SCALE) {
                                             if (!triggered) {
@@ -246,12 +256,12 @@ public class EncryptionFragment extends Fragment {
 
                                                 testText.setText("zoom out");
                                                 MyVibrator.tick(requireActivity());
-                                                ball.setScaleX(1 / MAX_SCALE);
-                                                ball.setScaleY(1 / MAX_SCALE);
+                                                rocker.setScaleX(1 / MAX_SCALE);
+                                                rocker.setScaleY(1 / MAX_SCALE);
                                             }
                                         } else {
-                                            ball.setScaleX(scale);
-                                            ball.setScaleY(scale);
+                                            rocker.setScaleX(scale);
+                                            rocker.setScaleY(scale);
                                         }
                                         break;
                                     // double fingers swipe
@@ -262,13 +272,13 @@ public class EncryptionFragment extends Fragment {
                                         float spinMaxMove = MAX_MOVE * SPIN_MOVE_RATIO;
                                         if (Math.abs(deltaCenterX) > Math.abs(deltaCenterY)) {
                                             // on X axis
-                                            spinTop = initLayout[1];
-                                            spinBottom = initLayout[3];
+                                            spinTop = rockerInitLayout[1];
+                                            spinBottom = rockerInitLayout[3];
                                             if (Math.abs(deltaCenterX) < MAX_MOVE) {
                                                 if (Math.abs(deltaCenterX) >= TAP_MOVE) {
-                                                    spinLeft = (int) (initLayout[0] + (deltaCenterX * SPIN_MOVE_RATIO));
-                                                    spinRight = (int) (initLayout[2] + (deltaCenterX * SPIN_MOVE_RATIO));
-                                                    ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                                    spinLeft = (int) (rockerInitLayout[0] + (deltaCenterX * SPIN_MOVE_RATIO));
+                                                    spinRight = (int) (rockerInitLayout[2] + (deltaCenterX * SPIN_MOVE_RATIO));
+                                                    rocker.layout(spinLeft, spinTop, spinRight, spinBottom);
                                                 }
                                             } else {
                                                 if (deltaCenterX < 0) {
@@ -279,9 +289,9 @@ public class EncryptionFragment extends Fragment {
 
                                                         testText.setText("double left");
                                                         MyVibrator.tick(requireActivity());
-                                                        spinLeft = (int) (initLayout[0] - spinMaxMove);
-                                                        spinRight = (int) (initLayout[2] - spinMaxMove);
-                                                        ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                                        spinLeft = (int) (rockerInitLayout[0] - spinMaxMove);
+                                                        spinRight = (int) (rockerInitLayout[2] - spinMaxMove);
+                                                        rocker.layout(spinLeft, spinTop, spinRight, spinBottom);
                                                     }
                                                 } else {
                                                     if (!triggered) {
@@ -291,24 +301,24 @@ public class EncryptionFragment extends Fragment {
 
                                                         testText.setText("double right");
                                                         MyVibrator.tick(requireActivity());
-                                                        spinLeft = (int) (initLayout[0] + spinMaxMove);
-                                                        spinRight = (int) (initLayout[2] + spinMaxMove);
-                                                        ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                                        spinLeft = (int) (rockerInitLayout[0] + spinMaxMove);
+                                                        spinRight = (int) (rockerInitLayout[2] + spinMaxMove);
+                                                        rocker.layout(spinLeft, spinTop, spinRight, spinBottom);
                                                     }
                                                 }
                                             }
 
-                                            ball.setImageResource(icons[iconIndex][1]);
-                                            ball.setTag("spin_x");
+                                            rocker.setImageResource(rockerIcons[ICON_INDEX][1]);
+                                            rocker.setTag("spin_x");
                                         } else {
                                             // on Y axis
-                                            spinLeft = initLayout[0];
-                                            spinRight = initLayout[2];
+                                            spinLeft = rockerInitLayout[0];
+                                            spinRight = rockerInitLayout[2];
                                             if (Math.abs(deltaCenterY) < MAX_MOVE) {
                                                 if (Math.abs(deltaCenterY) >= TAP_MOVE) {
-                                                    spinTop = (int) (initLayout[1] + (deltaCenterY * SPIN_MOVE_RATIO));
-                                                    spinBottom = (int) (initLayout[3] + (deltaCenterY * SPIN_MOVE_RATIO));
-                                                    ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                                    spinTop = (int) (rockerInitLayout[1] + (deltaCenterY * SPIN_MOVE_RATIO));
+                                                    spinBottom = (int) (rockerInitLayout[3] + (deltaCenterY * SPIN_MOVE_RATIO));
+                                                    rocker.layout(spinLeft, spinTop, spinRight, spinBottom);
                                                 }
                                             } else {
                                                 if (deltaCenterY < 0) {
@@ -319,9 +329,9 @@ public class EncryptionFragment extends Fragment {
 
                                                         testText.setText("double up");
                                                         MyVibrator.tick(requireActivity());
-                                                        spinTop = (int) (initLayout[1] - spinMaxMove);
-                                                        spinBottom = (int) (initLayout[3] - spinMaxMove);
-                                                        ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                                        spinTop = (int) (rockerInitLayout[1] - spinMaxMove);
+                                                        spinBottom = (int) (rockerInitLayout[3] - spinMaxMove);
+                                                        rocker.layout(spinLeft, spinTop, spinRight, spinBottom);
                                                     }
                                                 } else {
                                                     if (!triggered) {
@@ -331,14 +341,14 @@ public class EncryptionFragment extends Fragment {
 
                                                         testText.setText("double down");
                                                         MyVibrator.tick(requireActivity());
-                                                        spinTop = (int) (initLayout[1] + spinMaxMove);
-                                                        spinBottom = (int) (initLayout[3] + spinMaxMove);
-                                                        ball.layout(spinLeft, spinTop, spinRight, spinBottom);
+                                                        spinTop = (int) (rockerInitLayout[1] + spinMaxMove);
+                                                        spinBottom = (int) (rockerInitLayout[3] + spinMaxMove);
+                                                        rocker.layout(spinLeft, spinTop, spinRight, spinBottom);
                                                     }
                                                 }
                                             }
-                                            ball.setImageResource(icons[iconIndex][2]);
-                                            ball.setTag("spin_y");
+                                            rocker.setImageResource(rockerIcons[ICON_INDEX][2]);
+                                            rocker.setTag("spin_y");
                                         }
                                         break;
                                 }
@@ -348,10 +358,10 @@ public class EncryptionFragment extends Fragment {
 
                     // second finger contact
                     case MotionEvent.ACTION_POINTER_DOWN:
-                        startX2 = (int) motionEvent.getX(1) + ball.getLeft();
-                        startY2 = (int) motionEvent.getY(1) + ball.getTop();
+                        startX2 = (int) motionEvent.getX(1) + rocker.getLeft();
+                        startY2 = (int) motionEvent.getY(1) + rocker.getTop();
                         fingerNum = 2;
-                        ball.layout(initLayout[0], initLayout[1], initLayout[2], initLayout[3]);
+                        rocker.layout(rockerInitLayout[0], rockerInitLayout[1], rockerInitLayout[2], rockerInitLayout[3]);
                         startGap = dist(startX1, startY1, startX2, startY2);
                         startCenterX = (startX1 + startX2) / 2;
                         startCenterY = (startY1 + startY2) / 2;
@@ -365,13 +375,13 @@ public class EncryptionFragment extends Fragment {
                     // all fingers leave
                     case MotionEvent.ACTION_UP:
                         // single finger tap
-                        if (fingerNum == 1 && dist(startX1, startY1, (int) motionEvent.getX() + ball.getLeft(), (int) motionEvent.getY() + ball.getTop()) < TAP_MOVE) {
+                        if (fingerNum == 1 && dist(startX1, startY1, (int) motionEvent.getX() + rocker.getLeft(), (int) motionEvent.getY() + rocker.getTop()) < TAP_MOVE) {
 
                             // trigger single tap !!!
 
                             ScaleAnimation ta = new ScaleAnimation(1, 1.1F, 1, 1.1F, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
                             ta.setDuration(50);
-                            ball.startAnimation(ta);
+                            rocker.startAnimation(ta);
                             testText.setText("single tap");
                             MyVibrator.tick(requireActivity());
                         }
@@ -382,44 +392,44 @@ public class EncryptionFragment extends Fragment {
                         mode = 0;
 
                         // ball reset animations
-                        if (ball.getLeft() != initLayout[0] || ball.getTop() != initLayout[1]) {
-                            TranslateAnimation ta = new TranslateAnimation(0, initLayout[0] - ball.getLeft(), 0, initLayout[1] - ball.getTop());
+                        if (rocker.getLeft() != rockerInitLayout[0] || rocker.getTop() != rockerInitLayout[1]) {
+                            TranslateAnimation ta = new TranslateAnimation(0, rockerInitLayout[0] - rocker.getLeft(), 0, rockerInitLayout[1] - rocker.getTop());
                             ta.setDuration(100);
                             ta.setInterpolator(new OvershootInterpolator(3));
                             ta.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
                                 public void onAnimationEnd(Animation animation) {
-                                    ball.clearAnimation();
-                                    ball.layout(initLayout[0], initLayout[1], initLayout[2], initLayout[3]);
+                                    rocker.clearAnimation();
+                                    rocker.layout(rockerInitLayout[0], rockerInitLayout[1], rockerInitLayout[2], rockerInitLayout[3]);
                                 }
                                 @Override
                                 public void onAnimationStart(Animation animation) {}
                                 @Override
                                 public void onAnimationRepeat(Animation animation) {}
                             });
-                            ball.startAnimation(ta);
+                            rocker.startAnimation(ta);
                         }
-                        if (ball.getRotation() != 0 || ball.getScaleX() != 1) {
-                            RotateAnimation ra = new RotateAnimation(0, -ball.getRotation(), Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                        if (rocker.getRotation() != 0 || rocker.getScaleX() != 1) {
+                            RotateAnimation ra = new RotateAnimation(0, -rocker.getRotation(), Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                             ra.setDuration(100);
                             ra.setInterpolator(new OvershootInterpolator(3));
                             ra.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
                                 public void onAnimationStart(Animation animation) {}
                                 @Override
-                                public void onAnimationEnd(Animation animation) { ball.clearAnimation(); }
+                                public void onAnimationEnd(Animation animation) { rocker.clearAnimation(); }
                                 @Override
                                 public void onAnimationRepeat(Animation animation) {}
                             });
 
-                            ScaleAnimation sa = new ScaleAnimation(1, 1 / ball.getScaleX(), 1, 1 / ball.getScaleY(), Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+                            ScaleAnimation sa = new ScaleAnimation(1, 1 / rocker.getScaleX(), 1, 1 / rocker.getScaleY(), Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
                             sa.setDuration(100);
                             sa.setInterpolator(new OvershootInterpolator(3));
                             sa.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
                                 public void onAnimationStart(Animation animation) {}
                                 @Override
-                                public void onAnimationEnd(Animation animation) { ball.clearAnimation(); }
+                                public void onAnimationEnd(Animation animation) { rocker.clearAnimation(); }
                                 @Override
                                 public void onAnimationRepeat(Animation animation) {}
                             });
@@ -432,18 +442,18 @@ public class EncryptionFragment extends Fragment {
                                 public void onAnimationStart(Animation animation) {}
                                 @Override
                                 public void onAnimationEnd(Animation animation) {
-                                    ball.setRotation(0);
-                                    ball.setScaleX(1);
-                                    ball.setScaleY(1);
+                                    rocker.setRotation(0);
+                                    rocker.setScaleX(1);
+                                    rocker.setScaleY(1);
                                 }
                                 @Override
                                 public void onAnimationRepeat(Animation animation) {}
                             });
-                            ball.startAnimation(as);
+                            rocker.startAnimation(as);
                         }
-                        if (!ball.getTag().equals("origin")) {
-                            ball.setImageResource(icons[iconIndex][0]);
-                            ball.setTag("origin");
+                        if (!rocker.getTag().equals("origin")) {
+                            rocker.setImageResource(rockerIcons[ICON_INDEX][0]);
+                            rocker.setTag("origin");
                         }
                         break;
                 }

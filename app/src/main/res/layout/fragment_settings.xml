@@ -216,7 +216,7 @@
                             android:layout_weight="1"
                             android:gravity="center_vertical"
                             android:padding="10dp"
-                            android:text="@string/settings_content_dragdist"
+                            android:text="@string/settings_content_travel"
                             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                             android:textColor="?android:attr/textColorPrimary" />
 
@@ -225,7 +225,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:backgroundTint="?attr/colorSecondary"
-                            android:entries="@array/dragdist"
+                            android:entries="@array/travel"
                             android:textAlignment="textEnd"
                             tools:ignore="TouchTargetSizeCheck" />
                     </LinearLayout>

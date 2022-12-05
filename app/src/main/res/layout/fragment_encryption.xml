@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/ic_cross" />
 
     <ImageView
-        android:id="@+id/ball"
+        android:id="@+id/rocker"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:tag="origin"

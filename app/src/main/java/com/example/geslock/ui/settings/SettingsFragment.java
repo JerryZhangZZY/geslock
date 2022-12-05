@@ -20,13 +20,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.geslock.R;
@@ -36,9 +36,16 @@ import java.util.Locale;
 
 public class SettingsFragment extends Fragment {
 
+    private ImageButton[] rockerIcons;
+    private Drawable border;
+    private Spinner spinnerTheme;
+    private Spinner spinnerLanguage;
+    private Spinner spinnerTravel;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    private Switch switchVibration;
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_settings, container, false);
     }
 
@@ -48,49 +55,47 @@ public class SettingsFragment extends Fragment {
 
         Activity activity = getActivity();
 
+        assert activity != null;
         SharedPreferences pref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
 
-        ImageButton[] dragIcons = new ImageButton[3];
-        dragIcons[0] = activity.findViewById(R.id.imgBtnSoccer);
-        dragIcons[1] = activity.findViewById(R.id.imgBtnDonut);
-        dragIcons[2] = activity.findViewById(R.id.imgBtnBasketball);
+        rockerIcons = new ImageButton[3];
+        rockerIcons[0] = activity.findViewById(R.id.imgBtnSoccer);
+        rockerIcons[1] = activity.findViewById(R.id.imgBtnDonut);
+        rockerIcons[2] = activity.findViewById(R.id.imgBtnBasketball);
 
-        Drawable border = getResources().getDrawable(R.drawable.round_btn_border);
+        border = ResourcesCompat.getDrawable(getResources(), R.drawable.round_btn_border, null);
 
-        for (int index = 0; index < dragIcons.length; index++) {
-            dragIcons[index].setBackground(pref.getInt("icon", 0) == index ? border : null);
+        for (int index = 0; index < rockerIcons.length; index++) {
+            rockerIcons[index].setBackground(pref.getInt("icon", 0) == index ? border : null);
             int finalIndex = index;
-            dragIcons[index].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    MyVibrator.tick(requireActivity());
-                    for (ImageButton btn : dragIcons)
-                        btn.setBackground(null);
-                    ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(border, PropertyValuesHolder.ofInt("alpha", 0, 255));
-                    animator.setTarget(border);
-                    animator.setDuration(200);
-                    animator.start();
-                    dragIcons[finalIndex].setBackground(border);
-                    editor.putInt("icon", finalIndex);
-                    editor.apply();
-                }
+            rockerIcons[index].setOnClickListener(view -> {
+                MyVibrator.tick(requireActivity());
+                for (ImageButton btn : rockerIcons)
+                    btn.setBackground(null);
+                ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(border, PropertyValuesHolder.ofInt("alpha", 0, 255));
+                animator.setTarget(border);
+                animator.setDuration(200);
+                animator.start();
+                rockerIcons[finalIndex].setBackground(border);
+                editor.putInt("icon", finalIndex);
+                editor.apply();
             });
         }
 
-        Spinner theme = activity.findViewById(R.id.spinnerTheme);
+        spinnerTheme = activity.findViewById(R.id.spinnerTheme);
         switch (pref.getInt("theme", MODE_NIGHT_FOLLOW_SYSTEM)) {
             case MODE_NIGHT_NO:
-                theme.setSelection(0);
+                spinnerTheme.setSelection(0);
                 break;
             case MODE_NIGHT_YES:
-                theme.setSelection(1);
+                spinnerTheme.setSelection(1);
                 break;
             case MODE_NIGHT_FOLLOW_SYSTEM:
-                theme.setSelection(2);
+                spinnerTheme.setSelection(2);
                 break;
         }
-        theme.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerTheme.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
@@ -115,13 +120,13 @@ public class SettingsFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
-        Spinner language = activity.findViewById(R.id.spinnerLanguage);
-        language.setSelection(pref.getInt("language", 2));
+        spinnerLanguage = activity.findViewById(R.id.spinnerLanguage);
+        spinnerLanguage.setSelection(pref.getInt("language", 2));
         Resources resources = getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         Configuration configuration = resources.getConfiguration();
         final boolean[] enabledFlag = {false};
-        language.setOnTouchListener(new View.OnTouchListener() {
+        spinnerLanguage.setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -129,7 +134,7 @@ public class SettingsFragment extends Fragment {
                 return false;
             }
         });
-        language.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (enabledFlag[0]) {
@@ -163,9 +168,9 @@ public class SettingsFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
-        Spinner dragDist = activity.findViewById(R.id.spinnerDragDist);
-        dragDist.setSelection(pref.getInt("drag-dist", 1));
-        dragDist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerTravel = activity.findViewById(R.id.spinnerDragDist);
+        spinnerTravel.setSelection(pref.getInt("drag-dist", 1));
+        spinnerTravel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
@@ -187,14 +192,11 @@ public class SettingsFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
-        Switch switchVibration = activity.findViewById(R.id.switchVibration);
+        switchVibration = activity.findViewById(R.id.switchVibration);
         switchVibration.setChecked(pref.getBoolean("vibration", true));
-        switchVibration.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                editor.putBoolean("vibration", b);
-                editor.apply();
-            }
+        switchVibration.setOnCheckedChangeListener((compoundButton, b) -> {
+            editor.putBoolean("vibration", b);
+            editor.apply();
         });
     }
 }

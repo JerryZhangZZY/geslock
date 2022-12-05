@@ -10,9 +10,9 @@
         <item>@string/spinner_language_2</item>
         <item>@string/spinner_language_3</item>
     </string-array>
-    <string-array name="dragdist">
-        <item>@string/spinner_dragdist_1</item>
-        <item>@string/spinner_dragdist_2</item>
-        <item>@string/spinner_dragdist_3</item>
+    <string-array name="travel">
+        <item>@string/spinner_travel_1</item>
+        <item>@string/spinner_travel_2</item>
+        <item>@string/spinner_travel_3</item>
     </string-array>
 </resources>
