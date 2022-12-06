@@ -9,11 +9,13 @@
     <color name="yellow_500">#FFF9A647</color>
 
     <color name="white">#FFFFFFFF</color>
-    <color name="black">#FF000000</color>
-
     <color name="gray_200">#FFF0F0F3</color>
     <color name="gray_300">#FFE2DBD0</color>
     <color name="gray_400">#FFD7DEE4</color>
-    <color name="gray_500">#FF808080</color>
+    <color name="gray_500">#FF8E8D93</color>
+    <color name="gray_600">#FF86858B</color>
+    <color name="gray_700">#FF3C3B40</color>
+    <color name="gray_800">#FF2E2F31</color>
     <color name="gray_900">#FF1D1F20</color>
+    <color name="black">#FF000000</color>
 </resources>

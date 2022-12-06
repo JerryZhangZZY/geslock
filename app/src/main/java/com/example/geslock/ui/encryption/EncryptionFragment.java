@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.geslock.R;
@@ -38,6 +40,7 @@ public class EncryptionFragment extends Fragment {
     private final int[] rockerInitLayout = new int[4];
     private TextView testText;
     private ImageView rocker;
+    private ImageView cross;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,6 +82,9 @@ public class EncryptionFragment extends Fragment {
         // get widgets
         testText = activity.findViewById(R.id.testT);
         rocker = activity.findViewById(R.id.rocker);
+        cross = activity.findViewById(R.id.cross);
+
+        cross.setVisibility(pref.getBoolean("cross", true) ? View.VISIBLE : View.INVISIBLE);
 
         rocker.setImageResource(rockerIcons[ICON_INDEX][0]);
         rocker.post(() -> {

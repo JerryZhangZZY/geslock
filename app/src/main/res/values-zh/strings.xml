@@ -8,6 +8,7 @@
     <string name="drag_icon_1">足球</string>
     <string name="drag_icon_2">甜甜圈</string>
     <string name="drag_icon_3">篮球</string>
+    <string name="settings_content_cross">显示十字架</string>
     <string name="settings_content_theme">主题</string>
     <string name="spinner_theme_1">浅色</string>
     <string name="spinner_theme_2">深色</string>
@@ -18,8 +19,8 @@
     <string name="spinner_language_3">跟随系统</string>
     <string name="settings_category_interaction">交互</string>
     <string name="settings_content_travel">摇杆行程</string>
-    <string name="spinner_travel_1">短距</string>
-    <string name="spinner_travel_2">中距</string>
-    <string name="spinner_travel_3">长距</string>
-    <string name="settings_content_vibration">振动</string>
+    <string name="spinner_travel_1">较短</string>
+    <string name="spinner_travel_2">中等</string>
+    <string name="spinner_travel_3">较长</string>
+    <string name="settings_content_vibration">触感反馈</string>
 </resources>

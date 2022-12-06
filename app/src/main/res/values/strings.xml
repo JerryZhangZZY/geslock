@@ -8,6 +8,7 @@
     <string name="drag_icon_1">Soccer</string>
     <string name="drag_icon_2">Donut</string>
     <string name="drag_icon_3">Basketball</string>
+    <string name="settings_content_cross">Show cross</string>
     <string name="settings_content_theme">Theme</string>
     <string name="spinner_theme_1">Light</string>
     <string name="spinner_theme_2">Dark</string>
@@ -21,5 +22,5 @@
     <string name="spinner_travel_1">Short</string>
     <string name="spinner_travel_2">Middle</string>
     <string name="spinner_travel_3">Long</string>
-    <string name="settings_content_vibration">Vibration</string>
+    <string name="settings_content_vibration">Haptic feedback</string>
 </resources>

@@ -38,6 +38,7 @@ public class SettingsFragment extends Fragment {
 
     private ImageButton[] rockerIcons;
     private Drawable border;
+    private Switch switchCross;
     private Spinner spinnerTheme;
     private Spinner spinnerLanguage;
     private Spinner spinnerTravel;
@@ -82,6 +83,13 @@ public class SettingsFragment extends Fragment {
                 editor.apply();
             });
         }
+
+        switchCross = activity.findViewById(R.id.switchCross);
+        switchCross.setChecked(pref.getBoolean("cross", true));
+        switchCross.setOnCheckedChangeListener((compoundButton, b) -> {
+            editor.putBoolean("cross", b);
+            editor.apply();
+        });
 
         spinnerTheme = activity.findViewById(R.id.spinnerTheme);
         switch (pref.getInt("theme", MODE_NIGHT_FOLLOW_SYSTEM)) {

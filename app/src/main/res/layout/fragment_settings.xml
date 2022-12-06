@@ -35,23 +35,13 @@
                 android:id="@+id/tvCategoryAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="25dp"
-                android:paddingRight="25dp"
                 android:text="@string/settings_category_appearance"
-                android:textColor="?android:attr/titleTextColor"
-                android:textSize="16sp" />
+                style="@style/subtitleTheme" />
 
             <androidx.cardview.widget.CardView
+                style="@style/cardTheme"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="15dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="10dp"
-                app:cardUseCompatPadding="false"
-                app:contentPaddingLeft="10dp"
-                app:contentPaddingRight="10dp">
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -116,6 +106,16 @@
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
+                    <Switch
+                        android:id="@+id/switchCross"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:text="@string/settings_content_cross"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textColor="?android:attr/textColorPrimary"
+                        tools:ignore="TouchTargetSizeCheck" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -136,9 +136,8 @@
                             android:id="@+id/spinnerTheme"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:backgroundTint="?attr/colorSecondary"
                             android:entries="@array/theme"
-                            android:textAlignment="textEnd"
+                            android:theme="@style/spinnerTheme"
                             tools:ignore="TouchTargetSizeCheck" />
                     </LinearLayout>
 
@@ -162,9 +161,8 @@
                             android:id="@+id/spinnerLanguage"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:backgroundTint="?attr/colorSecondary"
                             android:entries="@array/language"
-                            android:textAlignment="textEnd"
+                            android:theme="@style/spinnerTheme"
                             tools:ignore="TouchTargetSizeCheck" />
                     </LinearLayout>
 
@@ -177,25 +175,15 @@
 
             <TextView
                 android:id="@+id/tvCategoryInteraction"
+                style="@style/subtitleTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="25dp"
-                android:paddingRight="25dp"
-                android:text="@string/settings_category_interaction"
-                android:textColor="?attr/colorSecondary"
-                android:textSize="16sp" />
+                android:text="@string/settings_category_interaction" />
 
             <androidx.cardview.widget.CardView
+                style="@style/cardTheme"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="15dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="10dp"
-                app:cardUseCompatPadding="false"
-                app:contentPaddingLeft="10dp"
-                app:contentPaddingRight="10dp">
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -224,9 +212,8 @@
                             android:id="@+id/spinnerDragDist"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:backgroundTint="?attr/colorSecondary"
                             android:entries="@array/travel"
-                            android:textAlignment="textEnd"
+                            android:theme="@style/spinnerTheme"
                             tools:ignore="TouchTargetSizeCheck" />
                     </LinearLayout>
 
@@ -237,6 +224,7 @@
                         android:padding="10dp"
                         android:text="@string/settings_content_vibration"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textColor="?android:attr/textColorPrimary"
                         tools:ignore="TouchTargetSizeCheck" />
 
                 </LinearLayout>
