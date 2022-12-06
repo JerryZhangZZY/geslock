@@ -14,15 +14,22 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Vibrator;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -38,12 +45,14 @@ public class SettingsFragment extends Fragment {
 
     private ImageButton[] rockerIcons;
     private Drawable border;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch switchCross;
     private Spinner spinnerTheme;
     private Spinner spinnerLanguage;
     private Spinner spinnerTravel;
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch switchVibration;
+    private EditText editTextSPRatio;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -176,7 +185,7 @@ public class SettingsFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
-        spinnerTravel = activity.findViewById(R.id.spinnerDragDist);
+        spinnerTravel = activity.findViewById(R.id.spinnerTravel);
         spinnerTravel.setSelection(pref.getInt("drag-dist", 1));
         spinnerTravel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -205,6 +214,34 @@ public class SettingsFragment extends Fragment {
         switchVibration.setOnCheckedChangeListener((compoundButton, b) -> {
             editor.putBoolean("vibration", b);
             editor.apply();
+        });
+
+        editTextSPRatio = activity.findViewById(R.id.editTextSPRatio);
+        editTextSPRatio.setText(String.valueOf(pref.getFloat("sp-ratio", 0.2F)));
+        editTextSPRatio.setOnEditorActionListener((textView, i, keyEvent) -> {
+            String rawText = String.valueOf(editTextSPRatio.getText());
+            float spRatio;
+            if (rawText.isEmpty()) {
+                editTextSPRatio.setText(String.valueOf(pref.getFloat("sp-ratio", 0.2F)));
+            } else {
+                try {
+                    spRatio = Float.parseFloat(rawText);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    editTextSPRatio.setText(String.valueOf(pref.getFloat("sp-ratio", 0.2F)));
+                    editTextSPRatio.clearFocus();
+                    return false;
+                }
+                if (spRatio > 1 || spRatio < 0) {
+                    editTextSPRatio.setText(String.valueOf(pref.getFloat("sp-ratio", 0.2F)));
+                } else {
+                    editTextSPRatio.setText(String.valueOf(spRatio));
+                    editor.putFloat("sp-ratio", spRatio);
+                    editor.apply();
+                }
+            }
+            editTextSPRatio.clearFocus();
+            return false;
         });
     }
 }

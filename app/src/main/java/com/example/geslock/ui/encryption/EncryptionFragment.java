@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -20,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.geslock.R;
@@ -31,9 +29,9 @@ public class EncryptionFragment extends Fragment {
     private int MAX_MOVE = 300;
     private float MAX_SCALE = 1.5F;
     private int ICON_INDEX = 0;
+    private float SPIN_MOVE_RATIO = 0.2F;
 
     private final int TAP_MOVE = 10;
-    private final float SPIN_MOVE_RATIO = 0.2F;
 
     private final int[] fragmentSize = new int[2];
     private final int[][] rockerIcons = new int[3][3];
@@ -65,7 +63,7 @@ public class EncryptionFragment extends Fragment {
             fragmentSize[0] = requireView().getWidth();
             fragmentSize[1] = requireView().getHeight();
             // set drag params
-            setDragParams(fragmentSize, pref);
+            setTravelParams(fragmentSize, pref);
         });
 
         // set all icons
@@ -468,8 +466,9 @@ public class EncryptionFragment extends Fragment {
         });
     }
 
-    public void setDragParams(int[] fragmentSize, SharedPreferences pref) {
+    public void setTravelParams(int[] fragmentSize, SharedPreferences pref) {
         int dragDistIndex = pref.getInt("drag-dist", 1);
+        float spRatio = pref.getFloat("sp-ratio", 0.2F);
         switch (dragDistIndex) {
             case 0:
                 setMaxMove((int) (Math.min(fragmentSize[0], fragmentSize[1]) * 0.1));
@@ -484,6 +483,7 @@ public class EncryptionFragment extends Fragment {
                 setMaxScale(2F);
                 break;
         }
+        setSPRatio(spRatio);
     }
 
     public void setMaxMove(int maxMove) {
@@ -492,6 +492,10 @@ public class EncryptionFragment extends Fragment {
 
     public void setMaxScale(float maxScale) {
         MAX_SCALE = maxScale;
+    }
+
+    public void setSPRatio(float spRatio) {
+        SPIN_MOVE_RATIO = spRatio;
     }
 
     public float dist(int x1, int y1, int x2, int y2) {

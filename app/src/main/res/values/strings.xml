@@ -23,4 +23,6 @@
     <string name="spinner_travel_2">Middle</string>
     <string name="spinner_travel_3">Long</string>
     <string name="settings_content_vibration">Haptic feedback</string>
+    <string name="settings_category_advanced">Advanced</string>
+    <string name="settings_content_smratio">Spin-move ratio</string>
 </resources>

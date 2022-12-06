@@ -198,7 +198,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/tvDragDist"
+                            android:id="@+id/tvTravel"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
@@ -209,7 +209,7 @@
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <Spinner
-                            android:id="@+id/spinnerDragDist"
+                            android:id="@+id/spinnerTravel"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:entries="@array/travel"
@@ -228,6 +228,53 @@
                         tools:ignore="TouchTargetSizeCheck" />
 
                 </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
+            <TextView
+                android:id="@+id/tvCategoryAdvanced"
+                style="@style/subtitleTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_category_advanced" />
+
+            <androidx.cardview.widget.CardView
+                style="@style/cardTheme"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvDragDist2"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:padding="10dp"
+                        android:text="@string/settings_content_smratio"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textColor="?android:attr/textColorPrimary" />
+
+                    <EditText
+                        android:id="@+id/editTextSPRatio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:ems="2"
+                        android:hint="0.2"
+                        android:inputType="numberDecimal"
+                        android:textAlignment="center"
+                        android:textColor="?attr/colorSecondary" />
+                </LinearLayout>
+
             </androidx.cardview.widget.CardView>
 
             <Space
