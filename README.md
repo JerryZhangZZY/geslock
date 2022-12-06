@@ -21,20 +21,20 @@ gantt
 title Project Timeline
 dateFormat YYYY-MM-DD
 section Task 1
-Gather user requirements for the app to be developed: 2022-11-01, 2022-11-15
-Learn multi-finger touch gestures in smartphones: 2022-11-01, 2022-11-15
-Determine the set of gestures: 2022-11-01, 2022-11-30
+Gather user requirements for the app to be developed: 2022-11-01, 2022-11-16
+Learn multi-finger touch gestures in smartphones: 2022-11-01, 2022-11-16
+Determine the set of gestures: 2022-11-01, 2022-12-01
 section Task 2
-Write gesture recognition algorithms along with tests: 2022-12-01, 2022-12-31
-Learn the application of locally reversible encryption algorithms to software and file standards: 2022-11-16, 2022-11-30
-Determine the final encryption algorithm: 2022-11-16, 2022-11-30
-Write encryption algorithms and test its correctness and speed: 2023-01-01, 2023-01-31
+Write gesture recognition algorithms along with tests: 2022-12-01, 2023-01-01
+Learn the application of locally reversible encryption algorithms to software and file standards: 2022-11-16, 2022-12-01
+Determine the final encryption algorithm: 2022-11-16, 2022-12-01
+Write encryption algorithms and test its correctness and speed: 2023-01-01, 2023-02-01
 section Task 3
-Build the basic software interface: 2023-02-01, 2023-02-15
-Implement full functionality of the software including file management and file encryption and decryption: 2023-02-16, 2023-03-15
-Design and implement simple and intuitive user interaction with natural and intuitive animations: 2023-03-01, 2023-03-31
+Build the basic software interface: 2023-02-01, 2023-02-16
+Implement full functionality of the software including file management and file encryption and decryption: 2023-02-16, 2023-03-16
+Design and implement simple and intuitive user interaction with natural and intuitive animations: 2023-03-01, 2023-04-01
 section Task 4
-Invite users to trial and gather user cases: 2023-04-01, 2023-04-15
-Design of questionnaires for comparative testing: 2023-04-01, 2023-04-15
-Invite users to participate in comparison tests and collect questionnaires: 2023-04-01, 2023-04-15
+Invite users to trial and gather user cases: 2023-04-01, 2023-04-16
+Design of questionnaires for comparative testing: 2023-04-01, 2023-04-16
+Invite users to participate in comparison tests and collect questionnaires: 2023-04-01, 2023-04-16
 ```
