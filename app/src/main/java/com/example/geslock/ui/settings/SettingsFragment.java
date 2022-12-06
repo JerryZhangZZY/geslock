@@ -54,6 +54,8 @@ public class SettingsFragment extends Fragment {
     private Switch switchVibration;
     private EditText editTextSPRatio;
 
+    private final Object lock = new Object();
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_settings, container, false);
@@ -80,16 +82,18 @@ public class SettingsFragment extends Fragment {
             rockerIcons[index].setBackground(pref.getInt("icon", 0) == index ? border : null);
             int finalIndex = index;
             rockerIcons[index].setOnClickListener(view -> {
-                MyVibrator.tick(requireActivity());
-                for (ImageButton btn : rockerIcons)
-                    btn.setBackground(null);
-                ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(border, PropertyValuesHolder.ofInt("alpha", 0, 255));
-                animator.setTarget(border);
-                animator.setDuration(200);
-                animator.start();
-                rockerIcons[finalIndex].setBackground(border);
-                editor.putInt("icon", finalIndex);
-                editor.apply();
+                synchronized (lock) {
+                    MyVibrator.tick(requireActivity());
+                    for (ImageButton btn : rockerIcons)
+                        btn.setBackground(null);
+                    ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(border, PropertyValuesHolder.ofInt("alpha", 0, 255));
+                    animator.setTarget(border);
+                    animator.setDuration(200);
+                    animator.start();
+                    rockerIcons[finalIndex].setBackground(border);
+                    editor.putInt("icon", finalIndex);
+                    editor.apply();
+                }
             });
         }
 
@@ -115,22 +119,24 @@ public class SettingsFragment extends Fragment {
         spinnerTheme.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i) {
-                    case 0:
-                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
-                        editor.putInt("theme", MODE_NIGHT_NO);
-                        editor.apply();
-                        break;
-                    case 1:
-                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
-                        editor.putInt("theme", MODE_NIGHT_YES);
-                        editor.apply();
-                        break;
-                    case 2:
-                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM);
-                        editor.putInt("theme", MODE_NIGHT_FOLLOW_SYSTEM);
-                        editor.apply();
-                        break;
+                synchronized (lock) {
+                    switch (i) {
+                        case 0:
+                            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
+                            editor.putInt("theme", MODE_NIGHT_NO);
+                            editor.apply();
+                            break;
+                        case 1:
+                            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+                            editor.putInt("theme", MODE_NIGHT_YES);
+                            editor.apply();
+                            break;
+                        case 2:
+                            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM);
+                            editor.putInt("theme", MODE_NIGHT_FOLLOW_SYSTEM);
+                            editor.apply();
+                            break;
+                    }
                 }
             }
             @Override
@@ -155,28 +161,30 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (enabledFlag[0]) {
-                    switch (i) {
-                        case 0:
-                            configuration.setLocale(Locale.ENGLISH);
-                            resources.updateConfiguration(configuration, displayMetrics);
-                            editor.putInt("language", 0);
-                            editor.apply();
-                            activity.recreate();
-                            break;
-                        case 1:
-                            configuration.setLocale(Locale.CHINESE);
-                            resources.updateConfiguration(configuration, displayMetrics);
-                            editor.putInt("language", 1);
-                            editor.apply();
-                            activity.recreate();
-                            break;
-                        case 2:
-                            configuration.setLocale(Locale.getDefault());
-                            resources.updateConfiguration(configuration, displayMetrics);
-                            editor.putInt("language", 2);
-                            editor.apply();
-                            activity.recreate();
-                            break;
+                    synchronized (lock) {
+                        switch (i) {
+                            case 0:
+                                configuration.setLocale(Locale.ENGLISH);
+                                resources.updateConfiguration(configuration, displayMetrics);
+                                editor.putInt("language", 0);
+                                editor.apply();
+                                activity.recreate();
+                                break;
+                            case 1:
+                                configuration.setLocale(Locale.CHINESE);
+                                resources.updateConfiguration(configuration, displayMetrics);
+                                editor.putInt("language", 1);
+                                editor.apply();
+                                activity.recreate();
+                                break;
+                            case 2:
+                                configuration.setLocale(Locale.getDefault());
+                                resources.updateConfiguration(configuration, displayMetrics);
+                                editor.putInt("language", 2);
+                                editor.apply();
+                                activity.recreate();
+                                break;
+                        }
                     }
                 }
 
@@ -235,9 +243,11 @@ public class SettingsFragment extends Fragment {
                 if (spRatio > 1 || spRatio < 0) {
                     editTextSPRatio.setText(String.valueOf(pref.getFloat("sp-ratio", 0.2F)));
                 } else {
-                    editTextSPRatio.setText(String.valueOf(spRatio));
-                    editor.putFloat("sp-ratio", spRatio);
-                    editor.apply();
+                    synchronized (lock) {
+                        editTextSPRatio.setText(String.valueOf(spRatio));
+                        editor.putFloat("sp-ratio", spRatio);
+                        editor.apply();
+                    }
                 }
             }
             editTextSPRatio.clearFocus();
