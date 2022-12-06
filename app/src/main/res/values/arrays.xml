@@ -15,4 +15,12 @@
         <item>@string/spinner_travel_2</item>
         <item>@string/spinner_travel_3</item>
     </string-array>
+    <string-array name="animation">
+        <item>@string/spinner_animation_1</item>
+        <item>@string/spinner_animation_2</item>
+        <item>@string/spinner_animation_3</item>
+        <item>@string/spinner_animation_4</item>
+        <item>@string/spinner_animation_5</item>
+        <item>@string/spinner_animation_6</item>
+    </string-array>
 </resources>

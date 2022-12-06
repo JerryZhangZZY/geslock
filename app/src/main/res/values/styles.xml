@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="cardTheme">
+    <style name="cardStyle">
         <item name="android:layout_marginLeft">15dp</item>
         <item name="android:layout_marginRight">15dp</item>
         <item name="cardCornerRadius">16dp</item>
@@ -10,14 +10,25 @@
         <item name="contentPaddingLeft">10dp</item>
         <item name="contentPaddingRight">10dp</item>
     </style>
-    <style name="subtitleTheme">
+    <style name="rockerBtnStyle">
+        <item name="android:background">@drawable/round_btn_border</item>
+        <item name="android:padding">7dp</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+    <style name="settingsEntryStyle">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+    <style name="subtitleStyle">
         <item name="android:layout_marginBottom">5dp</item>
         <item name="android:paddingLeft">35dp</item>
         <item name="android:paddingRight">35dp</item>
         <item name="android:textColor">?android:attr/subtitleTextColor</item>
         <item name="android:textSize">14sp</item>
     </style>
-    <style name="spinnerTheme">
+    <style name="spinnerStyle">
         <item name="android:textColor">?attr/colorSecondary</item>
         <item name="backgroundTint">?attr/colorSecondary</item>
         <item name="android:textAlignment">textEnd</item>
