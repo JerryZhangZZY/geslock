@@ -14,12 +14,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Vibrator;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,7 +24,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -37,7 +31,8 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.geslock.R;
-import com.example.geslock.tool.MyVibrator;
+import com.example.geslock.tools.MyAnimationScaler;
+import com.example.geslock.tools.MyVibrator;
 
 import java.util.Locale;
 
@@ -52,7 +47,8 @@ public class SettingsFragment extends Fragment {
     private Spinner spinnerTravel;
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch switchVibration;
-    private EditText editTextSPRatio;
+    private Spinner spinnerAnimation;
+    private EditText editTextSMRatio;
 
     private final Object lock = new Object();
 
@@ -88,7 +84,7 @@ public class SettingsFragment extends Fragment {
                         btn.setBackground(null);
                     ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(border, PropertyValuesHolder.ofInt("alpha", 0, 255));
                     animator.setTarget(border);
-                    animator.setDuration(200);
+                    animator.setDuration(MyAnimationScaler.getDuration(100, activity));
                     animator.start();
                     rockerIcons[finalIndex].setBackground(border);
                     editor.putInt("icon", finalIndex);
@@ -165,26 +161,18 @@ public class SettingsFragment extends Fragment {
                         switch (i) {
                             case 0:
                                 configuration.setLocale(Locale.ENGLISH);
-                                resources.updateConfiguration(configuration, displayMetrics);
-                                editor.putInt("language", 0);
-                                editor.apply();
-                                activity.recreate();
                                 break;
                             case 1:
                                 configuration.setLocale(Locale.CHINESE);
-                                resources.updateConfiguration(configuration, displayMetrics);
-                                editor.putInt("language", 1);
-                                editor.apply();
-                                activity.recreate();
                                 break;
                             case 2:
                                 configuration.setLocale(Locale.getDefault());
-                                resources.updateConfiguration(configuration, displayMetrics);
-                                editor.putInt("language", 2);
-                                editor.apply();
-                                activity.recreate();
                                 break;
                         }
+                        resources.updateConfiguration(configuration, displayMetrics);
+                        editor.putInt("language", i);
+                        editor.apply();
+                        activity.recreate();
                     }
                 }
 
@@ -194,24 +182,12 @@ public class SettingsFragment extends Fragment {
         });
 
         spinnerTravel = activity.findViewById(R.id.spinnerTravel);
-        spinnerTravel.setSelection(pref.getInt("drag-dist", 1));
+        spinnerTravel.setSelection(pref.getInt("travel", 1));
         spinnerTravel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i) {
-                    case 0:
-                        editor.putInt("drag-dist", 0);
-                        editor.apply();
-                        break;
-                    case 1:
-                        editor.putInt("drag-dist", 1);
-                        editor.apply();
-                        break;
-                    case 2:
-                        editor.putInt("drag-dist", 2);
-                        editor.apply();
-                        break;
-                }
+                editor.putInt("travel", i);
+                editor.apply();
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
@@ -224,33 +200,45 @@ public class SettingsFragment extends Fragment {
             editor.apply();
         });
 
-        editTextSPRatio = activity.findViewById(R.id.editTextSPRatio);
-        editTextSPRatio.setText(String.valueOf(pref.getFloat("sp-ratio", 0.2F)));
-        editTextSPRatio.setOnEditorActionListener((textView, i, keyEvent) -> {
-            String rawText = String.valueOf(editTextSPRatio.getText());
-            float spRatio;
+        spinnerAnimation = activity.findViewById(R.id.spinnerAnimation);
+        spinnerAnimation.setSelection(pref.getInt("animation", 2));
+        spinnerAnimation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                editor.putInt("animation", i);
+                editor.apply();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+
+        editTextSMRatio = activity.findViewById(R.id.editTextSMRatio);
+        editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", 0.2F)));
+        editTextSMRatio.setOnEditorActionListener((textView, i, keyEvent) -> {
+            String rawText = String.valueOf(editTextSMRatio.getText());
+            float smRatio;
             if (rawText.isEmpty()) {
-                editTextSPRatio.setText(String.valueOf(pref.getFloat("sp-ratio", 0.2F)));
+                editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", 0.2F)));
             } else {
                 try {
-                    spRatio = Float.parseFloat(rawText);
+                    smRatio = Float.parseFloat(rawText);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
-                    editTextSPRatio.setText(String.valueOf(pref.getFloat("sp-ratio", 0.2F)));
-                    editTextSPRatio.clearFocus();
+                    editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", 0.2F)));
+                    editTextSMRatio.clearFocus();
                     return false;
                 }
-                if (spRatio > 1 || spRatio < 0) {
-                    editTextSPRatio.setText(String.valueOf(pref.getFloat("sp-ratio", 0.2F)));
+                if (smRatio > 1 || smRatio < 0) {
+                    editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", 0.2F)));
                 } else {
                     synchronized (lock) {
-                        editTextSPRatio.setText(String.valueOf(spRatio));
-                        editor.putFloat("sp-ratio", spRatio);
+                        editTextSMRatio.setText(String.valueOf(smRatio));
+                        editor.putFloat("sm-ratio", smRatio);
                         editor.apply();
                     }
                 }
             }
-            editTextSPRatio.clearFocus();
+            editTextSMRatio.clearFocus();
             return false;
         });
     }

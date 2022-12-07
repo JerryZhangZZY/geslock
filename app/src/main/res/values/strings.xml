@@ -24,7 +24,6 @@
     <string name="spinner_travel_3">Long</string>
     <string name="settings_entry_vibration">Haptic feedback</string>
     <string name="settings_category_advanced">Advanced</string>
-    <string name="settings_entry_smratio">Spin-move ratio</string>
     <string name="setting_entry_animation">Animation scale</string>
     <string name="spinner_animation_1">Animation off</string>
     <string name="spinner_animation_2">Scale .5x</string>
@@ -32,4 +31,8 @@
     <string name="spinner_animation_4">Scale 1.5x</string>
     <string name="spinner_animation_5">Scale 2x</string>
     <string name="spinner_animation_6">Scale 5x</string>
+    <string name="settings_entry_smratio">Spin-move ratio</string>
+    <string name="edittext_smratio_hint" translatable="false">0.2</string>
+    <string name="setting_entry_tmratio">2-finger gesture judgement ratio</string>
+    <string name="edittext_tmratio_hint" translatable="false">0.04</string>
 </resources>

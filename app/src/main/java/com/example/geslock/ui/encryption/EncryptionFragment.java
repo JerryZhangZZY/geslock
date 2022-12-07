@@ -22,7 +22,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.geslock.R;
-import com.example.geslock.tool.MyVibrator;
+import com.example.geslock.tools.MyAnimationScaler;
+import com.example.geslock.tools.MyVibrator;
 
 public class EncryptionFragment extends Fragment {
 
@@ -30,6 +31,7 @@ public class EncryptionFragment extends Fragment {
     private float MAX_SCALE = 1.5F;
     private int ICON_INDEX = 0;
     private float SPIN_MOVE_RATIO = 0.2F;
+    private float DOUBLE_JUDGE_MOVE = 43.2F;
 
     private final int TAP_MOVE = 10;
 
@@ -63,7 +65,7 @@ public class EncryptionFragment extends Fragment {
             fragmentSize[0] = requireView().getWidth();
             fragmentSize[1] = requireView().getHeight();
             // set drag params
-            setTravelParams(fragmentSize, pref);
+            setRockerParams(fragmentSize, pref);
         });
 
         // set all icons
@@ -216,17 +218,15 @@ public class EncryptionFragment extends Fragment {
                                 int moveCenterY = (moveY1 + moveY2) / 2;
                                 float deltaCenter = dist(startCenterX, startCenterY, moveCenterX, moveCenterY);
 
-                                double maxJudgementMove = 0.04 * Math.min(fragmentSize[0], fragmentSize[1]);
-
                                 switch (mode) {
                                     // unjudged
                                     case 0:
-                                        if (Math.abs(deltaCenter) > maxJudgementMove || Math.abs(deltaGap) > maxJudgementMove) {
+                                        if (Math.abs(deltaCenter) > DOUBLE_JUDGE_MOVE || Math.abs(deltaGap) > DOUBLE_JUDGE_MOVE) {
                                             int deltaX1 = moveX1 - startX1;
                                             int deltaY1 = moveY1 - startY1;
                                             int deltaX2 = moveX2 - startX2;
                                             int deltaY2 = moveY2 - startY2;
-                                            if (Math.abs(deltaGap) > maxJudgementMove && isHetero(deltaX1, deltaX2) && isHetero(deltaY1, deltaY2))
+                                            if (Math.abs(deltaGap) > DOUBLE_JUDGE_MOVE && isHetero(deltaX1, deltaX2) && isHetero(deltaY1, deltaY2))
                                                 mode = 1;
                                             else
                                                 mode = 2;
@@ -384,7 +384,7 @@ public class EncryptionFragment extends Fragment {
                             // trigger single tap !!!
 
                             ScaleAnimation ta = new ScaleAnimation(1, 1.1F, 1, 1.1F, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
-                            ta.setDuration(50);
+                            ta.setDuration(MyAnimationScaler.getDuration(50, activity));
                             rocker.startAnimation(ta);
                             testText.setText("single tap");
                             MyVibrator.tick(requireActivity());
@@ -398,7 +398,7 @@ public class EncryptionFragment extends Fragment {
                         // ball reset animations
                         if (rocker.getLeft() != rockerInitLayout[0] || rocker.getTop() != rockerInitLayout[1]) {
                             TranslateAnimation ta = new TranslateAnimation(0, rockerInitLayout[0] - rocker.getLeft(), 0, rockerInitLayout[1] - rocker.getTop());
-                            ta.setDuration(100);
+                            ta.setDuration(MyAnimationScaler.getDuration(100, activity));
                             ta.setInterpolator(new OvershootInterpolator(3));
                             ta.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
@@ -415,7 +415,7 @@ public class EncryptionFragment extends Fragment {
                         }
                         if (rocker.getRotation() != 0 || rocker.getScaleX() != 1) {
                             RotateAnimation ra = new RotateAnimation(0, -rocker.getRotation(), Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                            ra.setDuration(100);
+                            ra.setDuration(MyAnimationScaler.getDuration(100, activity));
                             ra.setInterpolator(new OvershootInterpolator(3));
                             ra.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
@@ -427,7 +427,7 @@ public class EncryptionFragment extends Fragment {
                             });
 
                             ScaleAnimation sa = new ScaleAnimation(1, 1 / rocker.getScaleX(), 1, 1 / rocker.getScaleY(), Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
-                            sa.setDuration(100);
+                            sa.setDuration(MyAnimationScaler.getDuration(100, activity));
                             sa.setInterpolator(new OvershootInterpolator(3));
                             sa.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
@@ -466,24 +466,27 @@ public class EncryptionFragment extends Fragment {
         });
     }
 
-    public void setTravelParams(int[] fragmentSize, SharedPreferences pref) {
-        int dragDistIndex = pref.getInt("drag-dist", 1);
-        float spRatio = pref.getFloat("sp-ratio", 0.2F);
-        switch (dragDistIndex) {
+    public void setRockerParams(int[] fragmentSize, SharedPreferences pref) {
+        int minSide = Math.min(fragmentSize[0], fragmentSize[1]);
+        int travelSelectionIndex = pref.getInt("travel", 1);
+        float spRatio = pref.getFloat("sm-ratio", 0.2F);
+        float doubleJudgeRatio = pref.getFloat("double-judge-ratio", 0.04F);
+        switch (travelSelectionIndex) {
             case 0:
-                setMaxMove((int) (Math.min(fragmentSize[0], fragmentSize[1]) * 0.1));
+                setMaxMove((int) (minSide * 0.1));
                 setMaxScale(1.2F);
                 break;
             case 1:
-                setMaxMove((int) (Math.min(fragmentSize[0], fragmentSize[1]) * 0.2));
+                setMaxMove((int) (minSide * 0.2));
                 setMaxScale(1.5F);
                 break;
             case 2:
-                setMaxMove((int) (Math.min(fragmentSize[0], fragmentSize[1]) * 0.3));
+                setMaxMove((int) (minSide * 0.3));
                 setMaxScale(2F);
                 break;
         }
         setSPRatio(spRatio);
+        setDoubleJudgeMove(minSide * doubleJudgeRatio);
     }
 
     public void setMaxMove(int maxMove) {
@@ -496,6 +499,10 @@ public class EncryptionFragment extends Fragment {
 
     public void setSPRatio(float spRatio) {
         SPIN_MOVE_RATIO = spRatio;
+    }
+
+    public void setDoubleJudgeMove(float doubleJudgeMove) {
+        DOUBLE_JUDGE_MOVE = doubleJudgeMove;
     }
 
     public float dist(int x1, int y1, int x2, int y2) {

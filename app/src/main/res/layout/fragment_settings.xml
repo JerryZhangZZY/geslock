@@ -234,7 +234,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/tvTravel2"
+                            android:id="@+id/tvAnimation"
                             style="@style/settingsEntryStyle"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -256,24 +256,48 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/tvDragDist2"
+                            android:id="@+id/tvSMRatio"
                             style="@style/settingsEntryStyle"
                             android:layout_width="0dp"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="@string/settings_entry_smratio" />
 
                         <EditText
-                            android:id="@+id/editTextSPRatio"
+                            android:id="@+id/editTextSMRatio"
+                            style="@style/editTextStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
                             android:ems="2"
-                            android:hint="0.2"
-                            android:inputType="numberDecimal"
-                            android:textAlignment="center"
+                            android:hint="@string/edittext_smratio_hint"
                             android:textColor="?attr/colorSecondary" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvTMRatio"
+                            style="@style/settingsEntryStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackground"
+                            android:text="@string/setting_entry_tmratio" />
+
+                        <EditText
+                            android:id="@+id/editTextTMRatio"
+                            style="@style/editTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="2"
+                            android:hint="@string/edittext_tmratio_hint"
+                            android:textColor="?attr/colorSecondary" />
+
                     </LinearLayout>
 
                 </LinearLayout>
