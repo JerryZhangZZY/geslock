@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -49,6 +51,7 @@ public class SettingsFragment extends Fragment {
     private Switch switchVibration;
     private Spinner spinnerAnimation;
     private EditText editTextSMRatio;
+    private EditText editTextTMRatio;
 
     private final Object lock = new Object();
 
@@ -217,6 +220,7 @@ public class SettingsFragment extends Fragment {
         editTextSMRatio.setOnEditorActionListener((textView, i, keyEvent) -> {
             String rawText = String.valueOf(editTextSMRatio.getText());
             float smRatio;
+            // empty input
             if (rawText.isEmpty()) {
                 editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", 0.2F)));
             } else {
@@ -228,6 +232,7 @@ public class SettingsFragment extends Fragment {
                     editTextSMRatio.clearFocus();
                     return false;
                 }
+                // input out of bounds
                 if (smRatio > 1 || smRatio < 0) {
                     editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", 0.2F)));
                 } else {
@@ -239,6 +244,38 @@ public class SettingsFragment extends Fragment {
                 }
             }
             editTextSMRatio.clearFocus();
+            return false;
+        });
+
+        editTextTMRatio = activity.findViewById(R.id.editTextTMRatio);
+        editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", 0.04F)));
+        editTextTMRatio.setOnEditorActionListener((textView, i, keyEvent) -> {
+            String rawText = String.valueOf(editTextTMRatio.getText());
+            float tmRatio;
+            // empty input
+            if (rawText.isEmpty()) {
+                editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", 0.04F)));
+            } else {
+                try {
+                    tmRatio = Float.parseFloat(rawText);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", 0.04F)));
+                    editTextTMRatio.clearFocus();
+                    return false;
+                }
+                // input out of bounds
+                if (tmRatio > 0.1 || tmRatio <= 0) {
+                    editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", 0.04F)));
+                } else {
+                    synchronized (lock) {
+                        editTextTMRatio.setText(String.valueOf(tmRatio));
+                        editor.putFloat("tm-ratio", tmRatio);
+                        editor.apply();
+                    }
+                }
+            }
+            editTextTMRatio.clearFocus();
             return false;
         });
     }

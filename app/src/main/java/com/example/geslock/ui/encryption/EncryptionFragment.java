@@ -32,8 +32,8 @@ public class EncryptionFragment extends Fragment {
     private int ICON_INDEX = 0;
     private float SPIN_MOVE_RATIO = 0.2F;
     private float DOUBLE_JUDGE_MOVE = 43.2F;
+    private int TAP_MOVE = 10;
 
-    private final int TAP_MOVE = 10;
 
     private final int[] fragmentSize = new int[2];
     private final int[][] rockerIcons = new int[3][3];
@@ -470,7 +470,8 @@ public class EncryptionFragment extends Fragment {
         int minSide = Math.min(fragmentSize[0], fragmentSize[1]);
         int travelSelectionIndex = pref.getInt("travel", 1);
         float spRatio = pref.getFloat("sm-ratio", 0.2F);
-        float doubleJudgeRatio = pref.getFloat("double-judge-ratio", 0.04F);
+        float doubleJudgeRatio = pref.getFloat("tm-ratio", 0.04F);
+
         switch (travelSelectionIndex) {
             case 0:
                 setMaxMove((int) (minSide * 0.1));
@@ -487,6 +488,7 @@ public class EncryptionFragment extends Fragment {
         }
         setSPRatio(spRatio);
         setDoubleJudgeMove(minSide * doubleJudgeRatio);
+        setTapMove((int) (minSide * 0.01));
     }
 
     public void setMaxMove(int maxMove) {
@@ -503,6 +505,10 @@ public class EncryptionFragment extends Fragment {
 
     public void setDoubleJudgeMove(float doubleJudgeMove) {
         DOUBLE_JUDGE_MOVE = doubleJudgeMove;
+    }
+
+    public void setTapMove(int tapMove) {
+        TAP_MOVE = tapMove;
     }
 
     public float dist(int x1, int y1, int x2, int y2) {
