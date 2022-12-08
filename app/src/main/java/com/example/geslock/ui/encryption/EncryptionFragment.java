@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
+import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
@@ -34,13 +35,13 @@ public class EncryptionFragment extends Fragment {
     private float DOUBLE_JUDGE_MOVE = 43.2F;
     private int TAP_MOVE = 10;
 
-
     private final int[] fragmentSize = new int[2];
     private final int[][] rockerIcons = new int[3][3];
     private final int[] rockerInitLayout = new int[4];
     private TextView testText;
     private ImageView rocker;
     private ImageView cross;
+    private Interpolator interpolator;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,6 +60,9 @@ public class EncryptionFragment extends Fragment {
 
         // set icon selection
         ICON_INDEX = pref.getInt("icon", 0);
+
+        // set animation interpolator
+        interpolator = new OvershootInterpolator(pref.getFloat("overshoot", 0.3F) * 10);
 
         requireView().post(() -> {
             // set fragment measurements
@@ -400,7 +404,7 @@ public class EncryptionFragment extends Fragment {
                         if (rocker.getLeft() != rockerInitLayout[0] || rocker.getTop() != rockerInitLayout[1]) {
                             TranslateAnimation ta = new TranslateAnimation(0, rockerInitLayout[0] - rocker.getLeft(), 0, rockerInitLayout[1] - rocker.getTop());
                             ta.setDuration(MyAnimationScaler.getDuration(100, activity));
-                            ta.setInterpolator(new OvershootInterpolator(3));
+                            ta.setInterpolator(interpolator);
                             ta.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
                                 public void onAnimationEnd(Animation animation) {
@@ -417,7 +421,7 @@ public class EncryptionFragment extends Fragment {
                         if (rocker.getRotation() != 0 || rocker.getScaleX() != 1) {
                             RotateAnimation ra = new RotateAnimation(0, -rocker.getRotation(), Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                             ra.setDuration(MyAnimationScaler.getDuration(100, activity));
-                            ra.setInterpolator(new OvershootInterpolator(3));
+                            ra.setInterpolator(interpolator);
                             ra.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
                                 public void onAnimationStart(Animation animation) {}
@@ -429,7 +433,7 @@ public class EncryptionFragment extends Fragment {
 
                             ScaleAnimation sa = new ScaleAnimation(1, 1 / rocker.getScaleX(), 1, 1 / rocker.getScaleY(), Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
                             sa.setDuration(MyAnimationScaler.getDuration(100, activity));
-                            sa.setInterpolator(new OvershootInterpolator(3));
+                            sa.setInterpolator(interpolator);
                             sa.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
                                 public void onAnimationStart(Animation animation) {}

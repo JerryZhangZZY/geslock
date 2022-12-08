@@ -38,6 +38,8 @@ import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyToastMaker;
 import com.example.geslock.tools.MyVibrator;
 
+import org.w3c.dom.Text;
+
 import java.util.Locale;
 
 public class SettingsFragment extends Fragment {
@@ -52,6 +54,8 @@ public class SettingsFragment extends Fragment {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch switchVibration;
     private Spinner spinnerAnimation;
+    private TextView tvOvershoot;
+    private EditText editTextOvershoot;
     private TextView tvSMRatio;
     private EditText editTextSMRatio;
     private TextView tvTMRatio;
@@ -219,6 +223,41 @@ public class SettingsFragment extends Fragment {
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+
+        tvOvershoot = activity.findViewById(R.id.tvOvershoot);
+        tvOvershoot.setOnClickListener(view -> MyToastMaker.make(String.valueOf(activity.getText(R.string.overshoot_description)), activity));
+
+        editTextOvershoot = activity.findViewById(R.id.editTextOvershoot);
+        editTextOvershoot.setText(String.valueOf(pref.getFloat("overshoot", 0.3F)));
+        editTextOvershoot.setOnEditorActionListener((textView, i, keyEvent) -> {
+            String rawText = String.valueOf(editTextOvershoot.getText());
+            float overshoot;
+            // empty input
+            if (rawText.isEmpty()) {
+                editTextOvershoot.setText(String.valueOf(pref.getFloat("overshoot", 0.3F)));
+            } else {
+                try {
+                    overshoot = Float.parseFloat(rawText);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    editTextOvershoot.setText(String.valueOf(pref.getFloat("overshoot", 0.3F)));
+                    editTextOvershoot.clearFocus();
+                    return false;
+                }
+                // input out of bounds
+                if (overshoot > 1 || overshoot < 0) {
+                    editTextOvershoot.setText(String.valueOf(pref.getFloat("sm-overshoot", 0.3F)));
+                } else {
+                    synchronized (lock) {
+                        editTextOvershoot.setText(String.valueOf(overshoot));
+                        editor.putFloat("overshoot", overshoot);
+                        editor.apply();
+                    }
+                }
+            }
+            editTextOvershoot.clearFocus();
+            return false;
         });
 
         tvSMRatio = activity.findViewById(R.id.tvSMRatio);

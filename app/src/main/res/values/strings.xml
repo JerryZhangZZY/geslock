@@ -24,17 +24,20 @@
     <string name="spinner_travel_3">Long</string>
     <string name="settings_entry_vibration">Haptic feedback</string>
     <string name="settings_category_advanced">Advanced</string>
-    <string name="setting_entry_animation">Animation scale</string>
+    <string name="settings_entry_animation">Animation scale</string>
     <string name="spinner_animation_1">Animation off</string>
     <string name="spinner_animation_2">Scale .5x</string>
     <string name="spinner_animation_3">Scale 1x</string>
     <string name="spinner_animation_4">Scale 1.5x</string>
     <string name="spinner_animation_5">Scale 2x</string>
     <string name="spinner_animation_6">Scale 5x</string>
+    <string name="settings_entry_overshoot">Animation overshoot</string>
+    <string name="overshoot_description">(0–1) Rocker rebound overshoot</string>
+    <string name="edittext_overshoot_hint" translatable="false">0.3</string>
     <string name="settings_entry_smratio">Spin-move ratio</string>
     <string name="edittext_smratio_hint" translatable="false">0.2</string>
-    <string name="smratio_description">The ratio of the distance the rocker moves when dragging with one finger and two fingers</string>
-    <string name="setting_entry_tmratio">2-finger gesture judgement ratio</string>
+    <string name="smratio_description">(0–1) The ratio of the distance the rocker moves when dragging with one finger and two fingers</string>
+    <string name="settings_entry_tmratio">2-finger gesture judgement ratio</string>
     <string name="edittext_tmratio_hint" translatable="false">0.04</string>
-    <string name="tmratio_description">The ratio of finger movement distance to the shortest edge of the interactive interface when distinguishing between pinching and dragging with two fingers</string>
+    <string name="tmratio_description">(0–0.1) The ratio of finger movement distance to the shortest edge of the interactive interface when distinguishing between pinching and dragging with two fingers</string>
 </resources>
