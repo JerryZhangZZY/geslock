@@ -108,6 +108,7 @@ public class EncryptionFragment extends Fragment {
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
                     // first finger contact
                     case MotionEvent.ACTION_DOWN:
+                        rocker.clearAnimation();
                         startX1 = (int) motionEvent.getX() + rocker.getLeft();
                         startY1 = (int) motionEvent.getY() + rocker.getTop();
                         fingerNum = 1;
