@@ -52,6 +52,7 @@ public class SettingsFragment extends Fragment {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch switchVibration;
     private Spinner spinnerAnimation;
+    private TextView tvSMRatio;
     private EditText editTextSMRatio;
     private TextView tvTMRatio;
     private EditText editTextTMRatio;
@@ -220,6 +221,9 @@ public class SettingsFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
+        tvSMRatio = activity.findViewById(R.id.tvSMRatio);
+        tvSMRatio.setOnClickListener(view -> MyToastMaker.make(String.valueOf(activity.getText(R.string.smratio_description)), activity));
+
         editTextSMRatio = activity.findViewById(R.id.editTextSMRatio);
         editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", 0.2F)));
         editTextSMRatio.setOnEditorActionListener((textView, i, keyEvent) -> {
@@ -253,12 +257,7 @@ public class SettingsFragment extends Fragment {
         });
 
         tvTMRatio = activity.findViewById(R.id.tvTMRatio);
-        tvTMRatio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MyToastMaker.make(String.valueOf(activity.getText(R.string.tmratio_description)), activity);
-            }
-        });
+        tvTMRatio.setOnClickListener(view -> MyToastMaker.make(String.valueOf(activity.getText(R.string.tmratio_description)), activity));
 
         editTextTMRatio = activity.findViewById(R.id.editTextTMRatio);
         editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", 0.04F)));

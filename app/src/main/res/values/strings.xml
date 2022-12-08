@@ -33,6 +33,7 @@
     <string name="spinner_animation_6">Scale 5x</string>
     <string name="settings_entry_smratio">Spin-move ratio</string>
     <string name="edittext_smratio_hint" translatable="false">0.2</string>
+    <string name="smratio_description">The ratio of the distance the rocker moves when dragging with one finger and two fingers</string>
     <string name="setting_entry_tmratio">2-finger gesture judgement ratio</string>
     <string name="edittext_tmratio_hint" translatable="false">0.04</string>
     <string name="tmratio_description">The ratio of finger movement distance to the shortest edge of the interactive interface when distinguishing between pinching and dragging with two fingers</string>
