@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class MyAnimationScaler {
+public abstract class MyAnimationScaler {
 
     private static SharedPreferences pref;
     private static int selectionIndex;

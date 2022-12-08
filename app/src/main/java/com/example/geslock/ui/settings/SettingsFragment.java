@@ -26,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -34,6 +35,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.geslock.R;
 import com.example.geslock.tools.MyAnimationScaler;
+import com.example.geslock.tools.MyToastMaker;
 import com.example.geslock.tools.MyVibrator;
 
 import java.util.Locale;
@@ -51,9 +53,12 @@ public class SettingsFragment extends Fragment {
     private Switch switchVibration;
     private Spinner spinnerAnimation;
     private EditText editTextSMRatio;
+    private TextView tvTMRatio;
     private EditText editTextTMRatio;
 
     private final Object lock = new Object();
+
+    private Toast toast;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -245,6 +250,14 @@ public class SettingsFragment extends Fragment {
             }
             editTextSMRatio.clearFocus();
             return false;
+        });
+
+        tvTMRatio = activity.findViewById(R.id.tvTMRatio);
+        tvTMRatio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MyToastMaker.make(String.valueOf(activity.getText(R.string.tmratio_description)), activity);
+            }
         });
 
         editTextTMRatio = activity.findViewById(R.id.editTextTMRatio);

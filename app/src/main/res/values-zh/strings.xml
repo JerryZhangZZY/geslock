@@ -33,4 +33,5 @@
     <string name="spinner_animation_5">缩放 2x</string>
     <string name="spinner_animation_6">缩放 5x</string>
     <string name="setting_entry_tmratio">双指手势判别比</string>
+    <string name="tmratio_description">判别缩放还是双指拖移时手指移动距离占交互界面最短边的比例</string>
 </resources>

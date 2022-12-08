@@ -35,4 +35,5 @@
     <string name="edittext_smratio_hint" translatable="false">0.2</string>
     <string name="setting_entry_tmratio">2-finger gesture judgement ratio</string>
     <string name="edittext_tmratio_hint" translatable="false">0.04</string>
+    <string name="tmratio_description">The ratio of finger movement distance to the shortest edge of the interactive interface when distinguishing between pinching and dragging with two fingers</string>
 </resources>
