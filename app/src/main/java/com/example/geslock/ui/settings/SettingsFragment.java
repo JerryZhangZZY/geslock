@@ -158,13 +158,9 @@ public class SettingsFragment extends Fragment {
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         Configuration configuration = resources.getConfiguration();
         final boolean[] enabledFlag = {false};
-        spinnerLanguage.setOnTouchListener(new View.OnTouchListener() {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                enabledFlag[0] = true;
-                return false;
-            }
+        spinnerLanguage.setOnTouchListener((view, motionEvent) -> {
+            enabledFlag[0] = true;
+            return false;
         });
         spinnerLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
