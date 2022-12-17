@@ -3,6 +3,7 @@
     <string name="app_name">GesLock</string>
     <string name="title_encryption">Encryption</string>
     <string name="title_decryption">Decryption</string>
+    <string name="title_home">Home</string>
     <string name="title_settings">Settings</string>
     <string name="settings_category_appearance">Appearance</string>
     <string name="drag_icon_1">Soccer</string>

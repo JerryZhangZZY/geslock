@@ -3,6 +3,7 @@
     <string name="app_name">GesLock</string>
     <string name="title_encryption">加密</string>
     <string name="title_decryption">解密</string>
+    <string name="title_home">主页</string>
     <string name="title_settings">设置</string>
     <string name="settings_category_appearance">外观</string>
     <string name="drag_icon_1">足球</string>
