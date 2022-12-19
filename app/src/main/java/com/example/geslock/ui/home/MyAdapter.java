@@ -24,9 +24,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
+    /*
+    all supported file types
+     */
     private final List<String> textExtensions = Collections.singletonList("txt");
     private final List<String> imageExtensions = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "tiff");
     private final List<String> videoExtensions = Arrays.asList("mp4", "mov", "avi", "flv", "wmv", "mpeg", "mkv", "asf");
@@ -44,7 +48,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private MyViewHolder.OnItemLongClickListener longClickListener;
     private BasicFileAttributes attr;
     private FileTime time;
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
 
     public MyAdapter(Context context, List<File> list) {
         this.context = context;
@@ -58,17 +62,27 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return new MyViewHolder(view, clickListener, longClickListener);
     }
 
+    /**
+     * Set file entry appearance.
+     * @param myViewHolder view holder
+     * @param i file index
+     */
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         File file = list.get(i);
-
+        // set file name, file icon and enter icon
         if (file.isFile()) {
             String fileName = file.getName();
             myViewHolder.tvFileName.setText(fileName.substring(0, fileName.length() - 2));
+            myViewHolder.imgEnter.setVisibility(View.INVISIBLE);
+            myViewHolder.imgIcon.setImageResource(pickIcon(file.getName()));
         } else {
             myViewHolder.tvFileName.setText(file.getName());
+            myViewHolder.imgEnter.setVisibility(View.VISIBLE);
+            myViewHolder.imgIcon.setImageResource(R.drawable.ic_folder);
         }
 
+        // set file creation time
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             try {
                 attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
@@ -77,13 +91,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        if (file.isDirectory()) {
-            myViewHolder.imgEnter.setVisibility(View.VISIBLE);
-            myViewHolder.imgIcon.setImageResource(R.drawable.ic_folder);
-        } else {
-            myViewHolder.imgEnter.setVisibility(View.INVISIBLE);
-            myViewHolder.imgIcon.setImageResource(pickIcon(file.getName()));
         }
     }
 
@@ -143,7 +150,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
     }
 
+    /**
+     * Pick an icon for a file according to its name.
+     * @param fileName file name
+     * @return icon resource id
+     */
     public int pickIcon(String fileName) {
+        // extract extension string from file name
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length() - 2).toLowerCase();
         if (textExtensions.contains(extension)) {
             return R.drawable.ic_txt;

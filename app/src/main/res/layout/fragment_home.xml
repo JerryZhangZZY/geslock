@@ -26,7 +26,7 @@
             android:textSize="16sp"
             android:visibility="gone"
             app:icon="@drawable/back"
-            app:iconSize="12dp"
+            app:iconSize="14dp"
             app:iconTint="@drawable/selector_text_color_on_click"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -5,9 +5,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -18,9 +19,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Space;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -33,12 +32,10 @@ import com.example.geslock.R;
 import com.example.geslock.tools.MyToastMaker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -164,9 +161,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        getView().setFocusableInTouchMode(true);
-        getView().requestFocus();
-        getView().setOnKeyListener((view, i, keyEvent) -> {
+        requireView().setFocusableInTouchMode(true);
+        requireView().requestFocus();
+        requireView().setOnKeyListener((view, i, keyEvent) -> {
             if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_BACK) {
                 handleBack();
                 return true;
@@ -175,11 +172,16 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    /**
+     * Init recycler view after permission granted.
+     * @param requestCode request code
+     * @param permissions permissions
+     * @param grantResults grant results
+     */
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 1) {
-            Log.d("a", "" + grantResults[0]);
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (root.exists()) {
                     currentParent = root;
@@ -188,16 +190,21 @@ public class HomeFragment extends Fragment {
                     refresh();
                 }
             } else {
-                Toast.makeText(getActivity(), "no permission", Toast.LENGTH_SHORT).show();
+                MyToastMaker.make((String) activity.getText(R.string.no_permission), activity);
             }
         }
     }
 
+    /**
+     * The dialog of creating new folder.
+     * @param activity current activity
+     */
     public void dialogNewFolder(Activity activity) {
         final EditText editText = new EditText(activity);
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
         editText.setHint(R.string.new_folder_hint);
         editText.setPadding(70, 30, 70, 30);
+        int btnColor = activity.getColor(R.color.yellow_500);
         AlertDialog dialog = new AlertDialog.Builder(activity)
             .setIcon(R.drawable.ic_folder)
             .setTitle(R.string.new_folder)
@@ -219,12 +226,34 @@ public class HomeFragment extends Fragment {
                 }
             }).create();
         dialog.show();
-        int btnColor = activity.getColor(R.color.yellow_500);
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(btnColor);
+        Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().isEmpty()) {
+                    btnPositive.setTextColor(activity.getColor(R.color.gray_500));
+                    btnPositive.setClickable(false);
+                } else {
+                    btnPositive.setTextColor(btnColor);
+                    btnPositive.setClickable(true);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+        btnPositive.setTextColor(activity.getColor(R.color.gray_500));
+        btnPositive.setClickable(false);
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(btnColor);
     }
 
+    /**
+     * Refresh path bar, recycler view and empty sign.
+     */
+    @SuppressLint("NotifyDataSetChanged")
     public void refresh() {
+        // refresh path bar
         if (root.equals(currentParent)) {
             btnBack.setVisibility(View.GONE);
             tvPath.setText(title);
@@ -240,11 +269,15 @@ public class HomeFragment extends Fragment {
 
             tvPath.setText(currentParent.getName());
         }
-        Arrays.sort(currentFiles);
+
+        // refresh recycler view
+        currentFiles = sortFiles(currentFiles);
         myList.clear();
         Collections.addAll(myList, currentFiles);
         myAdapter.notifyDataSetChanged();
         recyclerFileList.scheduleLayoutAnimation();
+
+        // refresh empty sign
         if (currentFiles.length == 0) {
             imgEmpty.setVisibility(View.VISIBLE);
             imgEmpty.startAnimation(itemFallDown);
@@ -256,6 +289,10 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /**
+     * Create a new folder under the current path.
+     * @param name name of the folder to be created
+     */
     public void newFolder(String name) {
         File file = new File(currentParent.getPath() + "/" + name);
         if (file.exists()) {
@@ -265,6 +302,30 @@ public class HomeFragment extends Fragment {
         file.mkdir();
     }
 
+    /**
+     * Priority: folder > file.
+     * @param currentFiles files to be sorted
+     * @return sorted files
+     */
+    private File[] sortFiles(File[] currentFiles) {
+        ArrayList<File> folders = new ArrayList<>();
+        ArrayList<File> files = new ArrayList<>();
+        for (File file : currentFiles) {
+            if (file.isFile()) {
+                folders.add(file);
+            } else {
+                files.add(file);
+            }
+        }
+        folders.sort(Comparator.naturalOrder());
+        files.sort(Comparator.naturalOrder());
+        files.addAll(folders);
+        return files.toArray(new File[0]);
+    }
+
+    /**
+     * Actions after back operation is triggered.
+     */
     @SuppressLint("NotifyDataSetChanged")
     public void handleBack() {
         if (!root.equals(currentParent)) {
@@ -275,6 +336,9 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /**
+     * Switch floating action buttons' expansion status.
+     */
     public void switchFabs() {
         setVisibility();
         setAnimation();
@@ -282,6 +346,9 @@ public class HomeFragment extends Fragment {
         addClicked = !addClicked;
     }
 
+    /**
+     * Switch floating action buttons' visibility status.
+     */
     public void setVisibility() {
         if (!addClicked) {
             fabAddFile.setVisibility(View.VISIBLE);
@@ -296,6 +363,9 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /**
+     * Play floating action buttons' animations.
+     */
     public void setAnimation() {
         if (!addClicked) {
             fabAdd.startAnimation(rotateOpen);
@@ -312,6 +382,9 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /**
+     * Switch floating action buttons' clickable status.
+     */
     public void setClickable() {
         if (!addClicked) {
             fabAddFile.setClickable(true);
