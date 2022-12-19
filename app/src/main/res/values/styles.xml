@@ -41,6 +41,12 @@
         <item name="android:imeOptions">actionDone</item>
         <item name="android:saveEnabled">false</item>
     </style>
+    <style name="fabStyle">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="backgroundTint">?colorSecondary</item>
+        <item name="tint">@color/gray_700</item>
+    </style>
     <style name="fabTextStyle">
         <item name="android:layout_marginTop">-5dp</item>
         <item name="android:layout_marginEnd">-25dp</item>

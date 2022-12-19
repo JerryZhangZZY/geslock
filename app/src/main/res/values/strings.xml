@@ -41,6 +41,7 @@
     <string name="settings_entry_tmratio">2-finger gesture judgement ratio</string>
     <string name="edittext_tmratio_hint" translatable="false">0.04</string>
     <string name="tmratio_description">(0–0.1) The ratio of finger movement distance to the shortest edge of the interactive interface when distinguishing between pinching and dragging with two fingers</string>
+    <string name="empty">No items</string>
     <string name="new_file">Upload file</string>
     <string name="new_folder">New folder</string>
     <string name="new_folder_hint">Folder name</string>

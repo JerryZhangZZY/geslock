@@ -5,20 +5,20 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Rect;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
+import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.GridLayoutAnimationController;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,29 +26,28 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.geslock.MainActivity;
 import com.example.geslock.R;
 import com.example.geslock.tools.MyToastMaker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
     private Activity activity;
 
+    private String title;
     private File root;
-    private RecyclerView recyclerFileList;
-    private Button btnBack;
     private File currentParent;
     private File[] currentFiles;
 
@@ -56,16 +55,22 @@ public class HomeFragment extends Fragment {
     private MyAdapter myAdapter;
     private final List<File> myList = new ArrayList<>();
 
+    private Button btnBack;
+    private TextView tvPath;
+    private RecyclerView recyclerFileList;
     private FloatingActionButton fabAdd;
     private FloatingActionButton fabAddFile;
     private FloatingActionButton fabAddFolder;
     private TextView tvNewFile;
     private TextView tvNewFolder;
+    private ImageView imgEmpty;
+    private TextView tvEmpty;
 
     private Animation rotateOpen;
     private Animation rotateClose;
     private Animation fromBottom;
     private Animation toBottom;
+    private Animation itemFallDown;
 
     private boolean addClicked = false;
 
@@ -83,7 +88,9 @@ public class HomeFragment extends Fragment {
         activity = getActivity();
         assert activity != null;
 
-        root = new File(getActivity().getExternalCacheDir().toString() + "/safe");
+        title = (String) activity.getText(R.string.title_home);
+
+        root = new File(getActivity().getExternalCacheDir().toString() + "/root");
         if (!root.exists()) {
             root.mkdir();
         }
@@ -92,6 +99,8 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
         recyclerFileList.setLayoutManager(linearLayoutManager);
         recyclerFileList.setItemAnimator(new DefaultItemAnimator());
+
+        tvPath = activity.findViewById(R.id.tvPath);
 
         btnBack = activity.findViewById(R.id.btnBack);
         btnBack.setOnClickListener(view -> {
@@ -135,18 +144,21 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 switchFabs();
-                MyToastMaker.make("file", activity);
             }
         });
 
         fabAddFolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog(activity);
+                dialogNewFolder(activity);
                 switchFabs();
-                MyToastMaker.make("folder", activity);
             }
         });
+
+        imgEmpty = activity.findViewById(R.id.imgEmpty);
+        tvEmpty = activity.findViewById(R.id.tvEmpty);
+
+        itemFallDown = AnimationUtils.loadAnimation(activity, R.anim.item_fall_down_anim);
     }
 
     @Override
@@ -181,8 +193,9 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public void dialog(Activity activity) {
+    public void dialogNewFolder(Activity activity) {
         final EditText editText = new EditText(activity);
+        editText.setInputType(InputType.TYPE_CLASS_TEXT);
         editText.setHint(R.string.new_folder_hint);
         editText.setPadding(70, 30, 70, 30);
         AlertDialog dialog = new AlertDialog.Builder(activity)
@@ -206,13 +219,41 @@ public class HomeFragment extends Fragment {
                 }
             }).create();
         dialog.show();
+        int btnColor = activity.getColor(R.color.yellow_500);
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(btnColor);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(btnColor);
     }
 
     public void refresh() {
+        if (root.equals(currentParent)) {
+            btnBack.setVisibility(View.GONE);
+            tvPath.setText(title);
+        } else {
+            btnBack.setVisibility(View.VISIBLE);
+            File parent = currentParent.getParentFile();
+            if (root.equals(parent)) {
+                btnBack.setText(title);
+            } else {
+                assert parent != null;
+                btnBack.setText(parent.getName());
+            }
+
+            tvPath.setText(currentParent.getName());
+        }
         Arrays.sort(currentFiles);
         myList.clear();
         Collections.addAll(myList, currentFiles);
         myAdapter.notifyDataSetChanged();
+        recyclerFileList.scheduleLayoutAnimation();
+        if (currentFiles.length == 0) {
+            imgEmpty.setVisibility(View.VISIBLE);
+            imgEmpty.startAnimation(itemFallDown);
+            tvEmpty.setVisibility(View.VISIBLE);
+            tvEmpty.startAnimation(itemFallDown);
+        } else {
+            imgEmpty.setVisibility(View.GONE);
+            tvEmpty.setVisibility(View.GONE);
+        }
     }
 
     public void newFolder(String name) {
