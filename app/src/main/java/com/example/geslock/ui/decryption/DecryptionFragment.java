@@ -97,11 +97,10 @@ public class DecryptionFragment extends Fragment {
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("hh", activity.getCacheDir().toString());
-                File file = new File(activity.getCacheDir() + "/test.txt");
-                MyAES.encryptFile(file, activity.getCacheDir().toString(), "encrypted.gl", "123");
-                file = new File(activity.getCacheDir() + "/encrypted.gl");
-                MyAES.decryptFile(file, activity.getCacheDir().toString(), "decrypted.txt", "124");
+                File file = new File(activity.getExternalCacheDir() + "/test.txt");
+                MyAES.encryptFile(file, activity.getExternalCacheDir().toString(), "encrypted.gl", "123");
+                file = new File(activity.getExternalCacheDir() + "/encrypted.gl");
+                MyAES.decryptFile(file, activity.getExternalCacheDir().toString(), "decrypted.txt", "124");
             }
         });
     }

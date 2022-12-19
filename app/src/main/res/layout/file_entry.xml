@@ -10,18 +10,22 @@
         android:layout_height="5dp" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
+        android:id="@+id/cardFile"
         style="@style/cardStyle"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:contentPaddingBottom="10dp"
-        app:contentPaddingTop="10dp">
+        android:layout_height="wrap_content"
+        app:cardElevation="5dp"
+        app:contentPaddingBottom="15dp"
+        app:contentPaddingTop="15dp">
 
         <TextView
             android:id="@+id/tvFileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="80dp"
+            android:layout_marginStart="80dp"
             android:text="TextView"
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
@@ -29,18 +33,29 @@
             android:id="@+id/tvFileDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="80dp"
-            android:layout_marginTop="40dp"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="80dp"
             android:text="TextView" />
 
         <ImageView
             android:id="@+id/imgFileIcon"
-            android:layout_width="70dp"
-            android:layout_height="70dp" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp" />
+
+        <ImageView
+            android:id="@+id/imgEnter"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginEnd="10dp"
+            app:srcCompat="@drawable/ic_enter"
+            app:tint="?colorSecondary" />
     </androidx.cardview.widget.CardView>
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="25dp" />
+        android:layout_height="15dp" />
 
 </LinearLayout>

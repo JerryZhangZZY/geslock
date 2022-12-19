@@ -41,4 +41,17 @@
         <item name="android:imeOptions">actionDone</item>
         <item name="android:saveEnabled">false</item>
     </style>
+    <style name="fabTextStyle">
+        <item name="android:layout_marginTop">-5dp</item>
+        <item name="android:layout_marginEnd">-25dp</item>
+        <item name="android:textAlignment">textEnd</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Large</item>
+        <item name="android:textColor">?colorSecondary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:visibility">invisible</item>
+        <item name="android:shadowColor">?android:shadowColor</item>
+        <item name="android:shadowDy">5</item>
+        <item name="android:shadowRadius">15</item>
+        <item name="android:padding">10dp</item>
+    </style>
 </resources>
