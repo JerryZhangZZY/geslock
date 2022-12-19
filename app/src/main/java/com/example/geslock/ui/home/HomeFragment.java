@@ -5,11 +5,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -116,7 +116,7 @@ public class HomeFragment extends Fragment {
             refresh();
         });
         myAdapter.setOnItemLongClickListener(((view, position) -> {
-            MyToastMaker.make("long", activity);
+            dialogEdit(position, activity);
         }));
         recyclerFileList.setAdapter(myAdapter);
 
@@ -206,25 +206,25 @@ public class HomeFragment extends Fragment {
         editText.setPadding(70, 30, 70, 30);
         int btnColor = activity.getColor(R.color.yellow_500);
         AlertDialog dialog = new AlertDialog.Builder(activity)
-            .setIcon(R.drawable.ic_folder)
-            .setTitle(R.string.new_folder)
-            .setView(editText)
-            .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            })
-            .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String folderName = editText.getText().toString();
-                    newFolder(folderName);
-                    dialog.dismiss();
-                    currentFiles = currentParent.listFiles();
-                    refresh();
-                }
-            }).create();
+                .setIcon(R.drawable.ic_folder)
+                .setTitle(R.string.new_folder)
+                .setView(editText)
+                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String folderName = editText.getText().toString();
+                        newFolder(folderName);
+                        dialog.dismiss();
+                        currentFiles = currentParent.listFiles();
+                        refresh();
+                    }
+                }).create();
         dialog.show();
         Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         editText.addTextChangedListener(new TextWatcher() {
@@ -233,6 +233,79 @@ public class HomeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.toString().isEmpty()) {
+                    btnPositive.setTextColor(activity.getColor(R.color.gray_500));
+                    btnPositive.setClickable(false);
+                } else {
+                    btnPositive.setTextColor(btnColor);
+                    btnPositive.setClickable(true);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+        btnPositive.setTextColor(activity.getColor(R.color.gray_500));
+        btnPositive.setClickable(false);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(btnColor);
+    }
+
+    public void dialogEdit(int position, Activity activity) {
+        final String[] options = {(String) activity.getText(R.string.edit_file_rename),(String) activity.getText(R.string.edit_file_delete)};
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setIcon(getItemIcon(position))
+                .setTitle(getItemName(position))
+                .setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                dialogRename(position, activity);
+                                break;
+                            case 1:
+                                MyToastMaker.make("delete", activity);
+                                break;
+                        }
+                    }
+                }).create();
+        dialog.show();
+    }
+
+    public void dialogRename(int position, Activity activity) {
+        String currentName = getItemName(position);
+        final EditText editText = new EditText(activity);
+        editText.setInputType(InputType.TYPE_CLASS_TEXT);
+        editText.setHint(R.string.rename_hint);
+        editText.setPadding(70, 30, 70, 30);
+        int btnColor = activity.getColor(R.color.yellow_500);
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setIcon(getItemIcon(position))
+                .setTitle(currentName)
+                .setView(editText)
+                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton(R.string.rename_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        File file = currentFiles[position];
+                        String newName = editText.getText().toString() + (file.isFile() ? "gl" : "");
+                        rename(file, newName);
+                        dialog.dismiss();
+                        currentFiles = currentParent.listFiles();
+                        refresh();
+                    }
+                }).create();
+        dialog.show();
+        Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String newName = charSequence.toString();
+                if (newName.isEmpty() || newName.equals(currentName)) {
                     btnPositive.setTextColor(activity.getColor(R.color.gray_500));
                     btnPositive.setClickable(false);
                 } else {
@@ -300,6 +373,10 @@ public class HomeFragment extends Fragment {
             return;
         }
         file.mkdir();
+    }
+
+    public void rename(File file, String newName) {
+        file.renameTo(new File(file.getParent() + "/" + newName));
     }
 
     /**
@@ -393,5 +470,18 @@ public class HomeFragment extends Fragment {
             fabAddFile.setClickable(false);
             fabAddFolder.setClickable(false);
         }
+    }
+
+    public String getItemName(int position) {
+        View viewItem = Objects.requireNonNull(recyclerFileList.getLayoutManager()).findViewByPosition(position);
+        assert viewItem != null;
+        TextView name = viewItem.findViewById(R.id.tvFileName);
+        return (String) ((TextView) viewItem.findViewById(R.id.tvFileName)).getText();
+    }
+
+    public Drawable getItemIcon(int position) {
+        View viewItem = Objects.requireNonNull(recyclerFileList.getLayoutManager()).findViewByPosition(position);
+        assert viewItem != null;
+        return ((ImageView) viewItem.findViewById(R.id.imgFileIcon)).getDrawable();
     }
 }
