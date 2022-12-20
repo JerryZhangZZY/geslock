@@ -130,19 +130,25 @@ public class SettingsFragment extends Fragment {
                 synchronized (lock) {
                     switch (i) {
                         case 0:
-                            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
-                            editor.putInt("theme", MODE_NIGHT_NO);
-                            editor.apply();
+                            synchronized (lock) {
+                                AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
+                                editor.putInt("theme", MODE_NIGHT_NO);
+                                editor.apply();
+                            }
                             break;
                         case 1:
-                            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
-                            editor.putInt("theme", MODE_NIGHT_YES);
-                            editor.apply();
+                            synchronized (lock) {
+                                AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+                                editor.putInt("theme", MODE_NIGHT_YES);
+                                editor.apply();
+                            }
                             break;
                         case 2:
-                            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM);
-                            editor.putInt("theme", MODE_NIGHT_FOLLOW_SYSTEM);
-                            editor.apply();
+                            synchronized (lock) {
+                                AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM);
+                                editor.putInt("theme", MODE_NIGHT_FOLLOW_SYSTEM);
+                                editor.apply();
+                            }
                             break;
                     }
                 }
