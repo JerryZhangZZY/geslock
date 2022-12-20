@@ -201,13 +201,13 @@ public class HomeFragment extends Fragment {
                 .setIcon(R.drawable.ic_folder)
                 .setTitle(R.string.new_folder)
                 .setView(editText)
-                .setNegativeButton(R.string.cancel, (dialog12, which) -> dialog12.dismiss())
-                .setPositiveButton(R.string.ok, (dialog1, which) -> {
+                .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
+                .setPositiveButton(R.string.ok, (dialog0, which) -> {
                     String folderName = editText.getText().toString();
                     newFolder(folderName);
-                    dialog1.dismiss();
                     currentFiles = currentParent.listFiles();
                     refresh();
+                    dialog0.dismiss();
                 }).create();
         dialog.show();
         Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
@@ -262,25 +262,39 @@ public class HomeFragment extends Fragment {
      */
     public void dialogRename(int position, Activity activity) {
         String currentName = getItemName(position);
+        File file = currentFiles[position];
         final EditText editText = new EditText(activity);
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
         editText.setHint(R.string.rename_hint);
         editText.setPadding(70, 30, 70, 30);
+        // auto fill current name with extension
+        editText.setText(currentName);
+        // auto select file name without extension
+        editText.setOnFocusChangeListener((view, hasFocus) -> {
+            if (hasFocus) {
+                editText.post(() -> {
+                    editText.setSelection(0, file.isFile() ? currentName.lastIndexOf(".") : currentName.length());
+                    editText.setCursorVisible(true);
+                });
+            } else {
+                editText.setCursorVisible(false);
+            }
+        });
         int btnColor = activity.getColor(R.color.yellow_500);
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setIcon(getItemIcon(position))
                 .setTitle(currentName)
                 .setView(editText)
                 .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
-                .setPositiveButton(R.string.rename_ok, (dialog1, which) -> {
-                    File file = currentFiles[position];
+                .setPositiveButton(R.string.rename_ok, (dialog0, which) -> {
                     String newName = editText.getText().toString() + (file.isFile() ? "gl" : "");
                     rename(file, newName);
                     currentFiles = currentParent.listFiles();
                     refresh();
-                    dialog1.dismiss();
+                    dialog0.dismiss();
                 }).create();
         dialog.show();
+        // prevent null or same name
         Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -308,20 +322,12 @@ public class HomeFragment extends Fragment {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setIcon(getItemIcon(position))
                 .setTitle(getItemName(position))
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .setPositiveButton(R.string.delete_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        deleteFile(currentFiles[position]);
-                        currentFiles = currentParent.listFiles();
-                        refresh();
-                        dialog.dismiss();
-                    }
+                .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
+                .setPositiveButton(R.string.delete_ok, (dialog0, which) -> {
+                    deleteFile(currentFiles[position]);
+                    currentFiles = currentParent.listFiles();
+                    refresh();
+                    dialog0.dismiss();
                 }).create();
         dialog.show();
     }
@@ -505,7 +511,6 @@ public class HomeFragment extends Fragment {
     public String getItemName(int position) {
         View viewItem = Objects.requireNonNull(recyclerFileList.getLayoutManager()).findViewByPosition(position);
         assert viewItem != null;
-        TextView name = viewItem.findViewById(R.id.tvFileName);
         return (String) ((TextView) viewItem.findViewById(R.id.tvFileName)).getText();
     }
 
