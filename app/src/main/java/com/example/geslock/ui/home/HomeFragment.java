@@ -137,19 +137,11 @@ public class HomeFragment extends Fragment {
             switchFabs();
         });
 
-        fabAddFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switchFabs();
-            }
-        });
+        fabAddFile.setOnClickListener(view -> switchFabs());
 
-        fabAddFolder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogNewFolder(activity);
-                switchFabs();
-            }
+        fabAddFolder.setOnClickListener(view -> {
+            dialogNewFolder(activity);
+            switchFabs();
         });
 
         imgEmpty = activity.findViewById(R.id.imgEmpty);
@@ -209,21 +201,13 @@ public class HomeFragment extends Fragment {
                 .setIcon(R.drawable.ic_folder)
                 .setTitle(R.string.new_folder)
                 .setView(editText)
-                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String folderName = editText.getText().toString();
-                        newFolder(folderName);
-                        dialog.dismiss();
-                        currentFiles = currentParent.listFiles();
-                        refresh();
-                    }
+                .setNegativeButton(R.string.cancel, (dialog12, which) -> dialog12.dismiss())
+                .setPositiveButton(R.string.ok, (dialog1, which) -> {
+                    String folderName = editText.getText().toString();
+                    newFolder(folderName);
+                    dialog1.dismiss();
+                    currentFiles = currentParent.listFiles();
+                    refresh();
                 }).create();
         dialog.show();
         Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
@@ -248,27 +232,34 @@ public class HomeFragment extends Fragment {
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(btnColor);
     }
 
+    /**
+     * The dialog of editing a file/folder
+     * @param position position of the file/folder to be edited
+     * @param activity current activity
+     */
     public void dialogEdit(int position, Activity activity) {
         final String[] options = {(String) activity.getText(R.string.edit_file_rename),(String) activity.getText(R.string.edit_file_delete)};
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setIcon(getItemIcon(position))
                 .setTitle(getItemName(position))
-                .setItems(options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        switch (i) {
-                            case 0:
-                                dialogRename(position, activity);
-                                break;
-                            case 1:
-                                MyToastMaker.make("delete", activity);
-                                break;
-                        }
+                .setItems(options, (dialogInterface, i) -> {
+                    switch (i) {
+                        case 0:
+                            dialogRename(position, activity);
+                            break;
+                        case 1:
+                            dialogDeleteConfirm(position, activity);
+                            break;
                     }
                 }).create();
         dialog.show();
     }
 
+    /**
+     * The dialog of renaming a file/folder.
+     * @param position position of the file/folder to be renamed
+     * @param activity current activity
+     */
     public void dialogRename(int position, Activity activity) {
         String currentName = getItemName(position);
         final EditText editText = new EditText(activity);
@@ -280,22 +271,14 @@ public class HomeFragment extends Fragment {
                 .setIcon(getItemIcon(position))
                 .setTitle(currentName)
                 .setView(editText)
-                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .setPositiveButton(R.string.rename_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        File file = currentFiles[position];
-                        String newName = editText.getText().toString() + (file.isFile() ? "gl" : "");
-                        rename(file, newName);
-                        dialog.dismiss();
-                        currentFiles = currentParent.listFiles();
-                        refresh();
-                    }
+                .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
+                .setPositiveButton(R.string.rename_ok, (dialog1, which) -> {
+                    File file = currentFiles[position];
+                    String newName = editText.getText().toString() + (file.isFile() ? "gl" : "");
+                    rename(file, newName);
+                    currentFiles = currentParent.listFiles();
+                    refresh();
+                    dialog1.dismiss();
                 }).create();
         dialog.show();
         Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
@@ -319,6 +302,28 @@ public class HomeFragment extends Fragment {
         btnPositive.setTextColor(activity.getColor(R.color.gray_500));
         btnPositive.setClickable(false);
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(btnColor);
+    }
+
+    public void dialogDeleteConfirm(int position, Activity activity) {
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setIcon(getItemIcon(position))
+                .setTitle(getItemName(position))
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton(R.string.delete_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteFile(currentFiles[position]);
+                        currentFiles = currentParent.listFiles();
+                        refresh();
+                        dialog.dismiss();
+                    }
+                }).create();
+        dialog.show();
     }
 
     /**
@@ -375,6 +380,31 @@ public class HomeFragment extends Fragment {
         file.mkdir();
     }
 
+    /**
+     * Delete a file/folder.
+     * @param dirFile file/folder to be deleted
+     * @return success or not
+     */
+    public boolean deleteFile(File dirFile) {
+        // 如果dir对应的文件不存在，则退出
+        if (!dirFile.exists()) {
+            return false;
+        }
+        if (dirFile.isFile()) {
+            return dirFile.delete();
+        } else {
+            for (File file : Objects.requireNonNull(dirFile.listFiles())) {
+                deleteFile(file);
+            }
+        }
+        return dirFile.delete();
+    }
+
+    /**
+     * Rename a file/folder.
+     * @param file file/folder to be renamed
+     * @param newName new name
+     */
     public void rename(File file, String newName) {
         file.renameTo(new File(file.getParent() + "/" + newName));
     }

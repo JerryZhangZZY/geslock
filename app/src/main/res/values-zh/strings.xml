@@ -44,10 +44,11 @@
     <string name="new_folder">新建文件夹</string>
     <string name="new_folder_hint">文件夹名称</string>
     <string name="new_folder_exists">文件夹存在</string>
-    <string name="dialog_ok">确定</string>
-    <string name="dialog_cancel">取消</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
     <string name="edit_file_rename">重命名</string>
     <string name="edit_file_delete">删除</string>
     <string name="rename_hint">新名称</string>
     <string name="rename_ok">重命名</string>
+    <string name="delete_ok">删除</string>
 </resources>

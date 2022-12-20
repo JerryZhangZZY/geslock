@@ -47,10 +47,11 @@
     <string name="new_folder">New folder</string>
     <string name="new_folder_hint">Folder name</string>
     <string name="new_folder_exists">Folder exists</string>
-    <string name="dialog_ok">OK</string>
-    <string name="dialog_cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
     <string name="edit_file_rename">Rename</string>
     <string name="edit_file_delete">Delete</string>
     <string name="rename_hint">New name</string>
     <string name="rename_ok">Rename</string>
+    <string name="delete_ok">Delete</string>
 </resources>
