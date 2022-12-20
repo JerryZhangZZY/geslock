@@ -3,9 +3,10 @@ package com.example.geslock.ui.home;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -14,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -23,6 +25,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -62,6 +66,10 @@ public class HomeFragment extends Fragment {
     private TextView tvNewFolder;
     private ImageView imgEmpty;
     private TextView tvEmpty;
+
+    private int yellow_500;
+    private int red_500;
+    private int gray_500;
 
     private Animation rotateOpen;
     private Animation rotateClose;
@@ -137,7 +145,13 @@ public class HomeFragment extends Fragment {
             switchFabs();
         });
 
-        fabAddFile.setOnClickListener(view -> switchFabs());
+        fabAddFile.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            startActivityForResult(Intent.createChooser(intent, ""),1);
+            switchFabs();
+        });
 
         fabAddFolder.setOnClickListener(view -> {
             dialogNewFolder(activity);
@@ -148,6 +162,10 @@ public class HomeFragment extends Fragment {
         tvEmpty = activity.findViewById(R.id.tvEmpty);
 
         itemFallDown = AnimationUtils.loadAnimation(activity, R.anim.item_fall_down_anim);
+
+        yellow_500 = activity.getColor(R.color.yellow_500);
+        red_500 = activity.getColor(R.color.red_500);
+        gray_500 = activity.getColor(R.color.gray_500);
     }
 
     @Override
@@ -196,7 +214,6 @@ public class HomeFragment extends Fragment {
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
         editText.setHint(R.string.new_folder_hint);
         editText.setPadding(70, 30, 70, 30);
-        int btnColor = activity.getColor(R.color.yellow_500);
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setIcon(R.drawable.ic_folder)
                 .setTitle(R.string.new_folder)
@@ -209,6 +226,7 @@ public class HomeFragment extends Fragment {
                     refresh();
                     dialog0.dismiss();
                 }).create();
+        setDialogBackground(dialog);
         dialog.show();
         Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         editText.addTextChangedListener(new TextWatcher() {
@@ -217,19 +235,19 @@ public class HomeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.toString().isEmpty()) {
-                    btnPositive.setTextColor(activity.getColor(R.color.gray_500));
+                    btnPositive.setTextColor(gray_500);
                     btnPositive.setClickable(false);
                 } else {
-                    btnPositive.setTextColor(btnColor);
+                    btnPositive.setTextColor(yellow_500);
                     btnPositive.setClickable(true);
                 }
             }
             @Override
             public void afterTextChanged(Editable editable) {}
         });
-        btnPositive.setTextColor(activity.getColor(R.color.gray_500));
+        btnPositive.setTextColor(gray_500);
         btnPositive.setClickable(false);
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(btnColor);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(yellow_500);
     }
 
     /**
@@ -252,6 +270,7 @@ public class HomeFragment extends Fragment {
                             break;
                     }
                 }).create();
+        setDialogBackground(dialog);
         dialog.show();
     }
 
@@ -280,7 +299,6 @@ public class HomeFragment extends Fragment {
                 editText.setCursorVisible(false);
             }
         });
-        int btnColor = activity.getColor(R.color.yellow_500);
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setIcon(getItemIcon(position))
                 .setTitle(currentName)
@@ -293,6 +311,7 @@ public class HomeFragment extends Fragment {
                     refresh();
                     dialog0.dismiss();
                 }).create();
+        setDialogBackground(dialog);
         dialog.show();
         // prevent null or same name
         Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
@@ -303,19 +322,19 @@ public class HomeFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String newName = charSequence.toString();
                 if (newName.isEmpty() || newName.equals(currentName)) {
-                    btnPositive.setTextColor(activity.getColor(R.color.gray_500));
+                    btnPositive.setTextColor(gray_500);
                     btnPositive.setClickable(false);
                 } else {
-                    btnPositive.setTextColor(btnColor);
+                    btnPositive.setTextColor(yellow_500);
                     btnPositive.setClickable(true);
                 }
             }
             @Override
             public void afterTextChanged(Editable editable) {}
         });
-        btnPositive.setTextColor(activity.getColor(R.color.gray_500));
+        btnPositive.setTextColor(gray_500);
         btnPositive.setClickable(false);
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(btnColor);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(yellow_500);
     }
 
     public void dialogDeleteConfirm(int position, Activity activity) {
@@ -329,7 +348,10 @@ public class HomeFragment extends Fragment {
                     refresh();
                     dialog0.dismiss();
                 }).create();
+        setDialogBackground(dialog);
         dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(red_500);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(yellow_500);
     }
 
     /**
@@ -518,5 +540,9 @@ public class HomeFragment extends Fragment {
         View viewItem = Objects.requireNonNull(recyclerFileList.getLayoutManager()).findViewByPosition(position);
         assert viewItem != null;
         return ((ImageView) viewItem.findViewById(R.id.imgFileIcon)).getDrawable();
+    }
+
+    public void setDialogBackground(AlertDialog dialog) {
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_background);
     }
 }

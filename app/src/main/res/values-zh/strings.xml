@@ -15,9 +15,9 @@
     <string name="spinner_theme_2">深色</string>
     <string name="spinner_theme_3">跟随系统</string>
     <string name="settings_entry_language">语言</string>
-    <string name="spinner_language_1">English</string>
-    <string name="spinner_language_2">简体中文</string>
     <string name="spinner_language_3">跟随系统</string>
+    <string name="settings_category_general">通用</string>
+    <string name="settings_entry_show_item_count">显示文件夹内项目数量</string>
     <string name="settings_category_interaction">交互</string>
     <string name="settings_entry_travel">摇杆行程</string>
     <string name="spinner_travel_1">较短</string>

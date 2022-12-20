@@ -29,7 +29,7 @@
             android:layout_marginStart="80dp"
             android:maxEms="8"
             android:singleLine="true"
-            android:text="TextView"
+            android:text="Sample Name"
             android:textAlignment="viewStart"
             android:textColor="?android:attr/titleTextColor"
             android:textSize="18sp" />
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_marginStart="80dp"
-            android:text="TextView"
+            android:text="2018-03-30 05:24"
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
@@ -55,10 +55,22 @@
             android:id="@+id/imgEnter"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_gravity="right|center_vertical"
+            android:layout_gravity="center_vertical|end"
             android:layout_marginEnd="10dp"
             app:srcCompat="@drawable/ic_enter"
             app:tint="?colorSecondary" />
+
+        <TextView
+            android:id="@+id/tvItemCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="35dp"
+            android:text="3"
+            android:textAlignment="viewEnd"
+            android:textColor="?colorSecondary"
+            android:textSize="20sp"
+            android:visibility="visible" />
     </androidx.cardview.widget.CardView>
 
     <Space

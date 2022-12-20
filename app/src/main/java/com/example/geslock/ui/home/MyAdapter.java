@@ -1,6 +1,8 @@
 package com.example.geslock.ui.home;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geslock.R;
+import com.example.geslock.tools.MyToastMaker;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +28,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
@@ -44,6 +48,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private final Context context;
     private final List<File> list;
+    private final SharedPreferences pref;
+    private final boolean itemCount;
     private MyViewHolder.OnItemClickListener clickListener;
     private MyViewHolder.OnItemLongClickListener longClickListener;
     private BasicFileAttributes attr;
@@ -53,6 +59,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public MyAdapter(Context context, List<File> list) {
         this.context = context;
         this.list = list;
+        pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        itemCount = pref.getBoolean("item-count", true);
     }
 
     @NonNull
@@ -76,10 +84,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             myViewHolder.tvFileName.setText(fileName.substring(0, fileName.length() - 2));
             myViewHolder.imgEnter.setVisibility(View.INVISIBLE);
             myViewHolder.imgIcon.setImageResource(pickIcon(file.getName()));
+            myViewHolder.tvItemCount.setVisibility(View.INVISIBLE);
         } else {
             myViewHolder.tvFileName.setText(file.getName());
             myViewHolder.imgEnter.setVisibility(View.VISIBLE);
             myViewHolder.imgIcon.setImageResource(R.drawable.ic_folder);
+            if (itemCount) {
+                myViewHolder.tvItemCount.setVisibility(View.VISIBLE);
+                myViewHolder.tvItemCount.setText(String.valueOf(file.list().length));
+            } else {
+                myViewHolder.tvItemCount.setVisibility(View.INVISIBLE);
+            }
         }
 
         // set file creation time
@@ -114,6 +129,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         ImageView imgEnter;
         TextView tvFileName;
         TextView tvFileDate;
+        TextView tvItemCount;
         OnItemClickListener clickListener;
         OnItemLongClickListener longClickListener;
 
@@ -124,6 +140,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             imgEnter = itemView.findViewById(R.id.imgEnter);
             tvFileName = itemView.findViewById(R.id.tvFileName);
             tvFileDate = itemView.findViewById(R.id.tvFileDate);
+            tvItemCount = itemView.findViewById(R.id.tvItemCount);
             this.clickListener = clickListener;
             this.longClickListener = longClickListener;
             cardFile.setOnClickListener(this);

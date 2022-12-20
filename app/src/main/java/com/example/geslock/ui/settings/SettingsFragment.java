@@ -46,12 +46,11 @@ public class SettingsFragment extends Fragment {
 
     private ImageButton[] rockerIcons;
     private Drawable border;
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch switchCross;
     private Spinner spinnerTheme;
     private Spinner spinnerLanguage;
+    private Switch switchItemCount;
     private Spinner spinnerTravel;
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch switchVibration;
     private Spinner spinnerAnimation;
     private TextView tvOvershoot;
@@ -193,6 +192,13 @@ public class SettingsFragment extends Fragment {
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+
+        switchItemCount = activity.findViewById(R.id.switchItemCount);
+        switchItemCount.setChecked(pref.getBoolean("item-count", true));
+        switchItemCount.setOnCheckedChangeListener((compoundButton, b) -> {
+            editor.putBoolean("item-count", b);
+            editor.apply();
         });
 
         spinnerTravel = activity.findViewById(R.id.spinnerTravel);

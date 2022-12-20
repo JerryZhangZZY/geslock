@@ -154,6 +154,31 @@
                 android:layout_height="30dp" />
 
             <TextView
+                android:id="@+id/tvCategoryGeneral"
+                style="@style/subtitleStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_category_general" />
+
+            <androidx.cardview.widget.CardView
+                style="@style/cardStyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Switch
+                    android:id="@+id/switchItemCount"
+                    style="@style/settingsEntryStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_entry_show_item_count"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </androidx.cardview.widget.CardView>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
+            <TextView
                 android:id="@+id/tvCategoryInteraction"
                 style="@style/subtitleStyle"
                 android:layout_width="match_parent"
