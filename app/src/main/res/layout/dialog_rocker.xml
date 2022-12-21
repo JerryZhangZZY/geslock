@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ui.encryption.EncryptionFragment">
 
-    <ImageView
-        android:id="@+id/cross"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayoutCross"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -15,23 +15,37 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.8"
-        app:srcCompat="@drawable/ic_cross" />
+        app:layout_constraintWidth_percent="0.8">
 
-    <ImageView
-        android:id="@+id/rocker"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:tag="origin"
+        <ImageView
+            android:id="@+id/cross"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/ic_cross" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5"
-        app:layout_constraintWidth_percent="0.8"
-        app:srcCompat="@drawable/ic_soccer" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/rocker"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:tag="origin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.8"
+            app:srcCompat="@drawable/ic_soccer" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardPassword"
@@ -42,7 +56,7 @@
         app:cardCornerRadius="100dp"
         app:cardElevation="10dp"
         app:contentPadding="3dp"
-        app:layout_constraintBottom_toTopOf="@+id/cross"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayoutCross"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
