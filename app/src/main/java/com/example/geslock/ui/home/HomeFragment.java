@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -15,9 +14,9 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,14 +24,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geslock.R;
+import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyToastMaker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -71,11 +69,14 @@ public class HomeFragment extends Fragment {
     private int red_500;
     private int gray_500;
 
-    private Animation rotateOpen;
-    private Animation rotateClose;
-    private Animation fromBottom;
-    private Animation toBottom;
-    private Animation itemFallDown;
+    private Animation animRotateOpen;
+    private Animation animRotateClose;
+    private Animation animFromBottom;
+    private Animation animToBottom;
+    private Animation animItemFallDown;
+    private LayoutAnimationController animRecyclerLayout;
+    private int ANIM_DURATION_100;
+    private int ANIM_DURATION_200;
 
     private boolean addClicked = false;
 
@@ -85,7 +86,7 @@ public class HomeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
-    @SuppressLint({"NotifyDataSetChanged", "ClickableViewAccessibility"})
+    @SuppressLint({"NotifyDataSetChanged", "ClickableViewAccessibility", "ResourceType"})
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -100,10 +101,24 @@ public class HomeFragment extends Fragment {
             root.mkdir();
         }
 
+        ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
+        ANIM_DURATION_200 = MyAnimationScaler.getDuration(200, activity);
+        animRotateOpen = AnimationUtils.loadAnimation(activity, R.anim.rotate_open_anim);
+        animRotateOpen.setDuration(ANIM_DURATION_100);
+        animRotateClose = AnimationUtils.loadAnimation(activity, R.anim.rotate_close_anim);
+        animRotateClose.setDuration(ANIM_DURATION_100);
+        animFromBottom = AnimationUtils.loadAnimation(activity, R.anim.from_bottom_anim);
+        animFromBottom.setDuration(ANIM_DURATION_100);
+        animToBottom = AnimationUtils.loadAnimation(activity, R.anim.to_bottom_anim);
+        animToBottom.setDuration(ANIM_DURATION_100);
+        animItemFallDown = AnimationUtils.loadAnimation(activity, R.anim.item_fall_down_anim);
+        animItemFallDown.setDuration(ANIM_DURATION_200);
+        animRecyclerLayout = new LayoutAnimationController(animItemFallDown, 0.15F);
+
         recyclerFileList = activity.findViewById(R.id.recyclerFileList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
         recyclerFileList.setLayoutManager(linearLayoutManager);
-        recyclerFileList.setItemAnimator(new DefaultItemAnimator());
+        recyclerFileList.setLayoutAnimation(animRecyclerLayout);
 
         tvPath = activity.findViewById(R.id.tvPath);
 
@@ -115,13 +130,14 @@ public class HomeFragment extends Fragment {
         myAdapter = new MyAdapter(activity, myList);
         myAdapter.setOnItemClickListener((view, position) -> {
             if (currentFiles[position].isFile()) {
-                MyToastMaker.make("File clicked", activity);
-                return;
+                new RockerDialog(activity);
+
+            } else {
+                File[] files = currentFiles[position].listFiles();
+                currentParent = currentFiles[position];
+                currentFiles = files;
+                refresh();
             }
-            File[] files = currentFiles[position].listFiles();
-            currentParent = currentFiles[position];
-            currentFiles = files;
-            refresh();
         });
         myAdapter.setOnItemLongClickListener(((view, position) -> {
             dialogEdit(position, activity);
@@ -135,11 +151,6 @@ public class HomeFragment extends Fragment {
         fabAddFolder = activity.findViewById(R.id.fabAddFolder);
         tvNewFile = activity.findViewById(R.id.tvNewFile);
         tvNewFolder = activity.findViewById(R.id.tvNewFolder);
-
-        rotateOpen = AnimationUtils.loadAnimation(activity, R.anim.rotate_open_anim);
-        rotateClose = AnimationUtils.loadAnimation(activity, R.anim.rotate_close_anim);
-        fromBottom = AnimationUtils.loadAnimation(activity, R.anim.from_bottom_anim);
-        toBottom = AnimationUtils.loadAnimation(activity, R.anim.to_bottom_anim);
 
         fabAdd.setOnClickListener(view -> {
             switchFabs();
@@ -160,8 +171,6 @@ public class HomeFragment extends Fragment {
 
         imgEmpty = activity.findViewById(R.id.imgEmpty);
         tvEmpty = activity.findViewById(R.id.tvEmpty);
-
-        itemFallDown = AnimationUtils.loadAnimation(activity, R.anim.item_fall_down_anim);
 
         yellow_500 = activity.getColor(R.color.yellow_500);
         red_500 = activity.getColor(R.color.red_500);
@@ -386,9 +395,9 @@ public class HomeFragment extends Fragment {
         // refresh empty sign
         if (currentFiles.length == 0) {
             imgEmpty.setVisibility(View.VISIBLE);
-            imgEmpty.startAnimation(itemFallDown);
+            imgEmpty.startAnimation(animItemFallDown);
             tvEmpty.setVisibility(View.VISIBLE);
-            tvEmpty.startAnimation(itemFallDown);
+            tvEmpty.startAnimation(animItemFallDown);
         } else {
             imgEmpty.setVisibility(View.GONE);
             tvEmpty.setVisibility(View.GONE);
@@ -411,21 +420,21 @@ public class HomeFragment extends Fragment {
     /**
      * Delete a file/folder.
      * @param dirFile file/folder to be deleted
-     * @return success or not
      */
-    public boolean deleteFile(File dirFile) {
+    public void deleteFile(File dirFile) {
         // 如果dir对应的文件不存在，则退出
         if (!dirFile.exists()) {
-            return false;
+            return;
         }
         if (dirFile.isFile()) {
-            return dirFile.delete();
+            dirFile.delete();
+            return;
         } else {
             for (File file : Objects.requireNonNull(dirFile.listFiles())) {
                 deleteFile(file);
             }
         }
-        return dirFile.delete();
+        dirFile.delete();
     }
 
     /**
@@ -503,17 +512,17 @@ public class HomeFragment extends Fragment {
      */
     public void setAnimation() {
         if (!addClicked) {
-            fabAdd.startAnimation(rotateOpen);
-            fabAddFile.startAnimation(fromBottom);
-            fabAddFolder.startAnimation(fromBottom);
-            tvNewFile.startAnimation(fromBottom);
-            tvNewFolder.startAnimation(fromBottom);
+            fabAdd.startAnimation(animRotateOpen);
+            fabAddFile.startAnimation(animFromBottom);
+            fabAddFolder.startAnimation(animFromBottom);
+            tvNewFile.startAnimation(animFromBottom);
+            tvNewFolder.startAnimation(animFromBottom);
         } else {
-            fabAdd.startAnimation(rotateClose);
-            fabAddFile.startAnimation(toBottom);
-            fabAddFolder.startAnimation(toBottom);
-            tvNewFile.startAnimation(toBottom);
-            tvNewFolder.startAnimation(toBottom);
+            fabAdd.startAnimation(animRotateClose);
+            fabAddFile.startAnimation(animToBottom);
+            fabAddFolder.startAnimation(animToBottom);
+            tvNewFile.startAnimation(animToBottom);
+            tvNewFolder.startAnimation(animToBottom);
         }
     }
 
@@ -543,6 +552,6 @@ public class HomeFragment extends Fragment {
     }
 
     public void setDialogBackground(AlertDialog dialog) {
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_background);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_dialog_background);
     }
 }

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.encryption.EncryptionFragment">
+
+    <ImageView
+        android:id="@+id/cross"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.8"
+        app:srcCompat="@drawable/ic_cross" />
+
+    <ImageView
+        android:id="@+id/rocker"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:tag="origin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintWidth_percent="0.8"
+        app:srcCompat="@drawable/ic_soccer" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:cardBackgroundColor="?colorOnPrimarySurface"
+        app:cardCornerRadius="100dp"
+        app:cardElevation="10dp"
+        app:contentPadding="3dp"
+        app:layout_constraintBottom_toTopOf="@+id/cross"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="0dp"
+                android:outlineProvider="none"
+                app:cardBackgroundColor="?cardBackgroundColor"
+                app:cardCornerRadius="100dp"
+                app:contentPaddingLeft="13dp"
+                app:contentPaddingRight="13dp"
+                app:layout_constraintBottom_toTopOf="@+id/cross"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:cardCornerRadius="100dp">
+
+                <TextView
+                    android:id="@+id/tvPassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:inputType="textPassword"
+                    android:letterSpacing="0.2"
+                    android:minWidth="9dp"
+                    android:singleLine="true"
+                    android:textColor="?android:textColorTertiary"
+                    android:textSize="34sp"
+                    android:textStyle="bold" />
+            </androidx.cardview.widget.CardView>
+
+            <ImageButton
+                android:id="@+id/btnBackspace"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="7dp"
+                android:layout_marginEnd="10dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_backspace"
+                app:tint="@color/selector_gray_on_click" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

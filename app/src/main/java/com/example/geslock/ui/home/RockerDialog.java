@@ -1,14 +1,17 @@
-package com.example.geslock.ui.encryption;
+package com.example.geslock.ui.home;
 
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.Interpolator;
@@ -16,20 +19,21 @@ import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.cardview.widget.CardView;
 
 import com.example.geslock.R;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyVibrator;
 
-public class EncryptionFragment extends Fragment {
+public class RockerDialog {
 
     private Activity activity;
     private SharedPreferences pref;
+    private Dialog dialog;
 
     private int MAX_MOVE = 300;
     private float MAX_SCALE = 1.5F;
@@ -38,44 +42,50 @@ public class EncryptionFragment extends Fragment {
     private float DOUBLE_JUDGE_MOVE = 43.2F;
     private int TAP_MOVE = 10;
 
+    private final Interpolator interpolator;
+    private final AlphaAnimation appearAnimation;
+    private final AlphaAnimation fadeAnimation;
+    private final int ANIM_DURATION_100;
+    private final int ANIM_DURATION_50;
+
     private final int[] fragmentSize = new int[2];
     private final int[][] rockerIcons = new int[3][3];
     private final int[] rockerInitLayout = new int[4];
-    private TextView testText;
+    private TextView tvPassword;
+    private ImageButton btnBackspace;
+    private CardView cardPassword;
     private ImageView rocker;
     private ImageView cross;
-    private Interpolator interpolator;
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_rocker, container, false);
-    }
     @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
+    public RockerDialog(Activity activity) {
         // set activity
-        activity = getActivity();
+        this.activity = activity;
         // get preferences
         assert activity != null;
         pref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
 
-//        testText = activity.findViewById(R.id.testText);
+        // set dialog
+        dialog = new Dialog(activity);
+        dialog.setContentView(R.layout.dialog_rocker);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.rocker_dialog_background);
+        setFragmentSize();
+        dialog.getWindow().setLayout(fragmentSize[0], fragmentSize[1]);
 
         // set icon selection
         ICON_INDEX = pref.getInt("icon", 0);
 
-        // set animation interpolator
+        // set animation params
         interpolator = new OvershootInterpolator(pref.getFloat("overshoot", 0.3F) * 10);
+        ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
+        ANIM_DURATION_50 = MyAnimationScaler.getDuration(50, activity);
+        appearAnimation = new AlphaAnimation(0, 1);
+        appearAnimation.setDuration(ANIM_DURATION_100);
+        fadeAnimation = new AlphaAnimation(1, 0);
+        fadeAnimation.setDuration(ANIM_DURATION_100);
 
-        requireView().post(() -> {
-            // set fragment measurements
-            fragmentSize[0] = requireView().getWidth();
-            fragmentSize[1] = requireView().getHeight();
-            // set drag params
-            setRockerParams(fragmentSize, pref);
-        });
+        // set drag params
+        setRockerParams(fragmentSize, pref);
 
         // set all icons
         rockerIcons[0][0] = R.drawable.ic_soccer;
@@ -89,8 +99,11 @@ public class EncryptionFragment extends Fragment {
         rockerIcons[2][2] = R.drawable.ic_basketball_spin_y;
 
         // get widgets
-        rocker = activity.findViewById(R.id.rocker);
-        cross = activity.findViewById(R.id.cross);
+        tvPassword = dialog.findViewById(R.id.tvPassword);
+        btnBackspace = dialog.findViewById(R.id.btnBackspace);
+        cardPassword = dialog.findViewById(R.id.cardPassword);
+        rocker = dialog.findViewById(R.id.rocker);
+        cross = dialog.findViewById(R.id.cross);
 
         cross.setVisibility(pref.getBoolean("cross", true) ? View.VISIBLE : View.INVISIBLE);
 
@@ -111,6 +124,7 @@ public class EncryptionFragment extends Fragment {
             float startGap;
             int startCenterX, startCenterY;
 
+            @SuppressLint("SetTextI18n")
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
@@ -147,9 +161,9 @@ public class EncryptionFragment extends Fragment {
                                             triggered = true;
 
                                             // trigger single left !!!
+                                            tvPassword.setText(tvPassword.getText() + "B");
 
-                                            testText.setText("single left");
-                                            MyVibrator.tick(requireActivity());
+                                            MyVibrator.tick(activity);
                                             left = rockerInitLayout[0] - MAX_MOVE;
                                             right = rockerInitLayout[2] - MAX_MOVE;
                                             rocker.layout(left, top, right, bottom);
@@ -159,9 +173,9 @@ public class EncryptionFragment extends Fragment {
                                             triggered = true;
 
                                             // trigger single right !!!
+                                            tvPassword.setText(tvPassword.getText() + "C");
 
-                                            testText.setText("single right");
-                                            MyVibrator.tick(requireActivity());
+                                            MyVibrator.tick(activity);
                                             left = rockerInitLayout[0] + MAX_MOVE;
                                             right = rockerInitLayout[2] + MAX_MOVE;
                                             rocker.layout(left, top, right, bottom);
@@ -184,9 +198,9 @@ public class EncryptionFragment extends Fragment {
                                             triggered = true;
 
                                             // trigger single up !!!
+                                            tvPassword.setText(tvPassword.getText() + "D");
 
-                                            testText.setText("single up");
-                                            MyVibrator.tick(requireActivity());
+                                            MyVibrator.tick(activity);
                                             top = rockerInitLayout[1] - MAX_MOVE;
                                             bottom = rockerInitLayout[3] - MAX_MOVE;
                                             rocker.layout(left, top, right, bottom);
@@ -196,9 +210,9 @@ public class EncryptionFragment extends Fragment {
                                             triggered = true;
 
                                             // trigger single down !!!
+                                            tvPassword.setText(tvPassword.getText() + "E");
 
-                                            testText.setText("single down");
-                                            MyVibrator.tick(requireActivity());
+                                            MyVibrator.tick(activity);
                                             top = rockerInitLayout[1] + MAX_MOVE;
                                             bottom = rockerInitLayout[3] + MAX_MOVE;
                                             rocker.layout(left, top, right, bottom);
@@ -255,9 +269,9 @@ public class EncryptionFragment extends Fragment {
                                                 triggered = true;
 
                                                 // trigger zoom in !!!
+                                                tvPassword.setText(tvPassword.getText() + "J");
 
-                                                testText.setText("zoom in");
-                                                MyVibrator.tick(requireActivity());
+                                                MyVibrator.tick(activity);
                                                 rocker.setScaleX(MAX_SCALE);
                                                 rocker.setScaleY(MAX_SCALE);
                                             }
@@ -266,9 +280,9 @@ public class EncryptionFragment extends Fragment {
                                                 triggered = true;
 
                                                 // trigger zoom out !!!
+                                                tvPassword.setText(tvPassword.getText() + "K");
 
-                                                testText.setText("zoom out");
-                                                MyVibrator.tick(requireActivity());
+                                                MyVibrator.tick(activity);
                                                 rocker.setScaleX(1 / MAX_SCALE);
                                                 rocker.setScaleY(1 / MAX_SCALE);
                                             }
@@ -299,9 +313,9 @@ public class EncryptionFragment extends Fragment {
                                                         triggered = true;
 
                                                         // trigger double left !!!
+                                                        tvPassword.setText(tvPassword.getText() + "F");
 
-                                                        testText.setText("double left");
-                                                        MyVibrator.tick(requireActivity());
+                                                        MyVibrator.tick(activity);
                                                         spinLeft = (int) (rockerInitLayout[0] - spinMaxMove);
                                                         spinRight = (int) (rockerInitLayout[2] - spinMaxMove);
                                                         rocker.layout(spinLeft, spinTop, spinRight, spinBottom);
@@ -311,9 +325,9 @@ public class EncryptionFragment extends Fragment {
                                                         triggered = true;
 
                                                         // trigger double left !!!
+                                                        tvPassword.setText(tvPassword.getText() + "G");
 
-                                                        testText.setText("double right");
-                                                        MyVibrator.tick(requireActivity());
+                                                        MyVibrator.tick(activity);
                                                         spinLeft = (int) (rockerInitLayout[0] + spinMaxMove);
                                                         spinRight = (int) (rockerInitLayout[2] + spinMaxMove);
                                                         rocker.layout(spinLeft, spinTop, spinRight, spinBottom);
@@ -339,9 +353,9 @@ public class EncryptionFragment extends Fragment {
                                                         triggered = true;
 
                                                         // trigger double up !!!
+                                                        tvPassword.setText(tvPassword.getText() + "H");
 
-                                                        testText.setText("double up");
-                                                        MyVibrator.tick(requireActivity());
+                                                        MyVibrator.tick(activity);
                                                         spinTop = (int) (rockerInitLayout[1] - spinMaxMove);
                                                         spinBottom = (int) (rockerInitLayout[3] - spinMaxMove);
                                                         rocker.layout(spinLeft, spinTop, spinRight, spinBottom);
@@ -351,9 +365,9 @@ public class EncryptionFragment extends Fragment {
                                                         triggered = true;
 
                                                         // trigger double down !!!
+                                                        tvPassword.setText(tvPassword.getText() + "I");
 
-                                                        testText.setText("double down");
-                                                        MyVibrator.tick(requireActivity());
+                                                        MyVibrator.tick(activity);
                                                         spinTop = (int) (rockerInitLayout[1] + spinMaxMove);
                                                         spinBottom = (int) (rockerInitLayout[3] + spinMaxMove);
                                                         rocker.layout(spinLeft, spinTop, spinRight, spinBottom);
@@ -391,12 +405,12 @@ public class EncryptionFragment extends Fragment {
                         if (fingerNum == 1 && dist(startX1, startY1, (int) motionEvent.getX() + rocker.getLeft(), (int) motionEvent.getY() + rocker.getTop()) < TAP_MOVE) {
 
                             // trigger single tap !!!
+                            tvPassword.setText(tvPassword.getText() + "A");
 
-                            ScaleAnimation ta = new ScaleAnimation(1, 1.1F, 1, 1.1F, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
-                            ta.setDuration(MyAnimationScaler.getDuration(50, activity));
+                            ScaleAnimation ta = new ScaleAnimation(1.1F, 1, 1.1F, 1, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+                            ta.setDuration(ANIM_DURATION_50);
                             rocker.startAnimation(ta);
-                            testText.setText("single tap");
-                            MyVibrator.tick(requireActivity());
+                            MyVibrator.tick(activity);
                         }
 
                         // reset params
@@ -407,7 +421,7 @@ public class EncryptionFragment extends Fragment {
                         // ball reset animations
                         if (rocker.getLeft() != rockerInitLayout[0] || rocker.getTop() != rockerInitLayout[1]) {
                             TranslateAnimation ta = new TranslateAnimation(0, rockerInitLayout[0] - rocker.getLeft(), 0, rockerInitLayout[1] - rocker.getTop());
-                            ta.setDuration(MyAnimationScaler.getDuration(100, activity));
+                            ta.setDuration(ANIM_DURATION_100);
                             ta.setInterpolator(interpolator);
                             ta.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
@@ -424,7 +438,7 @@ public class EncryptionFragment extends Fragment {
                         }
                         if (rocker.getRotation() != 0 || rocker.getScaleX() != 1) {
                             RotateAnimation ra = new RotateAnimation(0, -rocker.getRotation(), Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                            ra.setDuration(MyAnimationScaler.getDuration(100, activity));
+                            ra.setDuration(ANIM_DURATION_100);
                             ra.setInterpolator(interpolator);
                             ra.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
@@ -436,7 +450,7 @@ public class EncryptionFragment extends Fragment {
                             });
 
                             ScaleAnimation sa = new ScaleAnimation(1, 1 / rocker.getScaleX(), 1, 1 / rocker.getScaleY(), Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
-                            sa.setDuration(MyAnimationScaler.getDuration(100, activity));
+                            sa.setDuration(ANIM_DURATION_100);
                             sa.setInterpolator(interpolator);
                             sa.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
@@ -473,6 +487,62 @@ public class EncryptionFragment extends Fragment {
                 return true;
             }
         });
+
+        // set password backspace
+        btnBackspace.setOnClickListener(view -> {
+            CharSequence password = tvPassword.getText();
+            if (password.length() > 0) {
+                tvPassword.setText(password.subSequence(0, password.length() - 1));
+            }
+        });
+        btnBackspace.setOnLongClickListener(view -> {
+            tvPassword.setText(null);
+            return true;
+        });
+
+        // set password text box animation
+        tvPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() > 0) {
+                    if (cardPassword.getVisibility() == View.INVISIBLE) {
+                        cardPassword.startAnimation(appearAnimation);
+                        cardPassword.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if (cardPassword.getVisibility() == View.VISIBLE) {
+                        cardPassword.startAnimation(fadeAnimation);
+                        cardPassword.setVisibility(View.INVISIBLE);
+                    }
+                }
+                int currentWidth = tvPassword.getWidth();
+                tvPassword.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                int targetWidth = tvPassword.getMeasuredWidth();
+                ValueAnimator valueAnimator = ValueAnimator.ofInt(currentWidth, targetWidth);
+                valueAnimator.addUpdateListener(animation -> {
+                    tvPassword.getLayoutParams().width = (int) animation.getAnimatedValue();
+                    tvPassword.requestLayout();
+                });
+                valueAnimator.setInterpolator(interpolator);
+                valueAnimator.setDuration(ANIM_DURATION_100);
+                valueAnimator.start();
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+
+        dialog.show();
+    }
+
+    public void setFragmentSize() {
+        float widthPercentage = 0.9F;
+        float widthHeightRatio = 0.7F;
+        int width = (int) (widthPercentage * activity.getWindow().getDecorView().getWidth());
+        int height = (int) (width / widthHeightRatio);
+        fragmentSize[0] = width;
+        fragmentSize[1] = height;
     }
 
     public void setRockerParams(int[] fragmentSize, SharedPreferences pref) {

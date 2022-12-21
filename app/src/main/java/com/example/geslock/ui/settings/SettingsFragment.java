@@ -44,6 +44,9 @@ import java.util.Locale;
 
 public class SettingsFragment extends Fragment {
 
+    private Activity activity;
+    private SharedPreferences pref;
+
     private ImageButton[] rockerIcons;
     private Drawable border;
     private Switch switchCross;
@@ -72,10 +75,9 @@ public class SettingsFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Activity activity = getActivity();
-
+        activity = getActivity();
         assert activity != null;
-        SharedPreferences pref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        pref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
 
         rockerIcons = new ImageButton[3];
