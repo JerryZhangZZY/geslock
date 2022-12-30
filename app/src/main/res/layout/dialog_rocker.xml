@@ -6,6 +6,42 @@
     android:layout_height="match_parent"
     tools:context=".ui.encryption.EncryptionFragment">
 
+    <Button
+        android:id="@+id/btnRockerPositive"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="5dp"
+        android:alpha=".5"
+        android:backgroundTint="?colorOnPrimarySurface"
+        android:elevation="10dp"
+        android:enabled="false"
+        android:text="@string/ok"
+        android:textColor="?android:textColorTertiary"
+        android:textSize="16sp"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnRockerNegative" />
+
+    <Button
+        android:id="@+id/btnRockerNegative"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:backgroundTint="?colorOnPrimarySurface"
+        android:elevation="10dp"
+        android:text="@string/cancel"
+        android:textColor="?android:textColorTertiary"
+        android:textSize="16sp"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnRockerPositive"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayoutCross"
         android:layout_width="0dp"
@@ -22,15 +58,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:srcCompat="@drawable/ic_cross" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        tools:layout_editor_absoluteX="40dp"
+        tools:layout_editor_absoluteY="181dp">
 
         <ImageView
             android:id="@+id/rocker"
@@ -46,6 +81,19 @@
             app:srcCompat="@drawable/ic_soccer" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tvPasswordHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/password_hint"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="14sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayoutCross"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardPassword"

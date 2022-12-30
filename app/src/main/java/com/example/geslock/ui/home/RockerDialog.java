@@ -1,11 +1,17 @@
 package com.example.geslock.ui.home;
 
+import android.animation.Animator;
+import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
@@ -19,6 +25,7 @@ import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,31 +38,41 @@ import com.example.geslock.tools.MyVibrator;
 
 public class RockerDialog {
 
-    private Activity activity;
-    private SharedPreferences pref;
-    private Dialog dialog;
+    private final int MAX_PASSWORD_LENGTH = 10;
+
+    private final Activity activity;
+    private final SharedPreferences pref;
+    private final Dialog dialog;
 
     private int MAX_MOVE = 300;
     private float MAX_SCALE = 1.5F;
-    private int ICON_INDEX = 0;
-    private float SPIN_MOVE_RATIO = 0.2F;
+    private final int ICON_INDEX;
+    private float SPIN_MOVE_RATIO = .2F;
     private float DOUBLE_JUDGE_MOVE = 43.2F;
     private int TAP_MOVE = 10;
 
     private final Interpolator interpolator;
     private final AlphaAnimation appearAnimation;
     private final AlphaAnimation fadeAnimation;
+    private final AlphaAnimation enableAnimation;
+    private final AlphaAnimation disableAnimation;
     private final int ANIM_DURATION_100;
     private final int ANIM_DURATION_50;
 
     private final int[] fragmentSize = new int[2];
     private final int[][] rockerIcons = new int[3][3];
     private final int[] rockerInitLayout = new int[4];
-    private TextView tvPassword;
-    private ImageButton btnBackspace;
-    private CardView cardPassword;
-    private ImageView rocker;
-    private ImageView cross;
+    private final TextView tvPassword;
+    private final ImageButton btnBackspace;
+    private final CardView cardPassword;
+    private final ImageView rocker;
+    private final ImageView cross;
+    private final Button btnPositive;
+    private final Button btnNegative;
+    private final TextView tvPasswordHint;
+
+    private final int red_500;
+    private final int origin;
 
     @SuppressLint("ClickableViewAccessibility")
     public RockerDialog(Activity activity) {
@@ -76,13 +93,19 @@ public class RockerDialog {
         ICON_INDEX = pref.getInt("icon", 0);
 
         // set animation params
-        interpolator = new OvershootInterpolator(pref.getFloat("overshoot", 0.3F) * 10);
+        interpolator = new OvershootInterpolator(pref.getFloat("overshoot", .3F) * 10);
         ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
         ANIM_DURATION_50 = MyAnimationScaler.getDuration(50, activity);
         appearAnimation = new AlphaAnimation(0, 1);
         appearAnimation.setDuration(ANIM_DURATION_100);
         fadeAnimation = new AlphaAnimation(1, 0);
         fadeAnimation.setDuration(ANIM_DURATION_100);
+        enableAnimation = new AlphaAnimation(.5F, 1);
+        enableAnimation.setDuration(ANIM_DURATION_100);
+        enableAnimation.setFillAfter(true);
+        disableAnimation = new AlphaAnimation(1, .5F);
+        disableAnimation.setDuration(ANIM_DURATION_100);
+        disableAnimation.setFillAfter(true);
 
         // set drag params
         setRockerParams(fragmentSize, pref);
@@ -104,6 +127,13 @@ public class RockerDialog {
         cardPassword = dialog.findViewById(R.id.cardPassword);
         rocker = dialog.findViewById(R.id.rocker);
         cross = dialog.findViewById(R.id.cross);
+        btnPositive = dialog.findViewById(R.id.btnRockerPositive);
+        btnNegative = dialog.findViewById(R.id.btnRockerNegative);
+        tvPasswordHint = dialog.findViewById(R.id.tvPasswordHint);
+
+        // get colors
+        red_500 = activity.getColor(R.color.red_500);
+        origin = cardPassword.getCardBackgroundColor().getDefaultColor();
 
         cross.setVisibility(pref.getBoolean("cross", true) ? View.VISIBLE : View.INVISIBLE);
 
@@ -407,7 +437,7 @@ public class RockerDialog {
                             // trigger single tap !!!
                             tvPassword.setText(tvPassword.getText() + "A");
 
-                            ScaleAnimation ta = new ScaleAnimation(1.1F, 1, 1.1F, 1, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+                            ScaleAnimation ta = new ScaleAnimation(1.1F, 1, 1.1F, 1, Animation.RELATIVE_TO_SELF,.5f,Animation.RELATIVE_TO_SELF,.5f);
                             ta.setDuration(ANIM_DURATION_50);
                             rocker.startAnimation(ta);
                             MyVibrator.tick(activity);
@@ -437,7 +467,7 @@ public class RockerDialog {
                             rocker.startAnimation(ta);
                         }
                         if (rocker.getRotation() != 0 || rocker.getScaleX() != 1) {
-                            RotateAnimation ra = new RotateAnimation(0, -rocker.getRotation(), Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                            RotateAnimation ra = new RotateAnimation(0, -rocker.getRotation(), Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
                             ra.setDuration(ANIM_DURATION_100);
                             ra.setInterpolator(interpolator);
                             ra.setAnimationListener(new Animation.AnimationListener() {
@@ -449,7 +479,7 @@ public class RockerDialog {
                                 public void onAnimationRepeat(Animation animation) {}
                             });
 
-                            ScaleAnimation sa = new ScaleAnimation(1, 1 / rocker.getScaleX(), 1, 1 / rocker.getScaleY(), Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+                            ScaleAnimation sa = new ScaleAnimation(1, 1 / rocker.getScaleX(), 1, 1 / rocker.getScaleY(), Animation.RELATIVE_TO_SELF,.5f,Animation.RELATIVE_TO_SELF,.5f);
                             sa.setDuration(ANIM_DURATION_100);
                             sa.setInterpolator(interpolator);
                             sa.setAnimationListener(new Animation.AnimationListener() {
@@ -506,39 +536,81 @@ public class RockerDialog {
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.length() > 0) {
-                    if (cardPassword.getVisibility() == View.INVISIBLE) {
+                int length = charSequence.length();
+                if (length > 0) {
+                    if (length > MAX_PASSWORD_LENGTH) {
+                        // limit password length
+                        ValueAnimator toRed = ValueAnimator.ofInt(cardPassword.getCardBackgroundColor().getDefaultColor(), red_500);
+                        toRed.setEvaluator(new ArgbEvaluator());
+                        toRed.addUpdateListener(valueAnimator -> cardPassword.setCardBackgroundColor((int) valueAnimator.getAnimatedValue()));
+                        toRed.setDuration(ANIM_DURATION_100 * 2L);
+                        toRed.start();
+                        new Handler().postDelayed(() -> {
+                            // prevent over delete
+                            if (tvPassword.length() > MAX_PASSWORD_LENGTH) {
+                                btnBackspace.callOnClick();
+                                toRed.cancel();
+                                ValueAnimator fromRed = ValueAnimator.ofInt(cardPassword.getCardBackgroundColor().getDefaultColor(), origin);
+                                fromRed.setEvaluator(new ArgbEvaluator());
+                                fromRed.addUpdateListener(valueAnimator -> cardPassword.setCardBackgroundColor((int) valueAnimator.getAnimatedValue()));
+                                fromRed.setDuration(ANIM_DURATION_100 * 2L);
+                                fromRed.start();
+                            }
+                        }, ANIM_DURATION_50);
+                    }
+                    if (cardPassword.getVisibility() != View.VISIBLE) {
                         cardPassword.startAnimation(appearAnimation);
                         cardPassword.setVisibility(View.VISIBLE);
                     }
+                    if (!btnPositive.isEnabled()) {
+                        btnPositive.setAlpha(1);
+                        btnPositive.startAnimation(enableAnimation);
+                        btnPositive.setEnabled(true);
+                    }
+                    if (tvPasswordHint.getVisibility() != View.INVISIBLE) {
+                        tvPasswordHint.startAnimation(fadeAnimation);
+                        tvPasswordHint.setVisibility(View.INVISIBLE);
+                    }
                 } else {
-                    if (cardPassword.getVisibility() == View.VISIBLE) {
+                    if (cardPassword.getVisibility() != View.INVISIBLE) {
                         cardPassword.startAnimation(fadeAnimation);
                         cardPassword.setVisibility(View.INVISIBLE);
+                    }
+                    if (btnPositive.isEnabled()) {
+                        btnPositive.startAnimation(disableAnimation);
+                        btnPositive.setEnabled(false);
+                    }
+                    if (tvPasswordHint.getVisibility() != View.VISIBLE) {
+                        new Handler().postDelayed(() -> {
+                            tvPasswordHint.startAnimation(appearAnimation);
+                            tvPasswordHint.setVisibility(View.VISIBLE);
+                        }, ANIM_DURATION_100);
                     }
                 }
                 int currentWidth = tvPassword.getWidth();
                 tvPassword.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                int targetWidth = tvPassword.getMeasuredWidth();
-                ValueAnimator valueAnimator = ValueAnimator.ofInt(currentWidth, targetWidth);
-                valueAnimator.addUpdateListener(animation -> {
+                int targetWidth = Math.min(tvPassword.getMeasuredWidth(), fragmentSize[0] - 300);
+                ValueAnimator lengthAnimator = ValueAnimator.ofInt(currentWidth, targetWidth);
+                lengthAnimator.addUpdateListener(animation -> {
                     tvPassword.getLayoutParams().width = (int) animation.getAnimatedValue();
                     tvPassword.requestLayout();
                 });
-                valueAnimator.setInterpolator(interpolator);
-                valueAnimator.setDuration(ANIM_DURATION_100);
-                valueAnimator.start();
+                lengthAnimator.setInterpolator(interpolator);
+                lengthAnimator.setDuration(ANIM_DURATION_100);
+                lengthAnimator.start();
             }
             @Override
             public void afterTextChanged(Editable editable) {}
         });
 
+        btnNegative.setOnClickListener(v -> dialog.dismiss());
+
         dialog.show();
     }
 
     public void setFragmentSize() {
-        float widthPercentage = 0.9F;
-        float widthHeightRatio = 0.7F;
+        float widthPercentage = .9F;
+        float widthHeightRatio = .7F;
         int width = (int) (widthPercentage * activity.getWindow().getDecorView().getWidth());
         int height = (int) (width / widthHeightRatio);
         fragmentSize[0] = width;
@@ -548,26 +620,26 @@ public class RockerDialog {
     public void setRockerParams(int[] fragmentSize, SharedPreferences pref) {
         int minSide = Math.min(fragmentSize[0], fragmentSize[1]);
         int travelSelectionIndex = pref.getInt("travel", 1);
-        float spRatio = pref.getFloat("sm-ratio", 0.2F);
-        float doubleJudgeRatio = pref.getFloat("tm-ratio", 0.04F);
+        float spRatio = pref.getFloat("sm-ratio", .2F);
+        float doubleJudgeRatio = pref.getFloat("tm-ratio", .04F);
 
         switch (travelSelectionIndex) {
             case 0:
-                setMaxMove((int) (minSide * 0.1));
+                setMaxMove((int) (minSide * .1));
                 setMaxScale(1.2F);
                 break;
             case 1:
-                setMaxMove((int) (minSide * 0.2));
+                setMaxMove((int) (minSide * .2));
                 setMaxScale(1.5F);
                 break;
             case 2:
-                setMaxMove((int) (minSide * 0.3));
+                setMaxMove((int) (minSide * .3));
                 setMaxScale(2F);
                 break;
         }
         setSPRatio(spRatio);
         setDoubleJudgeMove(minSide * doubleJudgeRatio);
-        setTapMove((int) (minSide * 0.01));
+        setTapMove((int) (minSide * .01));
     }
 
     public void setMaxMove(int maxMove) {
