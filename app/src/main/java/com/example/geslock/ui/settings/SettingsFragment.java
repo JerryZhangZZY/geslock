@@ -8,8 +8,11 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -29,12 +32,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.geslock.R;
 import com.example.geslock.tools.MyAnimationScaler;
+import com.example.geslock.tools.MyDefaultPref;
 import com.example.geslock.tools.MyToastMaker;
 import com.example.geslock.tools.MyVibrator;
 
@@ -62,6 +68,7 @@ public class SettingsFragment extends Fragment {
     private EditText editTextSMRatio;
     private TextView tvTMRatio;
     private EditText editTextTMRatio;
+    private TextView tvReset;
 
     private final Object lock = new Object();
 
@@ -88,7 +95,7 @@ public class SettingsFragment extends Fragment {
         border = ResourcesCompat.getDrawable(getResources(), R.drawable.round_btn_border, null);
 
         for (int index = 0; index < rockerIcons.length; index++) {
-            rockerIcons[index].setBackground(pref.getInt("icon", 0) == index ? border : null);
+            rockerIcons[index].setBackground(pref.getInt("icon", MyDefaultPref.getDefaultInt("icon")) == index ? border : null);
             int finalIndex = index;
             rockerIcons[index].setOnClickListener(view -> {
                 synchronized (lock) {
@@ -107,14 +114,14 @@ public class SettingsFragment extends Fragment {
         }
 
         switchCross = activity.findViewById(R.id.switchCross);
-        switchCross.setChecked(pref.getBoolean("cross", true));
+        switchCross.setChecked(pref.getBoolean("cross", MyDefaultPref.getDefaultBoolean("cross")));
         switchCross.setOnCheckedChangeListener((compoundButton, b) -> {
             editor.putBoolean("cross", b);
             editor.apply();
         });
 
         spinnerTheme = activity.findViewById(R.id.spinnerTheme);
-        switch (pref.getInt("theme", MODE_NIGHT_FOLLOW_SYSTEM)) {
+        switch (pref.getInt("theme", MyDefaultPref.getDefaultInt("theme"))) {
             case MODE_NIGHT_NO:
                 spinnerTheme.setSelection(0);
                 break;
@@ -159,7 +166,7 @@ public class SettingsFragment extends Fragment {
         });
 
         spinnerLanguage = activity.findViewById(R.id.spinnerLanguage);
-        spinnerLanguage.setSelection(pref.getInt("language", 2));
+        spinnerLanguage.setSelection(pref.getInt("language", MyDefaultPref.getDefaultInt("language")));
         Resources resources = getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         Configuration configuration = resources.getConfiguration();
@@ -197,14 +204,14 @@ public class SettingsFragment extends Fragment {
         });
 
         switchItemCount = activity.findViewById(R.id.switchItemCount);
-        switchItemCount.setChecked(pref.getBoolean("item-count", true));
+        switchItemCount.setChecked(pref.getBoolean("item-count", MyDefaultPref.getDefaultBoolean("item-count")));
         switchItemCount.setOnCheckedChangeListener((compoundButton, b) -> {
             editor.putBoolean("item-count", b);
             editor.apply();
         });
 
         spinnerTravel = activity.findViewById(R.id.spinnerTravel);
-        spinnerTravel.setSelection(pref.getInt("travel", 1));
+        spinnerTravel.setSelection(pref.getInt("travel", MyDefaultPref.getDefaultInt("travel")));
         spinnerTravel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -216,14 +223,14 @@ public class SettingsFragment extends Fragment {
         });
 
         switchVibration = activity.findViewById(R.id.switchVibration);
-        switchVibration.setChecked(pref.getBoolean("vibration", true));
+        switchVibration.setChecked(pref.getBoolean("vibration", MyDefaultPref.getDefaultBoolean("vibration")));
         switchVibration.setOnCheckedChangeListener((compoundButton, b) -> {
             editor.putBoolean("vibration", b);
             editor.apply();
         });
 
         spinnerAnimation = activity.findViewById(R.id.spinnerAnimation);
-        spinnerAnimation.setSelection(pref.getInt("animation", 2));
+        spinnerAnimation.setSelection(pref.getInt("animation", MyDefaultPref.getDefaultInt("animation")));
         spinnerAnimation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -238,24 +245,24 @@ public class SettingsFragment extends Fragment {
         tvOvershoot.setOnClickListener(view -> MyToastMaker.make(String.valueOf(activity.getText(R.string.overshoot_description)), activity));
 
         editTextOvershoot = activity.findViewById(R.id.editTextOvershoot);
-        editTextOvershoot.setText(String.valueOf(pref.getFloat("overshoot", 0.3F)));
+        editTextOvershoot.setText(String.valueOf(pref.getFloat("overshoot", MyDefaultPref.getDefaultFloat("overshoot"))));
         editTextOvershoot.setOnFocusChangeListener((view, b) -> {
             String rawText = String.valueOf(editTextOvershoot.getText());
             float overshoot;
             // empty input
             if (rawText.isEmpty()) {
-                editTextOvershoot.setText(String.valueOf(pref.getFloat("overshoot", 0.3F)));
+                editTextOvershoot.setText(String.valueOf(pref.getFloat("overshoot", MyDefaultPref.getDefaultFloat("overshoot"))));
             } else {
                 try {
                     overshoot = Float.parseFloat(rawText);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
-                    editTextOvershoot.setText(String.valueOf(pref.getFloat("overshoot", 0.3F)));
+                    editTextOvershoot.setText(String.valueOf(pref.getFloat("overshoot", MyDefaultPref.getDefaultFloat("overshoot"))));
                     return;
                 }
                 // input out of bounds
                 if (overshoot > 1 || overshoot < 0) {
-                    editTextOvershoot.setText(String.valueOf(pref.getFloat("sm-overshoot", 0.3F)));
+                    editTextOvershoot.setText(String.valueOf(pref.getFloat("overshoot", MyDefaultPref.getDefaultFloat("overshoot"))));
                 } else {
                     synchronized (lock) {
                         editTextOvershoot.setText(String.valueOf(overshoot));
@@ -274,24 +281,24 @@ public class SettingsFragment extends Fragment {
         tvSMRatio.setOnClickListener(view -> MyToastMaker.make(String.valueOf(activity.getText(R.string.smratio_description)), activity));
 
         editTextSMRatio = activity.findViewById(R.id.editTextSMRatio);
-        editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", 0.2F)));
+        editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", MyDefaultPref.getDefaultFloat("sm-ratio"))));
         editTextSMRatio.setOnFocusChangeListener((view, b) -> {
             String rawText = String.valueOf(editTextSMRatio.getText());
             float smRatio;
             // empty input
             if (rawText.isEmpty()) {
-                editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", 0.2F)));
+                editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", MyDefaultPref.getDefaultFloat("sm-ratio"))));
             } else {
                 try {
                     smRatio = Float.parseFloat(rawText);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
-                    editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", 0.2F)));
+                    editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", MyDefaultPref.getDefaultFloat("sm-ratio"))));
                     return;
                 }
                 // input out of bounds
                 if (smRatio > 1 || smRatio < 0) {
-                    editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", 0.2F)));
+                    editTextSMRatio.setText(String.valueOf(pref.getFloat("sm-ratio", MyDefaultPref.getDefaultFloat("sm-ratio"))));
                 } else {
                     synchronized (lock) {
                         editTextSMRatio.setText(String.valueOf(smRatio));
@@ -310,25 +317,25 @@ public class SettingsFragment extends Fragment {
         tvTMRatio.setOnClickListener(view -> MyToastMaker.make(String.valueOf(activity.getText(R.string.tmratio_description)), activity));
 
         editTextTMRatio = activity.findViewById(R.id.editTextTMRatio);
-        editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", 0.04F)));
+        editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", MyDefaultPref.getDefaultFloat("tm-ratio"))));
         editTextTMRatio.setOnFocusChangeListener((view, b) -> {
             if (!b) {
                 String rawText = String.valueOf(editTextTMRatio.getText());
                 float tmRatio;
                 // empty input
                 if (rawText.isEmpty()) {
-                    editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", 0.04F)));
+                    editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", MyDefaultPref.getDefaultFloat("tm-ratio"))));
                 } else {
                     try {
                         tmRatio = Float.parseFloat(rawText);
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
-                        editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", 0.04F)));
+                        editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", MyDefaultPref.getDefaultFloat("tm-ratio"))));
                         return;
                     }
                     // input out of bounds
                     if (tmRatio > 0.1 || tmRatio <= 0) {
-                        editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", 0.04F)));
+                        editTextTMRatio.setText(String.valueOf(pref.getFloat("tm-ratio", MyDefaultPref.getDefaultFloat("tm-ratio"))));
                     } else {
                         synchronized (lock) {
                             editTextTMRatio.setText(String.valueOf(tmRatio));
@@ -343,5 +350,33 @@ public class SettingsFragment extends Fragment {
             editTextTMRatio.clearFocus();
             return false;
         });
+
+        tvReset = activity.findViewById(R.id.tvReset);
+        tvReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog dialog = new AlertDialog.Builder(activity)
+                        .setTitle(activity.getString(R.string.reset_title))
+                        .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
+                        .setPositiveButton(R.string.ok, (dialog0, which) -> {
+                            MyDefaultPref.resetToDefault(editor);
+                            triggerRebirth(activity);
+                            dialog0.dismiss();
+                        }).create();
+                dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_dialog_background);
+                dialog.show();
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(activity.getColor(R.color.red_500));
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(activity.getColor(R.color.yellow_500));
+            }
+        });
+    }
+
+    public void triggerRebirth(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());
+        ComponentName componentName = intent.getComponent();
+        Intent mainIntent = Intent.makeRestartActivityTask(componentName);
+        context.startActivity(mainIntent);
+        Runtime.getRuntime().exit(0);
     }
 }

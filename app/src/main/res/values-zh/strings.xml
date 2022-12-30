@@ -52,4 +52,6 @@
     <string name="rename_ok">重命名</string>
     <string name="delete_ok">删除</string>
     <string name="password_hint">请输入手势</string>
+    <string name="reset">重置设置</string>
+    <string name="reset_title">重置所有设置？</string>
 </resources>

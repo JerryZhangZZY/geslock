@@ -15,6 +15,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geslock.R;
+import com.example.geslock.tools.MyDefaultPref;
 import com.example.geslock.tools.MyToastMaker;
 
 import java.io.File;
@@ -60,7 +61,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         this.context = context;
         this.list = list;
         pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        itemCount = pref.getBoolean("item-count", true);
+        itemCount = pref.getBoolean("item-count", MyDefaultPref.getDefaultBoolean("item-count"));
     }
 
     @NonNull

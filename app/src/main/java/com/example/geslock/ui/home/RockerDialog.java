@@ -34,6 +34,7 @@ import androidx.cardview.widget.CardView;
 
 import com.example.geslock.R;
 import com.example.geslock.tools.MyAnimationScaler;
+import com.example.geslock.tools.MyDefaultPref;
 import com.example.geslock.tools.MyVibrator;
 
 public class RockerDialog {
@@ -90,10 +91,10 @@ public class RockerDialog {
         dialog.getWindow().setLayout(fragmentSize[0], fragmentSize[1]);
 
         // set icon selection
-        ICON_INDEX = pref.getInt("icon", 0);
+        ICON_INDEX = pref.getInt("icon", MyDefaultPref.getDefaultInt("icon"));
 
         // set animation params
-        interpolator = new OvershootInterpolator(pref.getFloat("overshoot", .3F) * 10);
+        interpolator = new OvershootInterpolator(pref.getFloat("overshoot", MyDefaultPref.getDefaultFloat("overshoot")) * 10);
         ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
         ANIM_DURATION_50 = MyAnimationScaler.getDuration(50, activity);
         appearAnimation = new AlphaAnimation(0, 1);
@@ -135,7 +136,7 @@ public class RockerDialog {
         red_500 = activity.getColor(R.color.red_500);
         origin = cardPassword.getCardBackgroundColor().getDefaultColor();
 
-        cross.setVisibility(pref.getBoolean("cross", true) ? View.VISIBLE : View.INVISIBLE);
+        cross.setVisibility(pref.getBoolean("cross", MyDefaultPref.getDefaultBoolean("cross")) ? View.VISIBLE : View.INVISIBLE);
 
         rocker.setImageResource(rockerIcons[ICON_INDEX][0]);
         rocker.post(() -> {
@@ -619,9 +620,9 @@ public class RockerDialog {
 
     public void setRockerParams(int[] fragmentSize, SharedPreferences pref) {
         int minSide = Math.min(fragmentSize[0], fragmentSize[1]);
-        int travelSelectionIndex = pref.getInt("travel", 1);
-        float spRatio = pref.getFloat("sm-ratio", .2F);
-        float doubleJudgeRatio = pref.getFloat("tm-ratio", .04F);
+        int travelSelectionIndex = pref.getInt("travel", MyDefaultPref.getDefaultInt("travel"));
+        float spRatio = pref.getFloat("sm-ratio", MyDefaultPref.getDefaultFloat("sm-ratio"));
+        float doubleJudgeRatio = pref.getFloat("tm-ratio", MyDefaultPref.getDefaultFloat("tm-ratio"));
 
         switch (travelSelectionIndex) {
             case 0:

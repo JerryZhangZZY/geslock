@@ -57,4 +57,6 @@
     <string name="rename_ok">Rename</string>
     <string name="delete_ok">Delete</string>
     <string name="password_hint">Please enter gestures</string>
+    <string name="reset">Reset settings</string>
+    <string name="reset_title">Reset all settings?</string>
 </resources>

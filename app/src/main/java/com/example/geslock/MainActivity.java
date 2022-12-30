@@ -20,6 +20,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.geslock.databinding.ActivityMainBinding;
+import com.example.geslock.tools.MyDefaultPref;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Locale;
@@ -36,10 +37,10 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
 
         // set saved theme
-        AppCompatDelegate.setDefaultNightMode(pref.getInt("theme", MODE_NIGHT_FOLLOW_SYSTEM));
+        AppCompatDelegate.setDefaultNightMode(pref.getInt("theme", MyDefaultPref.getDefaultInt("theme")));
 
         // set saved language
-        int languageIndex = pref.getInt("language", 2);
+        int languageIndex = pref.getInt("language", MyDefaultPref.getDefaultInt("language"));
         Locale language;
         switch (languageIndex) {
             case 0:
