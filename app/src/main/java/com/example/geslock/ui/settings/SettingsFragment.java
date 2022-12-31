@@ -352,22 +352,19 @@ public class SettingsFragment extends Fragment {
         });
 
         tvReset = activity.findViewById(R.id.tvReset);
-        tvReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog dialog = new AlertDialog.Builder(activity)
-                        .setTitle(activity.getString(R.string.reset_title))
-                        .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
-                        .setPositiveButton(R.string.ok, (dialog0, which) -> {
-                            MyDefaultPref.resetToDefault(editor);
-                            triggerRebirth(activity);
-                            dialog0.dismiss();
-                        }).create();
-                dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_dialog_background);
-                dialog.show();
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(activity.getColor(R.color.red_500));
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(activity.getColor(R.color.yellow_500));
-            }
+        tvReset.setOnClickListener(v -> {
+            AlertDialog dialog = new AlertDialog.Builder(activity)
+                    .setTitle(activity.getString(R.string.reset_title))
+                    .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
+                    .setPositiveButton(R.string.ok, (dialog0, which) -> {
+                        MyDefaultPref.resetToDefault(editor);
+                        triggerRebirth(activity);
+                        dialog0.dismiss();
+                    }).create();
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_dialog_background);
+            dialog.show();
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(activity.getColor(R.color.red_500));
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(activity.getColor(R.color.yellow_500));
         });
     }
 

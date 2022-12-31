@@ -23,11 +23,11 @@
 
         <TextView
             android:id="@+id/tvFileName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:layout_marginStart="80dp"
-            android:maxEms="8"
+            android:layout_marginEnd="50dp"
             android:singleLine="true"
             android:text="Sample Name"
             android:textAlignment="viewStart"

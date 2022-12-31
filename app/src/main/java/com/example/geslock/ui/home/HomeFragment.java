@@ -1,11 +1,14 @@
 package com.example.geslock.ui.home;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -24,8 +27,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +38,8 @@ import com.example.geslock.tools.MyToastMaker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -160,7 +165,7 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("*/*");
             intent.addCategory(Intent.CATEGORY_OPENABLE);
-            startActivityForResult(Intent.createChooser(intent, ""),1);
+            startActivityForResult(Intent.createChooser(intent, ""), 1);
             switchFabs();
         });
 
@@ -175,6 +180,33 @@ public class HomeFragment extends Fragment {
         yellow_500 = activity.getColor(R.color.yellow_500);
         red_500 = activity.getColor(R.color.red_500);
         gray_500 = activity.getColor(R.color.gray_500);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(resultCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            String name = DocumentFile.fromSingleUri(activity, uri).getName();
+            copyFile(uri, currentParent.getPath() + "/" + name + "gl");
+            currentFiles = currentParent.listFiles();
+            refresh();
+        }
+    }
+
+    public void copyFile(Uri uri, String newPath) {
+        try {
+            int byteRead;
+            InputStream inStream = activity.getContentResolver().openInputStream(uri);
+            FileOutputStream fs = new FileOutputStream(newPath);
+            byte[] buffer = new byte[1444];
+            while ((byteRead = inStream.read(buffer)) != -1) {
+                fs.write(buffer, 0, byteRead);
+            }
+            inStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -346,6 +378,11 @@ public class HomeFragment extends Fragment {
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(yellow_500);
     }
 
+    /**
+     * The dialog of confirming a deletion of a file/folder.
+     * @param position position of the file/folder to be renamed
+     * @param activity current activity
+     */
     public void dialogDeleteConfirm(int position, Activity activity) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setIcon(getItemIcon(position))
@@ -381,7 +418,6 @@ public class HomeFragment extends Fragment {
                 assert parent != null;
                 btnBack.setText(parent.getName());
             }
-
             tvPath.setText(currentParent.getName());
         }
 
