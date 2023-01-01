@@ -4,17 +4,28 @@ import android.app.Activity;
 import android.net.Uri;
 import android.util.Base64;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.SequenceInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -23,6 +34,8 @@ public class MyAES {
     private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
     private static final String DEFAULT_VALUE = "0";
     private static final String CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
+    // CHECK length must not exceed 16
+    private static final byte[] CHECK = "[CHECK]".getBytes();
 
     public static void encryptFile(Uri srcUri, String destPath, String key, Activity activity) {
         if (new File(destPath).exists()) {
@@ -30,7 +43,10 @@ public class MyAES {
         }
         try {
             Cipher cipher = initFileAESCipher(key, Cipher.ENCRYPT_MODE);
-            CipherInputStream cipherInputStream = new CipherInputStream(activity.getContentResolver().openInputStream(srcUri), cipher);
+            InputStream dataStream = activity.getContentResolver().openInputStream(srcUri);
+            InputStream checkStream = new ByteArrayInputStream(CHECK);
+            SequenceInputStream sequenceInputStream = new SequenceInputStream(checkStream, dataStream);
+            CipherInputStream cipherInputStream = new CipherInputStream(sequenceInputStream, cipher);
             FileOutputStream outputStream = new FileOutputStream(destPath);
             byte[] buffer = new byte[2048];
             int len;
@@ -45,25 +61,79 @@ public class MyAES {
         }
     }
 
-    public static void decryptFile(File sourceFile, String destPath, String key) {
-        if (new File(destPath).exists()) {
-            return;
+    public static boolean decryptFile(File sourceFile, String destPath, String key) {
+        File file = new File(destPath);
+        if (file.exists()) {
+            if (!file.delete()) {
+                return false;
+            }
         }
         try {
             FileInputStream inputStream = new FileInputStream(sourceFile);
             Cipher cipher = initFileAESCipher(key, Cipher.DECRYPT_MODE);
-            CipherOutputStream cipherOutputStream = new CipherOutputStream(new FileOutputStream(destPath), cipher);
-            byte[] buffer = new byte[2048];
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            CipherOutputStream cipherOutputStream = new CipherOutputStream(byteArrayOutputStream , cipher);
+            FileOutputStream fileOutputStream = new FileOutputStream(destPath);
             int len;
+            assert cipher != null;
+            byte[] firstBlockBuffer = new byte[cipher.getBlockSize()];
+            byte[] buffer = new byte[2048];
+            boolean checked = false;
+
+            // decrypted the first block which the check included
+            len = inputStream.read(firstBlockBuffer);
+            if (len >= 0) {
+                cipherOutputStream.write(firstBlockBuffer, 0, len);
+            } else {
+                return false;
+            }
+
+            // continue decryption with conventional buffer size
             while ((len = inputStream.read(buffer)) >= 0) {
                 cipherOutputStream.write(buffer, 0, len);
+                // check password correctness
+                if (!checkPassword(checked, byteArrayOutputStream)) {
+                    return false;
+                } else {
+                    checked = true;
+                }
+                // write file from byte array stream and clear that byte array stream
+                byteArrayOutputStream.writeTo(fileOutputStream);
+                byteArrayOutputStream.reset();
             }
+            // finish cipher stream
             cipherOutputStream.flush();
             cipherOutputStream.close();
+            // handle remained data
+            if (!checkPassword(checked, byteArrayOutputStream)) {
+                return false;
+            }
+            byteArrayOutputStream.writeTo(fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
             closeStream(inputStream);
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
+    }
+
+    public static boolean checkPassword(boolean checked, ByteArrayOutputStream byteArrayOutputStream) {
+        if (!checked) {
+            byte[] firstBlock = byteArrayOutputStream.toByteArray();
+            int checkLength = CHECK.length;
+            for (int i = 0; i < checkLength; i++) {
+                if (firstBlock[i] != CHECK[i]) {
+                    // wrong password
+                    return false;
+                }
+            }
+            // remove the check from byte array stream
+            byteArrayOutputStream.reset();
+            byteArrayOutputStream.write(firstBlock, checkLength, firstBlock.length - checkLength);
+        }
+        return true;
     }
 
     public static String encrypt(String data, String secretKey) {
