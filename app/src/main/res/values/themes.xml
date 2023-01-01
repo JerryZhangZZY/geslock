@@ -22,7 +22,7 @@
         <item name="android:textColorTertiary">@color/gray_650</item>
         <item name="android:titleTextColor">@color/gray_900</item>
         <item name="android:subtitleTextColor">@color/gray_500</item>
-        <item name="dividerColor">@color/gray_500</item>
+        <item name="dividerColor">@color/gray_400</item>
         <item name="cardBackgroundColor">@color/white</item>
         <item name="android:shadowColor">@color/gray_400</item>
     </style>

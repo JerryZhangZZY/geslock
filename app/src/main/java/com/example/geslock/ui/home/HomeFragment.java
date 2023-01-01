@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geslock.R;
+import com.example.geslock.tools.MyAES;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyToastMaker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -52,6 +53,7 @@ public class HomeFragment extends Fragment {
 
     private String title;
     private File root;
+    private File plain;
     private File currentParent;
     private File[] currentFiles;
 
@@ -106,6 +108,11 @@ public class HomeFragment extends Fragment {
             root.mkdir();
         }
 
+        plain = new File(getActivity().getExternalCacheDir().toString() + "/plain");
+        if (!plain.exists()) {
+            plain.mkdir();
+        }
+
         ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
         ANIM_DURATION_200 = MyAnimationScaler.getDuration(200, activity);
         animRotateOpen = AnimationUtils.loadAnimation(activity, R.anim.rotate_open_anim);
@@ -134,9 +141,16 @@ public class HomeFragment extends Fragment {
 
         myAdapter = new MyAdapter(activity, myList);
         myAdapter.setOnItemClickListener((view, position) -> {
-            if (currentFiles[position].isFile()) {
-                new RockerDialog(activity);
-
+            File file = currentFiles[position];
+            if (file.isFile()) {
+                RockerDialog decryptionDialog = new RockerDialog(activity);
+                decryptionDialog.getBtnPositive().setOnClickListener(v -> {
+                    String key = decryptionDialog.getPassword();
+                    String destPath = plain.getPath() + "/" + file.getName().substring(0, file.getName().length() - 2);
+                    MyAES.decryptFile(file, destPath, key);
+                    decryptionDialog.dismiss();
+                });
+                decryptionDialog.show();
             } else {
                 File[] files = currentFiles[position].listFiles();
                 currentParent = currentFiles[position];
@@ -188,24 +202,22 @@ public class HomeFragment extends Fragment {
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
             String name = DocumentFile.fromSingleUri(activity, uri).getName();
-            copyFile(uri, currentParent.getPath() + "/" + name + "gl");
-            currentFiles = currentParent.listFiles();
-            refresh();
-        }
-    }
-
-    public void copyFile(Uri uri, String newPath) {
-        try {
-            int byteRead;
-            InputStream inStream = activity.getContentResolver().openInputStream(uri);
-            FileOutputStream fs = new FileOutputStream(newPath);
-            byte[] buffer = new byte[1444];
-            while ((byteRead = inStream.read(buffer)) != -1) {
-                fs.write(buffer, 0, byteRead);
-            }
-            inStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+            String destPath = currentParent.getPath() + "/" + name + "gl";
+            RockerDialog encryptionDialog = new RockerDialog(activity);
+            encryptionDialog.getBtnPositive().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // get password from dialog
+                    String key = encryptionDialog.getPassword();
+                    // run encryption and generate file
+                    MyAES.encryptFile(uri, destPath, key, activity);
+                    // refresh
+                    currentFiles = currentParent.listFiles();
+                    refresh();
+                    encryptionDialog.dismiss();
+                }
+            });
+            encryptionDialog.show();
         }
     }
 
@@ -333,7 +345,12 @@ public class HomeFragment extends Fragment {
         editText.setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus) {
                 editText.post(() -> {
-                    editText.setSelection(0, file.isFile() ? currentName.lastIndexOf(".") : currentName.length());
+                    // prevent unknown crash
+                    try {
+                        editText.setSelection(0, file.isFile() ? currentName.lastIndexOf(".") : currentName.length());
+                    } catch (IndexOutOfBoundsException e) {
+                        e.printStackTrace();
+                    }
                     editText.setCursorVisible(true);
                 });
             } else {
@@ -347,9 +364,10 @@ public class HomeFragment extends Fragment {
                 .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
                 .setPositiveButton(R.string.rename_ok, (dialog0, which) -> {
                     String newName = editText.getText().toString() + (file.isFile() ? "gl" : "");
-                    rename(file, newName);
-                    currentFiles = currentParent.listFiles();
-                    refresh();
+                    if (rename(file, newName)) {
+                        currentFiles = currentParent.listFiles();
+                        refresh();
+                    }
                     dialog0.dismiss();
                 }).create();
         setDialogBackground(dialog);
@@ -478,8 +496,14 @@ public class HomeFragment extends Fragment {
      * @param file file/folder to be renamed
      * @param newName new name
      */
-    public void rename(File file, String newName) {
-        file.renameTo(new File(file.getParent() + "/" + newName));
+    public boolean rename(File file, String newName) {
+        File newFile = new File(file.getParent() + "/" + newName);
+        if (newFile.exists()) {
+            MyToastMaker.make(String.valueOf(activity.getText(R.string.file_name_exist)), activity);
+            return false;
+        } else {
+            return file.renameTo(new File(file.getParent() + "/" + newName));
+        }
     }
 
     /**

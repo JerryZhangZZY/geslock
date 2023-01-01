@@ -1,5 +1,7 @@
 package com.example.geslock.tools;
 
+import android.app.Activity;
+import android.net.Uri;
 import android.util.Base64;
 
 import java.io.Closeable;
@@ -22,46 +24,46 @@ public class MyAES {
     private static final String DEFAULT_VALUE = "0";
     private static final String CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
 
-    public static File encryptFile(File sourceFile, String dir, String toFileName, String secretKey) {
+    public static void encryptFile(Uri srcUri, String destPath, String key, Activity activity) {
+        if (new File(destPath).exists()) {
+            return;
+        }
         try {
-            File encryptFile = new File(dir, toFileName);
-            FileOutputStream outputStream = new FileOutputStream(encryptFile);
-            Cipher cipher = initFileAESCipher(secretKey, Cipher.ENCRYPT_MODE);
-            CipherInputStream cipherInputStream = new CipherInputStream(new FileInputStream(sourceFile), cipher);
-            byte[] buffer = new byte[1024 * 2];
+            Cipher cipher = initFileAESCipher(key, Cipher.ENCRYPT_MODE);
+            CipherInputStream cipherInputStream = new CipherInputStream(activity.getContentResolver().openInputStream(srcUri), cipher);
+            FileOutputStream outputStream = new FileOutputStream(destPath);
+            byte[] buffer = new byte[2048];
             int len;
             while ((len = cipherInputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, len);
-                outputStream.flush();
             }
+            outputStream.flush();
             cipherInputStream.close();
             closeStream(outputStream);
-            return encryptFile;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public static File decryptFile(File sourceFile, String dir, String toFileName, String secretKey) {
+    public static void decryptFile(File sourceFile, String destPath, String key) {
+        if (new File(destPath).exists()) {
+            return;
+        }
         try {
-            File decryptFile = new File(dir, toFileName);
-            Cipher cipher = initFileAESCipher(secretKey, Cipher.DECRYPT_MODE);
             FileInputStream inputStream = new FileInputStream(sourceFile);
-            CipherOutputStream cipherOutputStream = new CipherOutputStream(new FileOutputStream(decryptFile), cipher);
-            byte[] buffer = new byte[1024 * 2];
+            Cipher cipher = initFileAESCipher(key, Cipher.DECRYPT_MODE);
+            CipherOutputStream cipherOutputStream = new CipherOutputStream(new FileOutputStream(destPath), cipher);
+            byte[] buffer = new byte[2048];
             int len;
             while ((len = inputStream.read(buffer)) >= 0) {
                 cipherOutputStream.write(buffer, 0, len);
-                cipherOutputStream.flush();
             }
+            cipherOutputStream.flush();
             cipherOutputStream.close();
             closeStream(inputStream);
-            return decryptFile;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     public static String encrypt(String data, String secretKey) {

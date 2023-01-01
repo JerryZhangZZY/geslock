@@ -523,6 +523,7 @@ public class RockerDialog {
         btnBackspace.setOnClickListener(view -> {
             CharSequence password = tvPassword.getText();
             if (password.length() > 0) {
+                MyVibrator.tick(activity);
                 tvPassword.setText(password.subSequence(0, password.length() - 1));
             }
         });
@@ -605,8 +606,6 @@ public class RockerDialog {
         });
 
         btnNegative.setOnClickListener(v -> dialog.dismiss());
-
-        dialog.show();
     }
 
     public void setFragmentSize() {
@@ -679,5 +678,21 @@ public class RockerDialog {
     public boolean isHetero(int a, int b) {
 //        return a * b <= 0;
         return (a ^ b) >>> 31 == 1 || a == 0 || b == 0;
+    }
+
+    public  void show() {
+        dialog.show();
+    }
+
+    public void dismiss() {
+        dialog.dismiss();
+    }
+
+    public Button getBtnPositive() {
+        return btnPositive;
+    }
+
+    public String getPassword() {
+        return String.valueOf(tvPassword.getText());
     }
 }
