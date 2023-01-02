@@ -1,6 +1,5 @@
 package com.example.geslock.ui.home;
 
-import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -8,8 +7,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
@@ -31,10 +28,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
+import androidx.dynamicanimation.animation.SpringAnimation;
+import androidx.dynamicanimation.animation.SpringForce;
 
 import com.example.geslock.R;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyDefaultPref;
+import com.example.geslock.tools.MyToastMaker;
 import com.example.geslock.tools.MyVibrator;
 
 public class RockerDialog {
@@ -55,8 +55,12 @@ public class RockerDialog {
     private final Interpolator interpolator;
     private final AlphaAnimation appearAnimation;
     private final AlphaAnimation fadeAnimation;
-    private final AlphaAnimation enableAnimation;
-    private final AlphaAnimation disableAnimation;
+    private final ValueAnimator cardToRedAnimation;
+    private final ValueAnimator cardFromRedAnimation;
+    private final ValueAnimator textToRedAnimation;
+    private final ValueAnimator textFromRedAnimation;
+    private final SpringAnimation shakeAnimation;
+    private final float STIFFNESS;
     private final int ANIM_DURATION_100;
     private final int ANIM_DURATION_50;
 
@@ -66,12 +70,14 @@ public class RockerDialog {
     private final TextView tvPassword;
     private final ImageButton btnBackspace;
     private final CardView cardPassword;
+    private final CardView cardPasswordText;
     private final ImageView rocker;
     private final ImageView cross;
     private final Button btnPositive;
     private final Button btnNegative;
     private final TextView tvPasswordHint;
 
+    private final int red_200;
     private final int red_500;
     private final int origin;
 
@@ -93,21 +99,6 @@ public class RockerDialog {
         // set icon selection
         ICON_INDEX = pref.getInt("icon", MyDefaultPref.getDefaultInt("icon"));
 
-        // set animation params
-        interpolator = new OvershootInterpolator(pref.getFloat("overshoot", MyDefaultPref.getDefaultFloat("overshoot")) * 10);
-        ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
-        ANIM_DURATION_50 = MyAnimationScaler.getDuration(50, activity);
-        appearAnimation = new AlphaAnimation(0, 1);
-        appearAnimation.setDuration(ANIM_DURATION_100);
-        fadeAnimation = new AlphaAnimation(1, 0);
-        fadeAnimation.setDuration(ANIM_DURATION_100);
-        enableAnimation = new AlphaAnimation(.5F, 1);
-        enableAnimation.setDuration(ANIM_DURATION_100);
-        enableAnimation.setFillAfter(true);
-        disableAnimation = new AlphaAnimation(1, .5F);
-        disableAnimation.setDuration(ANIM_DURATION_100);
-        disableAnimation.setFillAfter(true);
-
         // set drag params
         setRockerParams(fragmentSize, pref);
 
@@ -126,6 +117,7 @@ public class RockerDialog {
         tvPassword = dialog.findViewById(R.id.tvPassword);
         btnBackspace = dialog.findViewById(R.id.btnBackspace);
         cardPassword = dialog.findViewById(R.id.cardPassword);
+        cardPasswordText = dialog.findViewById(R.id.cardPasswordText);
         rocker = dialog.findViewById(R.id.rocker);
         cross = dialog.findViewById(R.id.cross);
         btnPositive = dialog.findViewById(R.id.btnRockerPositive);
@@ -133,8 +125,37 @@ public class RockerDialog {
         tvPasswordHint = dialog.findViewById(R.id.tvPasswordHint);
 
         // get colors
+        red_200 = activity.getColor(R.color.red_200);
         red_500 = activity.getColor(R.color.red_500);
         origin = cardPassword.getCardBackgroundColor().getDefaultColor();
+
+        // set animations
+        interpolator = new OvershootInterpolator(pref.getFloat("overshoot", MyDefaultPref.getDefaultFloat("overshoot")) * 10);
+        ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
+        ANIM_DURATION_50 = MyAnimationScaler.getDuration(50, activity);
+        appearAnimation = new AlphaAnimation(0, 1);
+        appearAnimation.setDuration(ANIM_DURATION_100);
+        fadeAnimation = new AlphaAnimation(1, 0);
+        fadeAnimation.setDuration(ANIM_DURATION_100);
+        cardToRedAnimation = ValueAnimator.ofInt(cardPassword.getCardBackgroundColor().getDefaultColor(), red_200);
+        cardToRedAnimation.setEvaluator(new ArgbEvaluator());
+        cardToRedAnimation.addUpdateListener(valueAnimator -> cardPassword.setCardBackgroundColor((int) valueAnimator.getAnimatedValue()));
+        cardToRedAnimation.setDuration(ANIM_DURATION_50);
+        cardFromRedAnimation = ValueAnimator.ofInt(red_200, origin);
+        cardFromRedAnimation.setEvaluator(new ArgbEvaluator());
+        cardFromRedAnimation.addUpdateListener(valueAnimator -> cardPassword.setCardBackgroundColor((int) valueAnimator.getAnimatedValue()));
+        cardFromRedAnimation.setDuration(ANIM_DURATION_50);
+        textToRedAnimation = ValueAnimator.ofInt(tvPassword.getTextColors().getDefaultColor(), red_500);
+        textToRedAnimation.setEvaluator(new ArgbEvaluator());
+        textToRedAnimation.addUpdateListener(valueAnimator -> tvPassword.setTextColor((int) valueAnimator.getAnimatedValue()));
+        textToRedAnimation.setDuration(ANIM_DURATION_100);
+        textFromRedAnimation = ValueAnimator.ofInt(red_500, tvPassword.getTextColors().getDefaultColor());
+        textFromRedAnimation.setEvaluator(new ArgbEvaluator());
+        textFromRedAnimation.addUpdateListener(valueAnimator -> tvPassword.setTextColor((int) valueAnimator.getAnimatedValue()));
+        textFromRedAnimation.setDuration(ANIM_DURATION_100);
+        STIFFNESS = MyAnimationScaler.getSpringStiffness(5000F, activity);
+        shakeAnimation = new SpringAnimation(cardPassword, SpringAnimation.TRANSLATION_X, 0)
+                .setSpring(new SpringForce(0).setDampingRatio(SpringForce.DAMPING_RATIO_HIGH_BOUNCY).setStiffness(STIFFNESS));
 
         cross.setVisibility(pref.getBoolean("cross", MyDefaultPref.getDefaultBoolean("cross")) ? View.VISIBLE : View.INVISIBLE);
 
@@ -519,6 +540,14 @@ public class RockerDialog {
             }
         });
 
+        // set password card height
+        cardPasswordText.post(new Runnable() {
+            @Override
+            public void run() {
+                cardPasswordText.setMinimumWidth(cardPasswordText.getHeight());
+            }
+        });
+
         // set password backspace
         btnBackspace.setOnClickListener(view -> {
             CharSequence password = tvPassword.getText();
@@ -542,21 +571,13 @@ public class RockerDialog {
                 if (length > 0) {
                     if (length > MAX_PASSWORD_LENGTH) {
                         // limit password length
-                        ValueAnimator toRed = ValueAnimator.ofInt(cardPassword.getCardBackgroundColor().getDefaultColor(), red_500);
-                        toRed.setEvaluator(new ArgbEvaluator());
-                        toRed.addUpdateListener(valueAnimator -> cardPassword.setCardBackgroundColor((int) valueAnimator.getAnimatedValue()));
-                        toRed.setDuration(ANIM_DURATION_100 * 2L);
-                        toRed.start();
+                        cardToRedAnimation.start();
                         new Handler().postDelayed(() -> {
                             // prevent over delete
                             if (tvPassword.length() > MAX_PASSWORD_LENGTH) {
                                 btnBackspace.callOnClick();
-                                toRed.cancel();
-                                ValueAnimator fromRed = ValueAnimator.ofInt(cardPassword.getCardBackgroundColor().getDefaultColor(), origin);
-                                fromRed.setEvaluator(new ArgbEvaluator());
-                                fromRed.addUpdateListener(valueAnimator -> cardPassword.setCardBackgroundColor((int) valueAnimator.getAnimatedValue()));
-                                fromRed.setDuration(ANIM_DURATION_100 * 2L);
-                                fromRed.start();
+                                cardToRedAnimation.cancel();
+                                cardFromRedAnimation.start();
                             }
                         }, ANIM_DURATION_50);
                     }
@@ -565,8 +586,7 @@ public class RockerDialog {
                         cardPassword.setVisibility(View.VISIBLE);
                     }
                     if (!btnPositive.isEnabled()) {
-                        btnPositive.setAlpha(1);
-                        btnPositive.startAnimation(enableAnimation);
+                        btnPositive.animate().alpha(1).setDuration(ANIM_DURATION_100);
                         btnPositive.setEnabled(true);
                     }
                     if (tvPasswordHint.getVisibility() != View.INVISIBLE) {
@@ -579,7 +599,7 @@ public class RockerDialog {
                         cardPassword.setVisibility(View.INVISIBLE);
                     }
                     if (btnPositive.isEnabled()) {
-                        btnPositive.startAnimation(disableAnimation);
+                        btnPositive.animate().alpha(.5F).setDuration(ANIM_DURATION_100);
                         btnPositive.setEnabled(false);
                     }
                     if (tvPasswordHint.getVisibility() != View.VISIBLE) {
@@ -686,6 +706,27 @@ public class RockerDialog {
 
     public void dismiss() {
         dialog.dismiss();
+    }
+
+    public void wrongPassword() {
+        textToRedAnimation.start();
+        // animation enabled
+        if (STIFFNESS != 524) {
+            shakeAnimation.setStartValue(50);
+            shakeAnimation.addEndListener((animation, canceled, value, velocity) -> {
+                textFromRedAnimation.start();
+                tvPassword.setText(null);
+            });
+            shakeAnimation.start();
+        } else {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    textFromRedAnimation.start();
+                    tvPassword.setText(null);
+                }
+            }, 500);
+        }
     }
 
     public Button getBtnPositive() {

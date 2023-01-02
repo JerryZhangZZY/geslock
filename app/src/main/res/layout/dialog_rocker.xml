@@ -115,9 +115,11 @@
             android:orientation="horizontal">
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardPasswordText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:elevation="0dp"
+                android:minWidth="45dp"
                 android:outlineProvider="none"
                 app:cardBackgroundColor="?cardBackgroundColor"
                 app:cardCornerRadius="100dp"
@@ -133,6 +135,7 @@
                     android:id="@+id/tvPassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:inputType="textPassword"
                     android:letterSpacing="0.2"
                     android:minWidth="9dp"

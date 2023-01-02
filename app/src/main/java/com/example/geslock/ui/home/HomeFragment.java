@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,8 +40,6 @@ import com.example.geslock.tools.MyToastMaker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,8 +51,8 @@ public class HomeFragment extends Fragment {
     private Activity activity;
 
     private String title;
-    private File root;
-    private File plain;
+    private File rootDir;
+    private File cacheDir;
     private File currentParent;
     private File[] currentFiles;
 
@@ -103,14 +102,14 @@ public class HomeFragment extends Fragment {
 
         title = (String) activity.getText(R.string.title_home);
 
-        root = new File(getActivity().getExternalCacheDir().toString() + "/root");
-        if (!root.exists()) {
-            root.mkdir();
+        rootDir = getActivity().getExternalFilesDir("root");
+        if (!rootDir.exists()) {
+            rootDir.mkdir();
         }
 
-        plain = new File(getActivity().getExternalCacheDir().toString() + "/plain");
-        if (!plain.exists()) {
-            plain.mkdir();
+        cacheDir = getActivity().getExternalCacheDir();
+        if (!cacheDir.exists()) {
+            cacheDir.mkdir();
         }
 
         ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
@@ -146,9 +145,24 @@ public class HomeFragment extends Fragment {
                 RockerDialog decryptionDialog = new RockerDialog(activity);
                 decryptionDialog.getBtnPositive().setOnClickListener(v -> {
                     String key = decryptionDialog.getPassword();
-                    String destPath = plain.getPath() + "/" + file.getName().substring(0, file.getName().length() - 2);
-                    MyAES.decryptFile(file, destPath, key);
-                    decryptionDialog.dismiss();
+                    String destPath = cacheDir.getPath() + "/" + file.getName().substring(0, file.getName().length() - 2);
+                    File plainFile = MyAES.decryptFile(file, destPath, key);
+                    if (plainFile == null) {
+                        decryptionDialog.wrongPassword();
+                    } else {
+
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        //intent.addCategory(Intent.CATEGORY_DEFAULT);
+                        Uri uri;
+                        uri = FileProvider.getUriForFile(activity, "com.example.geslock.fileprovider", plainFile);
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.setDataAndType(uri, "*/*");
+//                        intent.setDataAndType(uriForFile, getMimeTypeFromFile(file));
+                        activity.startActivity(intent);
+
+                        decryptionDialog.dismiss();
+                    }
                 });
                 decryptionDialog.show();
             } else {
@@ -246,9 +260,9 @@ public class HomeFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 1) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (root.exists()) {
-                    currentParent = root;
-                    currentFiles = root.listFiles();
+                if (rootDir.exists()) {
+                    currentParent = rootDir;
+                    currentFiles = rootDir.listFiles();
                     assert currentFiles != null;
                     refresh();
                 }
@@ -424,13 +438,13 @@ public class HomeFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     public void refresh() {
         // refresh path bar
-        if (root.equals(currentParent)) {
+        if (rootDir.equals(currentParent)) {
             btnBack.setVisibility(View.GONE);
             tvPath.setText(title);
         } else {
             btnBack.setVisibility(View.VISIBLE);
             File parent = currentParent.getParentFile();
-            if (root.equals(parent)) {
+            if (rootDir.equals(parent)) {
                 btnBack.setText(title);
             } else {
                 assert parent != null;
@@ -532,7 +546,7 @@ public class HomeFragment extends Fragment {
      */
     @SuppressLint("NotifyDataSetChanged")
     public void handleBack() {
-        if (!root.equals(currentParent)) {
+        if (!rootDir.equals(currentParent)) {
             currentParent = currentParent.getParentFile();
             assert currentParent != null;
             currentFiles = currentParent.listFiles();

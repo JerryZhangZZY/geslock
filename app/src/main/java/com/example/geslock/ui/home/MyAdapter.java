@@ -37,7 +37,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     all supported file types
      */
     private final List<String> textExtensions = Collections.singletonList("txt");
-    private final List<String> imageExtensions = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "tiff");
+    private final List<String> imageExtensions = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp");
     private final List<String> videoExtensions = Arrays.asList("mp4", "mov", "avi", "flv", "wmv", "mpeg", "mkv", "asf");
     private final List<String> audioExtensions = Arrays.asList("mp3", "wav", "cda", "aif", "aiff");
     private final List<String> zipExtensions = Arrays.asList("zip", "7z", "rar", "tz", "arj");

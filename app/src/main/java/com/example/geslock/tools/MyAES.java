@@ -61,13 +61,9 @@ public class MyAES {
         }
     }
 
-    public static boolean decryptFile(File sourceFile, String destPath, String key) {
+    public static File decryptFile(File sourceFile, String destPath, String key) {
         File file = new File(destPath);
-        if (file.exists()) {
-            if (!file.delete()) {
-                return false;
-            }
-        }
+        if (!deleteFile(file)) return null;
         try {
             FileInputStream inputStream = new FileInputStream(sourceFile);
             Cipher cipher = initFileAESCipher(key, Cipher.DECRYPT_MODE);
@@ -85,7 +81,7 @@ public class MyAES {
             if (len >= 0) {
                 cipherOutputStream.write(firstBlockBuffer, 0, len);
             } else {
-                return false;
+                return null;
             }
 
             // continue decryption with conventional buffer size
@@ -93,7 +89,8 @@ public class MyAES {
                 cipherOutputStream.write(buffer, 0, len);
                 // check password correctness
                 if (!checkPassword(checked, byteArrayOutputStream)) {
-                    return false;
+                    if (!deleteFile(file)) return null;
+                    return null;
                 } else {
                     checked = true;
                 }
@@ -106,17 +103,25 @@ public class MyAES {
             cipherOutputStream.close();
             // handle remained data
             if (!checkPassword(checked, byteArrayOutputStream)) {
-                return false;
+                if (!deleteFile(file)) return null;
+                return null;
             }
             byteArrayOutputStream.writeTo(fileOutputStream);
             fileOutputStream.flush();
             fileOutputStream.close();
             closeStream(inputStream);
-            return true;
+            return file;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
+    }
+
+    public static boolean deleteFile(File file) {
+        if (file.exists()) {
+            return file.delete();
+        }
+        return true;
     }
 
     public static boolean checkPassword(boolean checked, ByteArrayOutputStream byteArrayOutputStream) {
