@@ -157,8 +157,7 @@ public class HomeFragment extends Fragment {
                         uri = FileProvider.getUriForFile(activity, "com.example.geslock.fileprovider", plainFile);
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.setDataAndType(uri, "*/*");
-//                        intent.setDataAndType(uriForFile, getMimeTypeFromFile(file));
+                        intent.setData(uri);
                         activity.startActivity(intent);
 
                         decryptionDialog.dismiss();

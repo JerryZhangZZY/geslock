@@ -632,7 +632,7 @@ public class RockerDialog {
         float widthPercentage = .9F;
         float widthHeightRatio = .7F;
         int width = (int) (widthPercentage * activity.getWindow().getDecorView().getWidth());
-        int height = (int) (width / widthHeightRatio);
+        int height = (int) Math.min(width / widthHeightRatio, widthPercentage * activity.getWindow().getDecorView().getHeight());
         fragmentSize[0] = width;
         fragmentSize[1] = height;
     }
