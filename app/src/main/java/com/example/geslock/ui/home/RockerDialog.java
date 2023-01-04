@@ -629,12 +629,19 @@ public class RockerDialog {
     }
 
     public void setFragmentSize() {
+        int maxWidth = dpToPx(400);
         float widthPercentage = .9F;
         float widthHeightRatio = .7F;
-        int width = (int) (widthPercentage * activity.getWindow().getDecorView().getWidth());
+        int width = (int) Math.min(widthPercentage * activity.getWindow().getDecorView().getWidth(), maxWidth);
+//        int width = (int) (widthPercentage * activity.getWindow().getDecorView().getWidth());
         int height = (int) Math.min(width / widthHeightRatio, widthPercentage * activity.getWindow().getDecorView().getHeight());
         fragmentSize[0] = width;
         fragmentSize[1] = height;
+    }
+
+    public int dpToPx(int dp) {
+        float density = activity.getResources().getDisplayMetrics().density;
+        return Math.round((float) dp * density);
     }
 
     public void setRockerParams(int[] fragmentSize, SharedPreferences pref) {
