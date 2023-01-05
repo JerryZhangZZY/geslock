@@ -23,7 +23,7 @@ public abstract class MyAnimationScaler {
     public static int getCurrentIndex(Activity activity) {
         if (pref == null)
             pref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        return pref.getInt("animation", 2);
+        return pref.getInt("animation", MyDefaultPref.getDefaultInt("animation"));
     }
 
     public static void setScale(int currentIndex) {
@@ -50,5 +50,9 @@ public abstract class MyAnimationScaler {
                     break;
             }
         }
+    }
+
+    public static float getScale() {
+        return scale;
     }
 }

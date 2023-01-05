@@ -734,6 +734,8 @@ public class RockerDialog {
                 }
             }, 500);
         }
+
+        MyVibrator.shake(activity);
     }
 
     public Button getBtnPositive() {
