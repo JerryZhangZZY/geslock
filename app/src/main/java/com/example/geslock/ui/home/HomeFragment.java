@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.FileObserver;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -37,6 +38,7 @@ import com.example.geslock.R;
 import com.example.geslock.tools.MyAES;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyToastMaker;
+import com.example.geslock.tools.MyVibrator;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
@@ -102,15 +104,15 @@ public class HomeFragment extends Fragment {
 
         title = (String) activity.getText(R.string.title_home);
 
-        rootDir = getActivity().getExternalFilesDir("root");
+        rootDir = activity.getExternalFilesDir("root");
         if (!rootDir.exists()) {
             rootDir.mkdir();
         }
 
-        cacheDir = getActivity().getExternalCacheDir();
-        if (!cacheDir.exists()) {
-            cacheDir.mkdir();
-        }
+        cacheDir = activity.getExternalCacheDir();
+//        if (!cacheDir.exists()) {
+//            cacheDir.mkdir();
+//        }
 
         ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
         ANIM_DURATION_200 = MyAnimationScaler.getDuration(200, activity);
@@ -134,9 +136,7 @@ public class HomeFragment extends Fragment {
         tvPath = activity.findViewById(R.id.tvPath);
 
         btnBack = activity.findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(view -> {
-            handleBack();
-        });
+        btnBack.setOnClickListener(view -> handleBack());
 
         myAdapter = new MyAdapter(activity, myList);
         myAdapter.setOnItemClickListener((view, position) -> {
@@ -145,21 +145,21 @@ public class HomeFragment extends Fragment {
                 RockerDialog decryptionDialog = new RockerDialog(activity);
                 decryptionDialog.getBtnPositive().setOnClickListener(v -> {
                     String key = decryptionDialog.getPassword();
+                    if (!cacheDir.exists()) {
+                        cacheDir.mkdir();
+                    }
                     String destPath = cacheDir.getPath() + "/" + file.getName().substring(0, file.getName().length() - 2);
                     File plainFile = MyAES.decryptFile(file, destPath, key);
                     if (plainFile == null) {
                         decryptionDialog.wrongPassword();
                     } else {
-
                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                        //intent.addCategory(Intent.CATEGORY_DEFAULT);
                         Uri uri;
                         uri = FileProvider.getUriForFile(activity, "com.example.geslock.fileprovider", plainFile);
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.setData(uri);
                         activity.startActivity(intent);
-
                         decryptionDialog.dismiss();
                     }
                 });
@@ -184,9 +184,7 @@ public class HomeFragment extends Fragment {
         tvNewFile = activity.findViewById(R.id.tvNewFile);
         tvNewFolder = activity.findViewById(R.id.tvNewFolder);
 
-        fabAdd.setOnClickListener(view -> {
-            switchFabs();
-        });
+        fabAdd.setOnClickListener(view -> switchFabs());
 
         fabAddFile.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -220,18 +218,15 @@ public class HomeFragment extends Fragment {
             // TODO rename
 
             RockerDialog encryptionDialog = new RockerDialog(activity);
-            encryptionDialog.getBtnPositive().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // get password from dialog
-                    String key = encryptionDialog.getPassword();
-                    // run encryption and generate file
-                    MyAES.encryptFile(uri, destPath, key, activity);
-                    // refresh
-                    currentFiles = currentParent.listFiles();
-                    refresh();
-                    encryptionDialog.dismiss();
-                }
+            encryptionDialog.getBtnPositive().setOnClickListener(v -> {
+                // get password from dialog
+                String key = encryptionDialog.getPassword();
+                // run encryption and generate file
+                MyAES.encryptFile(uri, destPath, key, activity);
+                // refresh
+                currentFiles = currentParent.listFiles();
+                refresh();
+                encryptionDialog.dismiss();
             });
             encryptionDialog.show();
         }
@@ -240,6 +235,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        // handle back operation
         requireView().setFocusableInTouchMode(true);
         requireView().requestFocus();
         requireView().setOnKeyListener((view, i, keyEvent) -> {
@@ -249,6 +246,9 @@ public class HomeFragment extends Fragment {
             }
             return false;
         });
+
+        // delete cache for safety
+        deleteFile(cacheDir);
     }
 
     /**
@@ -477,40 +477,39 @@ public class HomeFragment extends Fragment {
     /**
      * Create a new folder under the current path.
      * @param name name of the folder to be created
+     * @return creation result
      */
-    public void newFolder(String name) {
+    public boolean newFolder(String name) {
         File file = new File(currentParent.getPath() + "/" + name);
         if (file.exists()) {
             MyToastMaker.make((String) activity.getText(R.string.new_folder_exists), activity);
-            return;
+            return false;
         }
-        file.mkdir();
+        return file.mkdir();
     }
 
     /**
      * Delete a file/folder.
      * @param dirFile file/folder to be deleted
+     * @return deletion result
      */
-    public void deleteFile(File dirFile) {
-        // 如果dir对应的文件不存在，则退出
+    public boolean deleteFile(File dirFile) {
         if (!dirFile.exists()) {
-            return;
+            return true;
         }
-        if (dirFile.isFile()) {
-            dirFile.delete();
-            return;
-        } else {
+        if (dirFile.isDirectory()) {
             for (File file : Objects.requireNonNull(dirFile.listFiles())) {
                 deleteFile(file);
             }
         }
-        dirFile.delete();
+        return dirFile.delete();
     }
 
     /**
      * Rename a file/folder.
      * @param file file/folder to be renamed
      * @param newName new name
+     * @return renaming result
      */
     public boolean rename(File file, String newName) {
         File newFile = new File(file.getParent() + "/" + newName);

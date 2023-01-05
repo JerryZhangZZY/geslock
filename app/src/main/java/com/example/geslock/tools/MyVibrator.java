@@ -44,9 +44,14 @@ public abstract class MyVibrator {
                         vibrator.vibrate(VibrationEffect.createOneShot(duration, 128));
                         Thread.sleep(interval);
                         vibrator.vibrate(VibrationEffect.createOneShot(duration / 2, 64));
-
                     } else {
-                        vibrator.vibrate(20);
+                        vibrator.vibrate(duration * 2);
+                        Thread.sleep(interval);
+                        vibrator.vibrate((long) (duration * 1.5));
+                        Thread.sleep(interval);
+                        vibrator.vibrate(duration);
+                        Thread.sleep(interval);
+                        vibrator.vibrate(duration / 2);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
