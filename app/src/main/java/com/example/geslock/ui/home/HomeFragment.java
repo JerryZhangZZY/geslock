@@ -214,8 +214,11 @@ public class HomeFragment extends Fragment {
         super.onActivityResult(resultCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
-            String name = DocumentFile.fromSingleUri(activity, uri).getName();
+            String name = Objects.requireNonNull(DocumentFile.fromSingleUri(activity, uri)).getName();
             String destPath = currentParent.getPath() + "/" + name + "gl";
+
+            // TODO rename
+
             RockerDialog encryptionDialog = new RockerDialog(activity);
             encryptionDialog.getBtnPositive().setOnClickListener(new View.OnClickListener() {
                 @Override
