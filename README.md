@@ -1,8 +1,11 @@
-<img src="https://raw.githubusercontent.com/JerryZhangZZY/album/main/geslock/ic_launcher_small.png" alt="launcher" style="zoom:25%;" />
+<p align="center">
+  <img width="200" src="https://raw.githubusercontent.com/JerryZhangZZY/album/main/geslock/ic_launcher_small.png">
+</p>
 
 # GesLock
 
-![android](https://img.shields.io/badge/Android-7.0%2B-green)![api](https://img.shields.io/badge/API-31%2B-yellow)
+![android](https://img.shields.io/badge/Android-7.0%2B-green)
+![api](https://img.shields.io/badge/API-31%2B-yellow)
 
 An Android app that protects sensitive files on mobile phones using secret multi-finger gestures.
 
@@ -18,7 +21,16 @@ An Android app that protects sensitive files on mobile phones using secret multi
 
 ## Screenshots
 
-<img src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-home.png?raw=true" alt="home" style="zoom:20%;" /><img src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-rocker.png?raw=true" alt="rocker" style="zoom:20%;" /><img src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-edit.png?raw=true" alt="home" style="zoom:20%;" /><img src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-settings.png?raw=true" alt="home" style="zoom:20%;" /><img src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-theme:language.png?raw=true" alt="home" style="zoom:20%;" />
+<div align="center">
+  <img width="250" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-home.png?raw=true" />
+  <img width="250" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-rocker.png?raw=true" />
+  <img width="250" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-edit.png?raw=true" />
+</div>
+
+<div align="center">
+  <img width="250" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-settings.png?raw=true" />
+  <img width="250" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-theme:language.png?raw=true" />
+</div>
 
 ## Work Plan (Gantt Chart)
 
