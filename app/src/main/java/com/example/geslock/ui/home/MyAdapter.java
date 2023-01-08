@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
@@ -89,8 +90,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             myViewHolder.imgEnter.setVisibility(View.VISIBLE);
             myViewHolder.imgIcon.setImageResource(R.drawable.ic_folder);
             if (itemCount) {
+                myViewHolder.tvItemCount.setText(String.valueOf(Objects.requireNonNull(file.list()).length));
                 myViewHolder.tvItemCount.setVisibility(View.VISIBLE);
-                myViewHolder.tvItemCount.setText(String.valueOf(file.list().length));
             } else {
                 myViewHolder.tvItemCount.setVisibility(View.INVISIBLE);
             }

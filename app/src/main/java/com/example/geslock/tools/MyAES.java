@@ -25,7 +25,6 @@ public class MyAES {
     public static final int SECRET_KEY_LENGTH = 16;
     private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
     private static final String DEFAULT_VALUE = "0";
-    private static final String CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
     private static final int BUFFER_LENGTH = 2048;
     // set CHECK string
     // CHECK length must not exceed 16

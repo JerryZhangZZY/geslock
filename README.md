@@ -1,20 +1,34 @@
-# BBC6521 Project
+<img src="https://raw.githubusercontent.com/JerryZhangZZY/album/main/geslock/ic_launcher_small.png" alt="launcher" style="zoom:25%;" />
 
-## Project Description
+# GesLock
 
-The traditional encryption method using numeric and character passwords are unintuitive, easy to forget, easy to be cracked, etc. While mobile phones nowadays are all equipped with multi-touch screens that can sense multi-finger gestures. Therefore, it is necessary to develop a mobile phone app to improve the way people encrypt sensitive files.
+![android](https://img.shields.io/badge/Android-7.0%2B-green)![api](https://img.shields.io/badge/API-31%2B-yellow)
 
-This project is about developing a smart phone app to protect sensitive files on mobile phones using secret hand/finger gestures.
+An Android app that protects sensitive files on mobile phones using secret multi-finger gestures.
+
+## Features
+
+- Intuitive password entry interaction for easy recall.
+- Supports up to 11 gestures.
+- Uses AES CBC PKCS5Padding algorithm for  data security.
+- Fully functional document management system.
+- Fully customizable user preferences.
+- Silky smooth animations and fine haptic feedback.
+- Support system dark mode.
+
+## Screenshots
+
+<img src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-home.png?raw=true" alt="home" style="zoom:20%;" /><img src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-rocker.png?raw=true" alt="rocker" style="zoom:20%;" /><img src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-edit.png?raw=true" alt="home" style="zoom:20%;" /><img src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-settings.png?raw=true" alt="home" style="zoom:20%;" /><img src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-theme:language.png?raw=true" alt="home" style="zoom:20%;" />
 
 ## Work Plan (Gantt Chart)
 
-### Task 1: To learn about the latest mobile development and in particular interactions with touch screens
+- Task 1: To learn about the latest mobile development and in particular interactions with touch screens.
 
-### Task 2: To design and implement an algorithm to recognise hand/finger gestures
+- Task 2: To design and implement an algorithm to recognize hand/finger gestures.
 
-### Task 3: To design and implement a user interface to allow selection of user files and link it with the gesture algorithm
+- Task 3: To design and implement a user interface to allow selection of user files and link it with the gesture algorithm.
 
-### Task 4: To provide at least 3 user cases for the mobile application and compare this approach with the standard
+- Task 4: To provide at least 3 user cases for the mobile application and compare this approach with the standard.
 
 ```mermaid
 gantt
@@ -38,3 +52,9 @@ Invite users to trial and gather user cases: 2023-04-01, 2023-04-16
 Design of questionnaires for comparative testing: 2023-04-01, 2023-04-16
 Invite users to participate in comparison tests and collect questionnaires: 2023-04-01, 2023-04-16
 ```
+
+## Thanks
+
+- [*@Matthew Tang*](https://github.com/wctangcse)
+- [*@Tom Xia*](https://github.com/TomXia)
+
