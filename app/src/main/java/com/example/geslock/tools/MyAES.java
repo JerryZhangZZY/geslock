@@ -2,7 +2,6 @@ package com.example.geslock.tools;
 
 import android.app.Activity;
 import android.net.Uri;
-import android.util.Base64;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,20 +11,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -34,10 +26,23 @@ public class MyAES {
     private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
     private static final String DEFAULT_VALUE = "0";
     private static final String CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
+    private static final int BUFFER_LENGTH = 2048;
+    // set CHECK string
     // CHECK length must not exceed 16
     private static final byte[] CHECK = "[CHECK]".getBytes();
 
+    /**
+     * Encrypt a file from an uri and export to the given path.
+     *
+     * @param srcUri   the file uri to be encrypted
+     * @param destPath file exporting path
+     * @param key      AES secret key
+     * @param activity activity
+     */
     public static void encryptFile(Uri srcUri, String destPath, String key, Activity activity) {
+
+        // TODO return boolean indicating the result
+
         if (new File(destPath).exists()) {
             return;
         }
@@ -48,7 +53,7 @@ public class MyAES {
             SequenceInputStream sequenceInputStream = new SequenceInputStream(checkStream, dataStream);
             CipherInputStream cipherInputStream = new CipherInputStream(sequenceInputStream, cipher);
             FileOutputStream outputStream = new FileOutputStream(destPath);
-            byte[] buffer = new byte[2048];
+            byte[] buffer = new byte[BUFFER_LENGTH];
             int len;
             while ((len = cipherInputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, len);
@@ -61,6 +66,14 @@ public class MyAES {
         }
     }
 
+    /**
+     * Decrypt a file and export to the given path.
+     *
+     * @param sourceFile the file to be decrypted
+     * @param destPath   file exporting path
+     * @param key        AES secret key
+     * @return null: decryption failed
+     */
     public static File decryptFile(File sourceFile, String destPath, String key) {
         File file = new File(destPath);
         if (!deleteFile(file)) return null;
@@ -68,12 +81,12 @@ public class MyAES {
             FileInputStream inputStream = new FileInputStream(sourceFile);
             Cipher cipher = initFileAESCipher(key, Cipher.DECRYPT_MODE);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            CipherOutputStream cipherOutputStream = new CipherOutputStream(byteArrayOutputStream , cipher);
+            CipherOutputStream cipherOutputStream = new CipherOutputStream(byteArrayOutputStream, cipher);
             FileOutputStream fileOutputStream = new FileOutputStream(destPath);
             int len;
             assert cipher != null;
             byte[] firstBlockBuffer = new byte[cipher.getBlockSize()];
-            byte[] buffer = new byte[2048];
+            byte[] buffer = new byte[BUFFER_LENGTH];
             boolean checked = false;
 
             // decrypted the first block which the check included
@@ -117,6 +130,12 @@ public class MyAES {
         }
     }
 
+    /**
+     * Delete the given file.
+     *
+     * @param file the file to be deleted
+     * @return result
+     */
     public static boolean deleteFile(File file) {
         if (file.exists()) {
             return file.delete();
@@ -124,6 +143,13 @@ public class MyAES {
         return true;
     }
 
+    /**
+     * Verify the CHECK in the first aes block to determine if the password is correct.
+     *
+     * @param checked               check status
+     * @param byteArrayOutputStream a byte array output stream contains the first decrypted AES block
+     * @return result
+     */
     public static boolean checkPassword(boolean checked, ByteArrayOutputStream byteArrayOutputStream) {
         if (!checked) {
             byte[] firstBlock = byteArrayOutputStream.toByteArray();
@@ -141,31 +167,12 @@ public class MyAES {
         return true;
     }
 
-    public static String encrypt(String data, String secretKey) {
-        try {
-            Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-            cipher.init(Cipher.ENCRYPT_MODE, getSecretKey(secretKey));
-            byte[] encryptByte = cipher.doFinal(data.getBytes(CHARSET_UTF8));
-            return base64Encode(encryptByte);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static String decrypt(String base64Data, String secretKey) {
-        try {
-            byte[] data = base64Decode(base64Data);
-            Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-            cipher.init(Cipher.DECRYPT_MODE, getSecretKey(secretKey));
-            byte[] result = cipher.doFinal(data);
-            return new String(result, CHARSET_UTF8);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
+    /**
+     * Extract a secret kry from a string.
+     *
+     * @param secretKey secret key in the form of string
+     * @return AES secret key in the form of SecretKeySpec
+     */
     public static SecretKeySpec getSecretKey(String secretKey) {
         secretKey = toMakeKey(secretKey, SECRET_KEY_LENGTH, DEFAULT_VALUE);
         return new SecretKeySpec(secretKey.getBytes(CHARSET_UTF8), "AES");
@@ -182,14 +189,6 @@ public class MyAES {
             secretKey = builder.toString();
         }
         return secretKey;
-    }
-
-    public static byte[] base64Decode(String data) {
-        return Base64.decode(data, Base64.NO_WRAP);
-    }
-
-    public static String base64Encode(byte[] data) {
-        return Base64.encodeToString(data, Base64.NO_WRAP);
     }
 
     private static Cipher initFileAESCipher(String secretKey, int cipherMode) {

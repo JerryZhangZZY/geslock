@@ -34,7 +34,6 @@ import androidx.dynamicanimation.animation.SpringForce;
 import com.example.geslock.R;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyDefaultPref;
-import com.example.geslock.tools.MyToastMaker;
 import com.example.geslock.tools.MyVibrator;
 
 public class RockerDialog {
@@ -64,7 +63,7 @@ public class RockerDialog {
     private final int ANIM_DURATION_100;
     private final int ANIM_DURATION_50;
 
-    private final int[] fragmentSize = new int[2];
+    private final int[] dialogSize = new int[2];
     private final int[][] rockerIcons = new int[3][3];
     private final int[] rockerInitLayout = new int[4];
     private final TextView tvPassword;
@@ -93,14 +92,14 @@ public class RockerDialog {
         dialog = new Dialog(activity);
         dialog.setContentView(R.layout.dialog_rocker);
         dialog.getWindow().setBackgroundDrawableResource(R.drawable.rocker_dialog_background);
-        setFragmentSize();
-        dialog.getWindow().setLayout(fragmentSize[0], fragmentSize[1]);
+        setDialogSize();
+        dialog.getWindow().setLayout(dialogSize[0], dialogSize[1]);
 
         // set icon selection
         ICON_INDEX = pref.getInt("icon", MyDefaultPref.getDefaultInt("icon"));
 
         // set drag params
-        setRockerParams(fragmentSize, pref);
+        setRockerParams(dialogSize, pref);
 
         // set all icons
         rockerIcons[0][0] = R.drawable.ic_soccer;
@@ -431,7 +430,8 @@ public class RockerDialog {
                                         }
                                         break;
                                 }
-                            } catch (IllegalArgumentException ignored) {}
+                            } catch (IllegalArgumentException ignored) {
+                            }
                         }
                         break;
 
@@ -447,10 +447,6 @@ public class RockerDialog {
                         angle = (float) Math.toDegrees(Math.atan2(startY2 - startY1, startX2 - startX1));
                         break;
 
-//                    case MotionEvent.ACTION_POINTER_UP:
-//                        fingerNum = 1;
-//                        break;
-
                     // all fingers leave
                     case MotionEvent.ACTION_UP:
                         // single finger tap
@@ -459,7 +455,7 @@ public class RockerDialog {
                             // trigger single tap !!!
                             tvPassword.setText(tvPassword.getText() + "A");
 
-                            ScaleAnimation ta = new ScaleAnimation(1.1F, 1, 1.1F, 1, Animation.RELATIVE_TO_SELF,.5f,Animation.RELATIVE_TO_SELF,.5f);
+                            ScaleAnimation ta = new ScaleAnimation(1.1F, 1, 1.1F, 1, Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
                             ta.setDuration(ANIM_DURATION_50);
                             rocker.startAnimation(ta);
                             MyVibrator.tick(activity);
@@ -481,10 +477,14 @@ public class RockerDialog {
                                     rocker.clearAnimation();
                                     rocker.layout(rockerInitLayout[0], rockerInitLayout[1], rockerInitLayout[2], rockerInitLayout[3]);
                                 }
+
                                 @Override
-                                public void onAnimationStart(Animation animation) {}
+                                public void onAnimationStart(Animation animation) {
+                                }
+
                                 @Override
-                                public void onAnimationRepeat(Animation animation) {}
+                                public void onAnimationRepeat(Animation animation) {
+                                }
                             });
                             rocker.startAnimation(ta);
                         }
@@ -494,23 +494,35 @@ public class RockerDialog {
                             ra.setInterpolator(interpolator);
                             ra.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
-                                public void onAnimationStart(Animation animation) {}
+                                public void onAnimationStart(Animation animation) {
+                                }
+
                                 @Override
-                                public void onAnimationEnd(Animation animation) { rocker.clearAnimation(); }
+                                public void onAnimationEnd(Animation animation) {
+                                    rocker.clearAnimation();
+                                }
+
                                 @Override
-                                public void onAnimationRepeat(Animation animation) {}
+                                public void onAnimationRepeat(Animation animation) {
+                                }
                             });
 
-                            ScaleAnimation sa = new ScaleAnimation(1, 1 / rocker.getScaleX(), 1, 1 / rocker.getScaleY(), Animation.RELATIVE_TO_SELF,.5f,Animation.RELATIVE_TO_SELF,.5f);
+                            ScaleAnimation sa = new ScaleAnimation(1, 1 / rocker.getScaleX(), 1, 1 / rocker.getScaleY(), Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
                             sa.setDuration(ANIM_DURATION_100);
                             sa.setInterpolator(interpolator);
                             sa.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
-                                public void onAnimationStart(Animation animation) {}
+                                public void onAnimationStart(Animation animation) {
+                                }
+
                                 @Override
-                                public void onAnimationEnd(Animation animation) { rocker.clearAnimation(); }
+                                public void onAnimationEnd(Animation animation) {
+                                    rocker.clearAnimation();
+                                }
+
                                 @Override
-                                public void onAnimationRepeat(Animation animation) {}
+                                public void onAnimationRepeat(Animation animation) {
+                                }
                             });
 
                             AnimationSet as = new AnimationSet(false);
@@ -518,15 +530,19 @@ public class RockerDialog {
                             as.addAnimation(sa);
                             as.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
-                                public void onAnimationStart(Animation animation) {}
+                                public void onAnimationStart(Animation animation) {
+                                }
+
                                 @Override
                                 public void onAnimationEnd(Animation animation) {
                                     rocker.setRotation(0);
                                     rocker.setScaleX(1);
                                     rocker.setScaleY(1);
                                 }
+
                                 @Override
-                                public void onAnimationRepeat(Animation animation) {}
+                                public void onAnimationRepeat(Animation animation) {
+                                }
                             });
                             rocker.startAnimation(as);
                         }
@@ -541,12 +557,7 @@ public class RockerDialog {
         });
 
         // set password card height
-        cardPasswordText.post(new Runnable() {
-            @Override
-            public void run() {
-                cardPasswordText.setMinimumWidth(cardPasswordText.getHeight());
-            }
-        });
+        cardPasswordText.post(() -> cardPasswordText.setMinimumWidth(cardPasswordText.getHeight()));
 
         // set password backspace
         btnBackspace.setOnClickListener(view -> {
@@ -564,7 +575,9 @@ public class RockerDialog {
         // set password text box animation
         tvPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 int length = charSequence.length();
@@ -611,7 +624,7 @@ public class RockerDialog {
                 }
                 int currentWidth = tvPassword.getWidth();
                 tvPassword.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                int targetWidth = Math.min(tvPassword.getMeasuredWidth(), fragmentSize[0] - 300);
+                int targetWidth = Math.min(tvPassword.getMeasuredWidth(), dialogSize[0] - 300);
                 ValueAnimator lengthAnimator = ValueAnimator.ofInt(currentWidth, targetWidth);
                 lengthAnimator.addUpdateListener(animation -> {
                     tvPassword.getLayoutParams().width = (int) animation.getAnimatedValue();
@@ -621,31 +634,47 @@ public class RockerDialog {
                 lengthAnimator.setDuration(ANIM_DURATION_100);
                 lengthAnimator.start();
             }
+
             @Override
-            public void afterTextChanged(Editable editable) {}
+            public void afterTextChanged(Editable editable) {
+            }
         });
 
         btnNegative.setOnClickListener(v -> dialog.dismiss());
     }
 
-    public void setFragmentSize() {
+    /**
+     * Calculate dialog size and set params.
+     */
+    public void setDialogSize() {
         int maxWidth = dpToPx(400);
         float widthPercentage = .9F;
         float widthHeightRatio = .7F;
         int width = (int) Math.min(widthPercentage * activity.getWindow().getDecorView().getWidth(), maxWidth);
-//        int width = (int) (widthPercentage * activity.getWindow().getDecorView().getWidth());
         int height = (int) Math.min(width / widthHeightRatio, widthPercentage * activity.getWindow().getDecorView().getHeight());
-        fragmentSize[0] = width;
-        fragmentSize[1] = height;
+        dialogSize[0] = width;
+        dialogSize[1] = height;
     }
 
+    /**
+     * Convert dp to px.
+     *
+     * @param dp dp
+     * @return px
+     */
     public int dpToPx(int dp) {
         float density = activity.getResources().getDisplayMetrics().density;
         return Math.round((float) dp * density);
     }
 
-    public void setRockerParams(int[] fragmentSize, SharedPreferences pref) {
-        int minSide = Math.min(fragmentSize[0], fragmentSize[1]);
+    /**
+     * Calculate and set params for rocker.
+     *
+     * @param dialogSize size array
+     * @param pref       shared preference
+     */
+    public void setRockerParams(int[] dialogSize, SharedPreferences pref) {
+        int minSide = Math.min(dialogSize[0], dialogSize[1]);
         int travelSelectionIndex = pref.getInt("travel", MyDefaultPref.getDefaultInt("travel"));
         float spRatio = pref.getFloat("sm-ratio", MyDefaultPref.getDefaultFloat("sm-ratio"));
         float doubleJudgeRatio = pref.getFloat("tm-ratio", MyDefaultPref.getDefaultFloat("tm-ratio"));
@@ -669,30 +698,27 @@ public class RockerDialog {
         setTapMove((int) (minSide * .01));
     }
 
-    public void setMaxMove(int maxMove) {
-        MAX_MOVE = maxMove;
-    }
-
-    public void setMaxScale(float maxScale) {
-        MAX_SCALE = maxScale;
-    }
-
-    public void setSPRatio(float spRatio) {
-        SPIN_MOVE_RATIO = spRatio;
-    }
-
-    public void setDoubleJudgeMove(float doubleJudgeMove) {
-        DOUBLE_JUDGE_MOVE = doubleJudgeMove;
-    }
-
-    public void setTapMove(int tapMove) {
-        TAP_MOVE = tapMove;
-    }
-
+    /**
+     * Calculate the distance between two points.
+     *
+     * @param x1 x of the point one
+     * @param y1 y of point one
+     * @param x2 x of point two
+     * @param y2 y of point two
+     * @return distance
+     */
     public float dist(int x1, int y1, int x2, int y2) {
         return (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 
+    /**
+     * Recover the rotated coordinates.
+     *
+     * @param xy       array of original x,y of the point
+     * @param rotation rotation angle
+     * @param scale    scale ratio
+     * @return recovered coordinates
+     */
     public int[] transformCor(int[] xy, int rotation, float scale) {
         int[] result = new int[2];
         int x1 = (int) (xy[0] * scale);
@@ -702,20 +728,21 @@ public class RockerDialog {
         return result;
     }
 
+    /**
+     * Determine if two numbers have different signs.
+     *
+     * @param a number one
+     * @param b number two
+     * @return result
+     */
     public boolean isHetero(int a, int b) {
-//        return a * b <= 0;
         return (a ^ b) >>> 31 == 1 || a == 0 || b == 0;
     }
 
-    public  void show() {
-        dialog.show();
-    }
-
-    public void dismiss() {
-        dialog.dismiss();
-    }
-
-    public void wrongPassword() {
+    /**
+     * Reactions when password wrong.
+     */
+    public void handleWrongPassword() {
         textToRedAnimation.start();
         // animation enabled
         if (STIFFNESS != 524) {
@@ -734,8 +761,21 @@ public class RockerDialog {
                 }
             }, 500);
         }
-
         MyVibrator.shake(activity);
+    }
+
+    /**
+     * Show the dialog.
+     */
+    public void show() {
+        dialog.show();
+    }
+
+    /**
+     * Dismiss the dialog.
+     */
+    public void dismiss() {
+        dialog.dismiss();
     }
 
     public Button getBtnPositive() {
@@ -744,5 +784,25 @@ public class RockerDialog {
 
     public String getPassword() {
         return String.valueOf(tvPassword.getText());
+    }
+
+    public void setMaxMove(int maxMove) {
+        MAX_MOVE = maxMove;
+    }
+
+    public void setMaxScale(float maxScale) {
+        MAX_SCALE = maxScale;
+    }
+
+    public void setSPRatio(float spRatio) {
+        SPIN_MOVE_RATIO = spRatio;
+    }
+
+    public void setDoubleJudgeMove(float doubleJudgeMove) {
+        DOUBLE_JUDGE_MOVE = doubleJudgeMove;
+    }
+
+    public void setTapMove(int tapMove) {
+        TAP_MOVE = tapMove;
     }
 }

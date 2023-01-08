@@ -13,6 +13,11 @@ public abstract class MyVibrator {
     private static SharedPreferences pref;
     private static final int duration = 20;
 
+    /**
+     * Create a tick effect.
+     *
+     * @param activity activity
+     */
     public static void tick(Activity activity) {
         init(activity);
         if (pref.getBoolean("vibration", MyDefaultPref.getDefaultBoolean("vibration"))) {
@@ -24,6 +29,11 @@ public abstract class MyVibrator {
         }
     }
 
+    /**
+     * Create a shake wave.
+     *
+     * @param activity activity
+     */
     public static void shake(Activity activity) {
         init(activity);
         if (pref.getBoolean("vibration", MyDefaultPref.getDefaultBoolean("vibration"))) {
@@ -63,7 +73,7 @@ public abstract class MyVibrator {
 
     public static void init(Activity activity) {
         if (vibrator == null) {
-            vibrator = (Vibrator)activity.getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
             pref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
         }
     }

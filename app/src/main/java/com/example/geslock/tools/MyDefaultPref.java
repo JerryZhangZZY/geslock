@@ -8,7 +8,7 @@ import java.util.Map;
 public class MyDefaultPref {
 
     private static final Map<String, Object> defaultValues = new HashMap<>();
-    private static boolean init = false;
+    private static final boolean init = false;
 
     // appearance
     private static final int icon = 0;

@@ -32,11 +32,11 @@
                 android:textSize="48sp" />
 
             <TextView
-                android:id="@+id/tvCategoryAppearance"
+                android:id="@+id/tvCategoryGeneral"
+                style="@style/subtitleStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/settings_category_appearance"
-                style="@style/subtitleStyle" />
+                android:text="@string/settings_category_general" />
 
             <androidx.cardview.widget.CardView
                 style="@style/cardStyle"
@@ -102,6 +102,14 @@
                         android:text="@string/settings_entry_cross"
                         tools:ignore="TouchTargetSizeCheck" />
 
+                    <Switch
+                        android:id="@+id/switchItemCount"
+                        style="@style/settingsEntryStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_entry_show_item_count"
+                        tools:ignore="TouchTargetSizeCheck" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -147,31 +155,6 @@
                     </LinearLayout>
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="30dp" />
-
-            <TextView
-                android:id="@+id/tvCategoryGeneral"
-                style="@style/subtitleStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/settings_category_general" />
-
-            <androidx.cardview.widget.CardView
-                style="@style/cardStyle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <Switch
-                    android:id="@+id/switchItemCount"
-                    style="@style/settingsEntryStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_entry_show_item_count"
-                    tools:ignore="TouchTargetSizeCheck" />
             </androidx.cardview.widget.CardView>
 
             <Space

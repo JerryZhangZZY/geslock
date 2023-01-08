@@ -18,9 +18,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -29,22 +27,18 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.geslock.R;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyDefaultPref;
 import com.example.geslock.tools.MyToastMaker;
 import com.example.geslock.tools.MyVibrator;
-
-import org.w3c.dom.Text;
 
 import java.util.Locale;
 
@@ -56,9 +50,9 @@ public class SettingsFragment extends Fragment {
     private ImageButton[] rockerIcons;
     private Drawable border;
     private Switch switchCross;
+    private Switch switchItemCount;
     private Spinner spinnerTheme;
     private Spinner spinnerLanguage;
-    private Switch switchItemCount;
     private Spinner spinnerTravel;
     private Switch switchVibration;
     private Spinner spinnerAnimation;
@@ -120,6 +114,13 @@ public class SettingsFragment extends Fragment {
             editor.apply();
         });
 
+        switchItemCount = activity.findViewById(R.id.switchItemCount);
+        switchItemCount.setChecked(pref.getBoolean("item-count", MyDefaultPref.getDefaultBoolean("item-count")));
+        switchItemCount.setOnCheckedChangeListener((compoundButton, b) -> {
+            editor.putBoolean("item-count", b);
+            editor.apply();
+        });
+
         spinnerTheme = activity.findViewById(R.id.spinnerTheme);
         switch (pref.getInt("theme", MyDefaultPref.getDefaultInt("theme"))) {
             case MODE_NIGHT_NO:
@@ -162,7 +163,8 @@ public class SettingsFragment extends Fragment {
                 }
             }
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         spinnerLanguage = activity.findViewById(R.id.spinnerLanguage);
@@ -200,14 +202,8 @@ public class SettingsFragment extends Fragment {
 
             }
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
-        });
-
-        switchItemCount = activity.findViewById(R.id.switchItemCount);
-        switchItemCount.setChecked(pref.getBoolean("item-count", MyDefaultPref.getDefaultBoolean("item-count")));
-        switchItemCount.setOnCheckedChangeListener((compoundButton, b) -> {
-            editor.putBoolean("item-count", b);
-            editor.apply();
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         spinnerTravel = activity.findViewById(R.id.spinnerTravel);
@@ -218,8 +214,10 @@ public class SettingsFragment extends Fragment {
                 editor.putInt("travel", i);
                 editor.apply();
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         switchVibration = activity.findViewById(R.id.switchVibration);
@@ -237,8 +235,10 @@ public class SettingsFragment extends Fragment {
                 editor.putInt("animation", i);
                 editor.apply();
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         tvOvershoot = activity.findViewById(R.id.tvOvershoot);
@@ -368,6 +368,11 @@ public class SettingsFragment extends Fragment {
         });
     }
 
+    /**
+     * Rebirth the app to refresh all settings.
+     *
+     * @param context context
+     */
     public void triggerRebirth(Context context) {
         PackageManager packageManager = context.getPackageManager();
         Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());

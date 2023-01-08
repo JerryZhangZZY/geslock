@@ -1,6 +1,5 @@
 package com.example.geslock.ui.home;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geslock.R;
 import com.example.geslock.tools.MyDefaultPref;
-import com.example.geslock.tools.MyToastMaker;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +27,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
@@ -37,7 +34,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     all supported file types
      */
     private final List<String> textExtensions = Collections.singletonList("txt");
-    private final List<String> imageExtensions = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp");
+    private final List<String> imageExtensions = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "ico");
     private final List<String> videoExtensions = Arrays.asList("mp4", "mov", "avi", "flv", "wmv", "mpeg", "mkv", "asf");
     private final List<String> audioExtensions = Arrays.asList("mp3", "wav", "cda", "aif", "aiff");
     private final List<String> zipExtensions = Arrays.asList("zip", "7z", "rar", "tz", "arj");
@@ -73,8 +70,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     /**
      * Set file entry appearance.
+     *
      * @param myViewHolder view holder
-     * @param i file index
+     * @param i            file index
      */
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
@@ -170,6 +168,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     /**
      * Pick an icon for a file according to its name.
+     *
      * @param fileName file name
      * @return icon resource id
      */

@@ -20,6 +20,7 @@
         <item name="android:padding">10dp</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:thumbTint">@color/selector_switch_thumb</item>
     </style>
     <style name="subtitleStyle">
         <item name="android:layout_marginBottom">5dp</item>

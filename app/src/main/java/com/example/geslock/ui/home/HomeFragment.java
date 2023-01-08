@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.FileObserver;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -38,7 +37,6 @@ import com.example.geslock.R;
 import com.example.geslock.tools.MyAES;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyToastMaker;
-import com.example.geslock.tools.MyVibrator;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
@@ -99,6 +97,8 @@ public class HomeFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        requestPermissions(permissions, 0);
+
         activity = getActivity();
         assert activity != null;
 
@@ -108,12 +108,9 @@ public class HomeFragment extends Fragment {
         if (!rootDir.exists()) {
             rootDir.mkdir();
         }
-
         cacheDir = activity.getExternalCacheDir();
-//        if (!cacheDir.exists()) {
-//            cacheDir.mkdir();
-//        }
 
+        // set animations
         ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
         ANIM_DURATION_200 = MyAnimationScaler.getDuration(200, activity);
         animRotateOpen = AnimationUtils.loadAnimation(activity, R.anim.rotate_open_anim);
@@ -128,6 +125,7 @@ public class HomeFragment extends Fragment {
         animItemFallDown.setDuration(ANIM_DURATION_200);
         animRecyclerLayout = new LayoutAnimationController(animItemFallDown, 0.15F);
 
+        // set file list
         recyclerFileList = activity.findViewById(R.id.recyclerFileList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
         recyclerFileList.setLayoutManager(linearLayoutManager);
@@ -138,10 +136,13 @@ public class HomeFragment extends Fragment {
         btnBack = activity.findViewById(R.id.btnBack);
         btnBack.setOnClickListener(view -> handleBack());
 
+        // set adapter
         myAdapter = new MyAdapter(activity, myList);
         myAdapter.setOnItemClickListener((view, position) -> {
             File file = currentFiles[position];
             if (file.isFile()) {
+                // handle decryption when clicked on a file
+                // set the decryption dialog
                 RockerDialog decryptionDialog = new RockerDialog(activity);
                 decryptionDialog.getBtnPositive().setOnClickListener(v -> {
                     String key = decryptionDialog.getPassword();
@@ -151,8 +152,9 @@ public class HomeFragment extends Fragment {
                     String destPath = cacheDir.getPath() + "/" + file.getName().substring(0, file.getName().length() - 2);
                     File plainFile = MyAES.decryptFile(file, destPath, key);
                     if (plainFile == null) {
-                        decryptionDialog.wrongPassword();
+                        decryptionDialog.handleWrongPassword();
                     } else {
+                        // share the decrypted file with a third-party app
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         Uri uri;
                         uri = FileProvider.getUriForFile(activity, "com.example.geslock.fileprovider", plainFile);
@@ -165,19 +167,18 @@ public class HomeFragment extends Fragment {
                 });
                 decryptionDialog.show();
             } else {
+                // enter the clicked folder
                 File[] files = currentFiles[position].listFiles();
                 currentParent = currentFiles[position];
                 currentFiles = files;
                 refresh();
             }
         });
-        myAdapter.setOnItemLongClickListener(((view, position) -> {
-            dialogEdit(position, activity);
-        }));
+        // show edit dialog when long clicked
+        myAdapter.setOnItemLongClickListener(((view, position) -> dialogEdit(position, activity)));
         recyclerFileList.setAdapter(myAdapter);
 
-        requestPermissions(permissions, 1);
-
+        // set floating action buttons
         fabAdd = activity.findViewById(R.id.fabAdd);
         fabAddFile = activity.findViewById(R.id.fabAddFile);
         fabAddFolder = activity.findViewById(R.id.fabAddFolder);
@@ -187,6 +188,7 @@ public class HomeFragment extends Fragment {
         fabAdd.setOnClickListener(view -> switchFabs());
 
         fabAddFile.setOnClickListener(view -> {
+            // open system file manager to upload a file
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("*/*");
             intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -195,13 +197,16 @@ public class HomeFragment extends Fragment {
         });
 
         fabAddFolder.setOnClickListener(view -> {
+            // create a new folder
             dialogNewFolder(activity);
             switchFabs();
         });
 
+        // set empty folder hint
         imgEmpty = activity.findViewById(R.id.imgEmpty);
         tvEmpty = activity.findViewById(R.id.tvEmpty);
 
+        // set colors
         yellow_500 = activity.getColor(R.color.yellow_500);
         red_500 = activity.getColor(R.color.red_500);
         gray_500 = activity.getColor(R.color.gray_500);
@@ -211,6 +216,7 @@ public class HomeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(resultCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+            // get uploaded file
             Uri uri = data.getData();
             String name = Objects.requireNonNull(DocumentFile.fromSingleUri(activity, uri)).getName();
             String destPath = currentParent.getPath() + "/" + name + "gl";
@@ -235,7 +241,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         // handle back operation
         requireView().setFocusableInTouchMode(true);
         requireView().requestFocus();
@@ -246,21 +251,21 @@ public class HomeFragment extends Fragment {
             }
             return false;
         });
-
         // delete cache for safety
         deleteFile(cacheDir);
     }
 
     /**
      * Init recycler view after permission granted.
-     * @param requestCode request code
-     * @param permissions permissions
+     *
+     * @param requestCode  request code
+     * @param permissions  permissions
      * @param grantResults grant results
      */
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 1) {
+        if (requestCode == 0) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (rootDir.exists()) {
                     currentParent = rootDir;
@@ -276,6 +281,7 @@ public class HomeFragment extends Fragment {
 
     /**
      * The dialog of creating new folder.
+     *
      * @param activity current activity
      */
     public void dialogNewFolder(Activity activity) {
@@ -300,7 +306,9 @@ public class HomeFragment extends Fragment {
         Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.toString().isEmpty()) {
@@ -311,8 +319,10 @@ public class HomeFragment extends Fragment {
                     btnPositive.setClickable(true);
                 }
             }
+
             @Override
-            public void afterTextChanged(Editable editable) {}
+            public void afterTextChanged(Editable editable) {
+            }
         });
         btnPositive.setTextColor(gray_500);
         btnPositive.setClickable(false);
@@ -321,11 +331,12 @@ public class HomeFragment extends Fragment {
 
     /**
      * The dialog of editing a file/folder
+     *
      * @param position position of the file/folder to be edited
      * @param activity current activity
      */
     public void dialogEdit(int position, Activity activity) {
-        final String[] options = {(String) activity.getText(R.string.edit_file_rename),(String) activity.getText(R.string.edit_file_delete)};
+        final String[] options = {(String) activity.getText(R.string.edit_file_rename), (String) activity.getText(R.string.edit_file_delete)};
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setIcon(getItemIcon(position))
                 .setTitle(getItemName(position))
@@ -345,6 +356,7 @@ public class HomeFragment extends Fragment {
 
     /**
      * The dialog of renaming a file/folder.
+     *
      * @param position position of the file/folder to be renamed
      * @param activity current activity
      */
@@ -392,7 +404,9 @@ public class HomeFragment extends Fragment {
         Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String newName = charSequence.toString();
@@ -404,8 +418,10 @@ public class HomeFragment extends Fragment {
                     btnPositive.setClickable(true);
                 }
             }
+
             @Override
-            public void afterTextChanged(Editable editable) {}
+            public void afterTextChanged(Editable editable) {
+            }
         });
         btnPositive.setTextColor(gray_500);
         btnPositive.setClickable(false);
@@ -414,6 +430,7 @@ public class HomeFragment extends Fragment {
 
     /**
      * The dialog of confirming a deletion of a file/folder.
+     *
      * @param position position of the file/folder to be renamed
      * @param activity current activity
      */
@@ -476,6 +493,7 @@ public class HomeFragment extends Fragment {
 
     /**
      * Create a new folder under the current path.
+     *
      * @param name name of the folder to be created
      * @return creation result
      */
@@ -490,6 +508,7 @@ public class HomeFragment extends Fragment {
 
     /**
      * Delete a file/folder.
+     *
      * @param dirFile file/folder to be deleted
      * @return deletion result
      */
@@ -507,7 +526,8 @@ public class HomeFragment extends Fragment {
 
     /**
      * Rename a file/folder.
-     * @param file file/folder to be renamed
+     *
+     * @param file    file/folder to be renamed
      * @param newName new name
      * @return renaming result
      */
@@ -523,6 +543,7 @@ public class HomeFragment extends Fragment {
 
     /**
      * Priority: folder > file.
+     *
      * @param currentFiles files to be sorted
      * @return sorted files
      */
@@ -614,18 +635,35 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /**
+     * Get file/folder name of a entry.
+     *
+     * @param position the index in the recycler view
+     * @return file/folder name
+     */
     public String getItemName(int position) {
         View viewItem = Objects.requireNonNull(recyclerFileList.getLayoutManager()).findViewByPosition(position);
         assert viewItem != null;
         return (String) ((TextView) viewItem.findViewById(R.id.tvFileName)).getText();
     }
 
+    /**
+     * Get file/folder icon of a entry.
+     *
+     * @param position the index in the recycler view
+     * @return file/folder icon
+     */
     public Drawable getItemIcon(int position) {
         View viewItem = Objects.requireNonNull(recyclerFileList.getLayoutManager()).findViewByPosition(position);
         assert viewItem != null;
         return ((ImageView) viewItem.findViewById(R.id.imgFileIcon)).getDrawable();
     }
 
+    /**
+     * Set dialog background.
+     *
+     * @param dialog dialog
+     */
     public void setDialogBackground(AlertDialog dialog) {
         dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_dialog_background);
     }
