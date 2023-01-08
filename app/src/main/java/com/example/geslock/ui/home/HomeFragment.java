@@ -5,6 +5,7 @@ import static android.app.Activity.RESULT_OK;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -161,7 +162,12 @@ public class HomeFragment extends Fragment {
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.setData(uri);
-                        activity.startActivity(intent);
+                        try {
+                            activity.startActivity(intent);
+                        } catch (ActivityNotFoundException e) {
+                            intent.setType("*/*");
+                            activity.startActivity(intent);
+                        }
                         decryptionDialog.dismiss();
                     }
                 });
