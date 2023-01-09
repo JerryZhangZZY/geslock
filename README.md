@@ -17,7 +17,7 @@ An Android app that protects sensitive files on mobile phones using secret multi
 - Fully functional document management system.
 - Fully customizable user preferences.
 - Silky smooth animations and fine haptic feedback.
-- Support system dark mode.
+- Adapts to system dark mode.
 
 ## Screenshots
 
