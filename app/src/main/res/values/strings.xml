@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GesLock</string>
-    <string name="title_encryption">Encryption</string>
-    <string name="title_decryption">Decryption</string>
     <string name="title_home">Home</string>
     <string name="title_settings">Settings</string>
     <string name="drag_icon_1">Soccer</string>
@@ -59,4 +57,8 @@
     <string name="reset">Reset settings</string>
     <string name="reset_title">Reset all settings?</string>
     <string name="file_name_exist">File name already exist</string>
+    <string name="menu_sort">Sort by...</string>
+    <string name="menu_property">Property showed...</string>
+    <string name="sheet_sort_title">SORT BY</string>
+    <string name="sheet_property_title">PROPERTY SHOWED</string>
 </resources>

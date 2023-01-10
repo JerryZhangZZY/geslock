@@ -10,12 +10,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -23,11 +25,13 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
@@ -38,6 +42,7 @@ import com.example.geslock.R;
 import com.example.geslock.tools.MyAES;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyToastMaker;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
@@ -63,6 +68,7 @@ public class HomeFragment extends Fragment {
 
     private Button btnBack;
     private TextView tvPath;
+    private ImageButton btnMenu;
     private RecyclerView recyclerFileList;
     private FloatingActionButton fabAdd;
     private FloatingActionButton fabAddFile;
@@ -133,6 +139,29 @@ public class HomeFragment extends Fragment {
         recyclerFileList.setLayoutAnimation(animRecyclerLayout);
 
         tvPath = activity.findViewById(R.id.tvPath);
+
+        btnMenu = activity.findViewById(R.id.btnMenu);
+        btnMenu.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(activity, v);
+            popupMenu.inflate(R.menu.sort_and_property_menu);
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getOrder()) {
+                        case 1:
+                            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(activity);
+                            bottomSheetDialog.setContentView(R.layout.sheet_sort);
+                            bottomSheetDialog.show();
+                            break;
+                        case 2:
+                            MyToastMaker.make("2", activity);
+                            break;
+                    }
+                    return false;
+                }
+            });
+            popupMenu.show();
+        });
 
         btnBack = activity.findViewById(R.id.btnBack);
         btnBack.setOnClickListener(view -> handleBack());

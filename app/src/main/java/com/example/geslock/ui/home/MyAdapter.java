@@ -3,6 +3,7 @@ package com.example.geslock.ui.home;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.FileUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,16 +98,40 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             }
         }
 
-        // set file creation time
+        // set file property
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             try {
                 attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
                 time = attr.creationTime();
-                myViewHolder.tvFileDate.setText(simpleDateFormat.format(new Date(time.toMillis())));
+                myViewHolder.tvFileProperty.setText(simpleDateFormat.format(new Date(time.toMillis())));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        myViewHolder.tvFileProperty.setText(file.length() / 1024 + " KB");
+        myViewHolder.tvFileProperty.setText(getFileSize(file) / 1000 + " KB");
+    }
+
+    /**
+     * Get size of a file or folder.
+     * @param file  file or folder
+     * @return size in bytes
+     */
+    public long getFileSize(File file) {
+        if (file.isFile()) {
+            return file.length();
+        }
+        long size = 0;
+        try {
+            File[] fileList = file.listFiles();
+            for (File value : fileList) {
+                if (value.isDirectory()) size = size + getFileSize(value);
+                else size = size + value.length();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return size;
     }
 
     public void setOnItemClickListener(MyViewHolder.OnItemClickListener listener) {
@@ -128,7 +153,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         ImageView imgIcon;
         ImageView imgEnter;
         TextView tvFileName;
-        TextView tvFileDate;
+        TextView tvFileProperty;
         TextView tvItemCount;
         OnItemClickListener clickListener;
         OnItemLongClickListener longClickListener;
@@ -139,7 +164,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             imgIcon = itemView.findViewById(R.id.imgFileIcon);
             imgEnter = itemView.findViewById(R.id.imgEnter);
             tvFileName = itemView.findViewById(R.id.tvFileName);
-            tvFileDate = itemView.findViewById(R.id.tvFileDate);
+            tvFileProperty = itemView.findViewById(R.id.tvFileProperty);
             tvItemCount = itemView.findViewById(R.id.tvItemCount);
             this.clickListener = clickListener;
             this.longClickListener = longClickListener;

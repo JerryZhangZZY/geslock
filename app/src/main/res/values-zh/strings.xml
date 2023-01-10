@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GesLock</string>
-    <string name="title_encryption">加密</string>
-    <string name="title_decryption">解密</string>
     <string name="title_home">主页</string>
     <string name="title_settings">设置</string>
     <string name="drag_icon_1">足球</string>
@@ -54,4 +52,8 @@
     <string name="reset">重置设置</string>
     <string name="reset_title">重置所有设置？</string>
     <string name="file_name_exist">文件名已存在</string>
+    <string name="menu_sort">排序方式...</string>
+    <string name="menu_property">属性显示...</string>
+    <string name="sheet_sort_title">排序方式</string>
+    <string name="sheet_property_title">显示的属性</string>
 </resources>

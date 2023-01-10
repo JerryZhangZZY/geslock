@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.geslock.ui.home.HomeFragment"
-        android:label="@string/title_decryption"
+        android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment

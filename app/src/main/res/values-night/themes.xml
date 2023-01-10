@@ -23,5 +23,6 @@
         <item name="dividerColor">@color/gray_700</item>
         <item name="cardBackgroundColor">@color/gray_800</item>
         <item name="android:shadowColor">@color/black</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
 </resources>
