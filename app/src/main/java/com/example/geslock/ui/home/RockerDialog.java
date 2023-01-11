@@ -27,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
@@ -36,13 +37,14 @@ import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyDefaultPref;
 import com.example.geslock.tools.MyVibrator;
 
-public class RockerDialog {
+import java.util.Objects;
+
+public class RockerDialog extends Dialog {
 
     private final int MAX_PASSWORD_LENGTH = 10;
 
     private final Activity activity;
     private final SharedPreferences pref;
-    private final Dialog dialog;
 
     private int MAX_MOVE = 300;
     private float MAX_SCALE = 1.5F;
@@ -82,18 +84,17 @@ public class RockerDialog {
 
     @SuppressLint("ClickableViewAccessibility")
     public RockerDialog(Activity activity) {
+        super(activity);
         // set activity
         this.activity = activity;
         // get preferences
-        assert activity != null;
         pref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
 
         // set dialog
-        dialog = new Dialog(activity);
-        dialog.setContentView(R.layout.dialog_rocker);
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.rocker_dialog_background);
+        this.setContentView(R.layout.dialog_rocker);
+        this.getWindow().setBackgroundDrawableResource(R.drawable.rocker_dialog_background);
         setDialogSize();
-        dialog.getWindow().setLayout(dialogSize[0], dialogSize[1]);
+        this.getWindow().setLayout(dialogSize[0], dialogSize[1]);
 
         // set icon selection
         ICON_INDEX = pref.getInt("icon", MyDefaultPref.getDefaultInt("icon"));
@@ -113,15 +114,15 @@ public class RockerDialog {
         rockerIcons[2][2] = R.drawable.ic_basketball_spin_y;
 
         // get widgets
-        tvPassword = dialog.findViewById(R.id.tvPassword);
-        btnBackspace = dialog.findViewById(R.id.btnBackspace);
-        cardPassword = dialog.findViewById(R.id.cardPassword);
-        cardPasswordText = dialog.findViewById(R.id.cardPasswordText);
-        rocker = dialog.findViewById(R.id.rocker);
-        cross = dialog.findViewById(R.id.cross);
-        btnPositive = dialog.findViewById(R.id.btnRockerPositive);
-        btnNegative = dialog.findViewById(R.id.btnRockerNegative);
-        tvPasswordHint = dialog.findViewById(R.id.tvPasswordHint);
+        tvPassword = this.findViewById(R.id.tvPassword);
+        btnBackspace = this.findViewById(R.id.btnBackspace);
+        cardPassword = this.findViewById(R.id.cardPassword);
+        cardPasswordText = this.findViewById(R.id.cardPasswordText);
+        rocker = this.findViewById(R.id.rocker);
+        cross = this.findViewById(R.id.cross);
+        btnPositive = this.findViewById(R.id.btnRockerPositive);
+        btnNegative = this.findViewById(R.id.btnRockerNegative);
+        tvPasswordHint = this.findViewById(R.id.tvPasswordHint);
 
         // get colors
         red_200 = activity.getColor(R.color.red_200);
@@ -640,7 +641,7 @@ public class RockerDialog {
             }
         });
 
-        btnNegative.setOnClickListener(v -> dialog.dismiss());
+        Objects.requireNonNull(btnNegative).setOnClickListener(v -> this.dismiss());
     }
 
     /**
@@ -762,20 +763,6 @@ public class RockerDialog {
             }, 500);
         }
         MyVibrator.shake(activity);
-    }
-
-    /**
-     * Show the dialog.
-     */
-    public void show() {
-        dialog.show();
-    }
-
-    /**
-     * Dismiss the dialog.
-     */
-    public void dismiss() {
-        dialog.dismiss();
     }
 
     public Button getBtnPositive() {
