@@ -56,4 +56,7 @@
     <string name="menu_property">属性显示...</string>
     <string name="sheet_sort_title">排序方式</string>
     <string name="sheet_property_title">显示的属性</string>
+    <string name="sort_name">文件名</string>
+    <string name="sort_date">创建日期</string>
+    <string name="sort_size">文件大小</string>
 </resources>

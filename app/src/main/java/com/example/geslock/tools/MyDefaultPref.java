@@ -29,6 +29,9 @@ public class MyDefaultPref {
     private static final float smRatio = 0.2F;
     private static final float tmRatio = 0.04F;
 
+    // files
+    private static final int sort = 0;
+
     public static void init() {
         defaultValues.put("icon", icon);
         defaultValues.put("cross", cross);

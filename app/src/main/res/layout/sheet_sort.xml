@@ -13,7 +13,6 @@
         android:paddingTop="20dp"
         android:paddingBottom="10dp"
         android:text="@string/sheet_sort_title"
-        app:layout_constraintBottom_toTopOf="@+id/tvSortByName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,21 +23,23 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:paddingStart="35dp"
-        android:text="Name"
+        android:text="@string/sort_name"
+        android:textColor="?android:attr/titleTextColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSortTitle" />
 
-    <TextView
-        android:id="@+id/tvSortBySize"
-        style="@style/sheetEntryStyle"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/imgCheckName"
+        android:layout_width="50dp"
         android:layout_height="50dp"
-        android:paddingStart="35dp"
-        android:text="Size"
+        android:layout_marginEnd="20dp"
+        android:padding="15dp"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvSortByName" />
+        app:layout_constraintTop_toTopOf="@id/tvSortByName"
+        app:srcCompat="@drawable/ic_check"
+        app:tint="?colorSecondary" />
 
     <TextView
         android:id="@+id/tvSortByDate"
@@ -46,15 +47,52 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:paddingStart="35dp"
-        android:text="Date"
+        android:text="@string/sort_date"
+        android:textColor="?android:attr/titleTextColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSortBySize" />
+        app:layout_constraintTop_toBottomOf="@+id/tvSortByName" />
+
+    <ImageView
+        android:id="@+id/imgCheckDate"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="20dp"
+        android:padding="15dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvSortByDate"
+        app:srcCompat="@drawable/ic_check"
+        app:tint="?colorSecondary" />
+
+    <TextView
+        android:id="@+id/tvSortBySize"
+        style="@style/sheetEntryStyle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:paddingStart="35dp"
+        android:text="@string/sort_size"
+        android:textColor="?android:attr/titleTextColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSortByDate" />
+
+    <ImageView
+        android:id="@+id/imgCheckSize"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="20dp"
+        android:padding="15dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvSortBySize"
+        app:srcCompat="@drawable/ic_check"
+        app:tint="?colorSecondary" />
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        app:layout_constraintTop_toBottomOf="@id/tvSortByDate"
+        app:layout_constraintTop_toBottomOf="@+id/tvSortBySize"
         tools:layout_editor_absoluteX="198dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

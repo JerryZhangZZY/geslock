@@ -6,18 +6,17 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -42,7 +41,6 @@ import com.example.geslock.R;
 import com.example.geslock.tools.MyAES;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyToastMaker;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
@@ -144,21 +142,24 @@ public class HomeFragment extends Fragment {
         btnMenu.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(activity, v);
             popupMenu.inflate(R.menu.sort_and_property_menu);
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    switch (item.getOrder()) {
-                        case 1:
-                            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(activity);
-                            bottomSheetDialog.setContentView(R.layout.sheet_sort);
-                            bottomSheetDialog.show();
-                            break;
-                        case 2:
-                            MyToastMaker.make("2", activity);
-                            break;
-                    }
-                    return false;
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getOrder()) {
+                    case 1:
+                        int[] entryIds = new int[]{R.id.tvSortByName, R.id.tvSortByDate, R.id.tvSortBySize};
+                        int[] checkIds = new int[]{R.id.imgCheckName, R.id.imgCheckDate, R.id.imgCheckSize};
+                        SingleChoiceSheet sortSheet = new SingleChoiceSheet(activity, R.layout.sheet_sort, entryIds, checkIds);
+                        sortSheet.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                            }
+                        });
+                        sortSheet.show();
+                        break;
+                    case 2:
+                        MyToastMaker.make("2", activity);
+                        break;
                 }
+                return false;
             });
             popupMenu.show();
         });

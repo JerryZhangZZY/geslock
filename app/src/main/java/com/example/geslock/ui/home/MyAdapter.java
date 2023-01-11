@@ -108,8 +108,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 e.printStackTrace();
             }
         }
-        myViewHolder.tvFileProperty.setText(file.length() / 1024 + " KB");
-        myViewHolder.tvFileProperty.setText(getFileSize(file) / 1000 + " KB");
+//        myViewHolder.tvFileProperty.setText(file.length() / 1024 + " KB");
+//        myViewHolder.tvFileProperty.setText(getFileSize(file) / 1000 + " KB");
     }
 
     /**

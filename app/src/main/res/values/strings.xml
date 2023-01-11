@@ -61,4 +61,7 @@
     <string name="menu_property">Property showed...</string>
     <string name="sheet_sort_title">SORT BY</string>
     <string name="sheet_property_title">PROPERTY SHOWED</string>
+    <string name="sort_name">File name</string>
+    <string name="sort_date">Date of creation</string>
+    <string name="sort_size">File size</string>
 </resources>
