@@ -1,122 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tvSortTitle"
+        android:id="@+id/tvOrderTitle"
         style="@style/subtitleStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="20dp"
         android:paddingBottom="10dp"
-        android:text="@string/sheet_sort_title"
+        android:text="@string/sheet_order_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvSortName"
+        android:id="@+id/tvOrderAscend"
         style="@style/sheetEntryStyle"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:paddingStart="65dp"
-        android:text="@string/sort_name"
+        android:text="@string/order_ascend"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSortTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvOrderTitle" />
 
     <ImageView
-        android:id="@+id/imgSortNameCheck"
+        android:id="@+id/imgOrderAscendCheck"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginEnd="20dp"
         android:padding="15dp"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvSortName"
+        app:layout_constraintTop_toTopOf="@id/tvOrderAscend"
         app:srcCompat="@drawable/ic_check"
         app:tint="?colorSecondary" />
 
     <ImageView
-        android:id="@+id/imgSortNameIcon"
+        android:id="@+id/imgOrderAscendIcon"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
         android:padding="15dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvSortName"
-        app:srcCompat="@drawable/ic_file_name"
+        app:layout_constraintTop_toTopOf="@id/tvOrderAscend"
+        app:srcCompat="@drawable/ic_arrow_up"
         app:tint="?android:attr/titleTextColor" />
 
     <TextView
-        android:id="@+id/tvSortDate"
+        android:id="@+id/tvOrderDescend"
         style="@style/sheetEntryStyle"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:paddingStart="65dp"
-        android:text="@string/sort_date"
+        android:text="@string/order_descend"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSortName" />
+        app:layout_constraintTop_toBottomOf="@id/tvOrderAscend" />
 
     <ImageView
-        android:id="@+id/imgSortDateCheck"
+        android:id="@+id/imgOrderDescendCheck"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginEnd="20dp"
         android:padding="15dp"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvSortDate"
+        app:layout_constraintTop_toTopOf="@id/tvOrderDescend"
         app:srcCompat="@drawable/ic_check"
         app:tint="?colorSecondary" />
 
     <ImageView
-        android:id="@+id/imgSortDateIcon"
+        android:id="@+id/imgOrderDescendIcon"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
         android:padding="15dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvSortDate"
-        app:srcCompat="@drawable/ic_file_date"
-        app:tint="?android:attr/titleTextColor" />
-
-    <TextView
-        android:id="@+id/tvSortSize"
-        style="@style/sheetEntryStyle"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:paddingStart="65dp"
-        android:text="@string/sort_size"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSortDate" />
-
-    <ImageView
-        android:id="@+id/imgSortSizeCheck"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="20dp"
-        android:padding="15dp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvSortSize"
-        app:srcCompat="@drawable/ic_check"
-        app:tint="?colorSecondary" />
-
-    <ImageView
-        android:id="@+id/imgSortSizeIcon"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="20dp"
-        android:padding="15dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvSortSize"
-        app:srcCompat="@drawable/ic_file_size"
+        app:layout_constraintTop_toTopOf="@id/tvOrderDescend"
+        app:srcCompat="@drawable/ic_arrow_down"
         app:tint="?android:attr/titleTextColor" />
 
     <Space
@@ -124,6 +89,5 @@
         android:layout_height="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSortSize" />
-
+        app:layout_constraintTop_toBottomOf="@id/imgOrderDescendCheck" />
 </androidx.constraintlayout.widget.ConstraintLayout>

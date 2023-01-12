@@ -1,48 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GesLock</string>
+
     <string name="title_home">主页</string>
     <string name="title_settings">设置</string>
+
     <string name="drag_icon_1">足球</string>
     <string name="drag_icon_2">甜甜圈</string>
     <string name="drag_icon_3">篮球</string>
+
+    <string name="settings_category_general">通用</string>
+    <string name="settings_category_interaction">交互</string>
+    <string name="settings_category_advanced">高级</string>
+
     <string name="settings_entry_cross">显示十字架</string>
     <string name="settings_entry_theme">主题</string>
+    <string name="settings_entry_language">语言</string>
+    <string name="settings_entry_show_item_count">显示文件夹内项目数量</string>
+    <string name="settings_entry_travel">摇杆行程</string>
+    <string name="settings_entry_vibration">触感反馈</string>
+    <string name="settings_entry_animation">动画缩放</string>
+    <string name="settings_entry_overshoot">动画超调量</string>
+    <string name="settings_entry_smratio">旋转-移动比</string>
+    <string name="settings_entry_tmratio">双指手势判别比</string>
+
     <string name="spinner_theme_1">浅色</string>
     <string name="spinner_theme_2">深色</string>
     <string name="spinner_theme_3">跟随系统</string>
-    <string name="settings_entry_language">语言</string>
+
     <string name="spinner_language_3">跟随系统</string>
-    <string name="settings_category_general">通用</string>
-    <string name="settings_entry_show_item_count">显示文件夹内项目数量</string>
-    <string name="settings_category_interaction">交互</string>
-    <string name="settings_entry_travel">摇杆行程</string>
+
     <string name="spinner_travel_1">较短</string>
     <string name="spinner_travel_2">中等</string>
     <string name="spinner_travel_3">较长</string>
-    <string name="settings_entry_vibration">触感反馈</string>
-    <string name="settings_category_advanced">高级</string>
-    <string name="settings_entry_animation">动画缩放</string>
+
     <string name="spinner_animation_1">动画关</string>
     <string name="spinner_animation_2">缩放 .5x</string>
     <string name="spinner_animation_3">缩放 1x</string>
     <string name="spinner_animation_4">缩放 1.5x</string>
     <string name="spinner_animation_5">缩放 2x</string>
     <string name="spinner_animation_6">缩放 5x</string>
-    <string name="settings_entry_overshoot">动画超调量</string>
+
     <string name="overshoot_description">(0–1) 摇杆回弹超调量</string>
-    <string name="settings_entry_smratio">旋转-移动比</string>
     <string name="smratio_description">(0–1) 单指和双指拖动时摇杆的移动距离比例</string>
-    <string name="settings_entry_tmratio">双指手势判别比</string>
     <string name="tmratio_description">(0–0.1) 判别缩放还是双指拖移时手指移动距离占交互界面最短边的比例</string>
+
     <string name="no_permission">请给予权限</string>
+
     <string name="empty">无项目</string>
+
     <string name="new_file">上传文件</string>
     <string name="new_folder">新建文件夹</string>
     <string name="new_folder_hint">文件夹名称</string>
     <string name="new_folder_exists">文件夹存在</string>
+
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
+
     <string name="edit_file_rename">重命名</string>
     <string name="edit_file_delete">删除</string>
     <string name="rename_hint">新名称</string>
@@ -52,11 +66,35 @@
     <string name="reset">重置设置</string>
     <string name="reset_title">重置所有设置？</string>
     <string name="file_name_exist">文件名已存在</string>
-    <string name="menu_sort">排序方式...</string>
-    <string name="menu_property">属性显示...</string>
+
+    <string name="menu_sort">排序方式…</string>
+    <string name="menu_order">排序方向…</string>
+    <string name="menu_property">属性显示…</string>
+
     <string name="sheet_sort_title">排序方式</string>
+    <string name="sheet_order_title">排序方向</string>
     <string name="sheet_property_title">显示的属性</string>
+
     <string name="sort_name">文件名</string>
     <string name="sort_date">创建日期</string>
     <string name="sort_size">文件大小</string>
+
+    <string name="order_ascend">升序</string>
+    <string name="order_descend">降序</string>
+
+    <string name="property_type">文件类型</string>
+    <string name="property_null">不显示</string>
+
+    <string name="type_folder">文件夹</string>
+    <string name="type_text">文本</string>
+    <string name="type_image">图像</string>
+    <string name="type_video">视频</string>
+    <string name="type_audio">音频</string>
+    <string name="type_zip">压缩包</string>
+    <string name="type_apk">安装包</string>
+    <string name="type_doc">微软Word文档</string>
+    <string name="type_ppt">微软PPT演示文稿</string>
+    <string name="type_xls">微软Excel表格</string>
+    <string name="type_pdf">便携式文档</string>
+    <string name="type_other">其他格式</string>
 </resources>

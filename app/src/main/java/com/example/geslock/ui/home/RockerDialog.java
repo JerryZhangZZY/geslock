@@ -35,6 +35,7 @@ import androidx.dynamicanimation.animation.SpringForce;
 import com.example.geslock.R;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyDefaultPref;
+import com.example.geslock.tools.MyPixelConverter;
 import com.example.geslock.tools.MyVibrator;
 
 import java.util.Objects;
@@ -648,24 +649,13 @@ public class RockerDialog extends Dialog {
      * Calculate dialog size and set params.
      */
     public void setDialogSize() {
-        int maxWidth = dpToPx(400);
+        int maxWidth = MyPixelConverter.dpToPx(400, activity);
         float widthPercentage = .9F;
         float widthHeightRatio = .7F;
         int width = (int) Math.min(widthPercentage * activity.getWindow().getDecorView().getWidth(), maxWidth);
         int height = (int) Math.min(width / widthHeightRatio, widthPercentage * activity.getWindow().getDecorView().getHeight());
         dialogSize[0] = width;
         dialogSize[1] = height;
-    }
-
-    /**
-     * Convert dp to px.
-     *
-     * @param dp dp
-     * @return px
-     */
-    public int dpToPx(int dp) {
-        float density = activity.getResources().getDisplayMetrics().density;
-        return Math.round((float) dp * density);
     }
 
     /**

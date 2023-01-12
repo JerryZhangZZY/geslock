@@ -2,8 +2,6 @@ package com.example.geslock.ui.home;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
-import android.os.FileUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +16,7 @@ import com.example.geslock.R;
 import com.example.geslock.tools.MyDefaultPref;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,10 +45,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private final List<File> list;
     private final SharedPreferences pref;
     private final boolean itemCount;
+    private int icon;
+    private String type;
     private MyViewHolder.OnItemClickListener clickListener;
     private MyViewHolder.OnItemLongClickListener longClickListener;
-    private BasicFileAttributes attr;
-    private FileTime time;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
 
     public MyAdapter(Context context, List<File> list) {
@@ -79,17 +74,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         File file = list.get(i);
+        setIconAndType(file);
+        myViewHolder.imgIcon.setImageResource(icon);
         // set file name, file icon and enter icon
         if (file.isFile()) {
             String fileName = file.getName();
             myViewHolder.tvFileName.setText(fileName.substring(0, fileName.length() - 2));
             myViewHolder.imgEnter.setVisibility(View.INVISIBLE);
-            myViewHolder.imgIcon.setImageResource(pickIcon(file.getName()));
             myViewHolder.tvItemCount.setVisibility(View.INVISIBLE);
         } else {
             myViewHolder.tvFileName.setText(file.getName());
             myViewHolder.imgEnter.setVisibility(View.VISIBLE);
-            myViewHolder.imgIcon.setImageResource(R.drawable.ic_folder);
             if (itemCount) {
                 myViewHolder.tvItemCount.setText(String.valueOf(Objects.requireNonNull(file.list()).length));
                 myViewHolder.tvItemCount.setVisibility(View.VISIBLE);
@@ -99,17 +94,33 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
 
         // set file property
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            try {
-                attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-                time = attr.creationTime();
-                myViewHolder.tvFileProperty.setText(simpleDateFormat.format(new Date(time.toMillis())));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        setProperty(myViewHolder.tvFileProperty, file);
+    }
+
+    /**
+     * Set additional file property on the subtitle
+     * @param textView subtitle textview
+     * @param file corresponding file
+     */
+    public void setProperty(TextView textView, File file) {
+        int property = pref.getInt("property", MyDefaultPref.getDefaultInt("property"));
+        switch (property) {
+            case 0:
+                // show creation time
+                textView.setText(simpleDateFormat.format(new Date(file.lastModified())));
+                break;
+            case 1:
+                // show file size
+                textView.setText(formatFileSize(getFileSize(file)));
+                break;
+            case 2:
+                // show file type
+                textView.setText(type);
+                break;
+            case 3:
+                // hide property
+                textView.setText(null);
         }
-//        myViewHolder.tvFileProperty.setText(file.length() / 1024 + " KB");
-//        myViewHolder.tvFileProperty.setText(getFileSize(file) / 1000 + " KB");
     }
 
     /**
@@ -117,7 +128,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
      * @param file  file or folder
      * @return size in bytes
      */
-    public long getFileSize(File file) {
+    public static long getFileSize(File file) {
         if (file.isFile()) {
             return file.length();
         }
@@ -132,6 +143,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             e.printStackTrace();
         }
         return size;
+    }
+
+    /**
+     * Format file size.
+     * @param size file size in bytes
+     * @return formatted file size with standard units
+     */
+    public String formatFileSize(long size) {
+        if (size <= 0) return "0 B";
+        final String[] units = new String[]{"B", "KB", "MB", "GB", "TB"};
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
     public void setOnItemClickListener(MyViewHolder.OnItemClickListener listener) {
@@ -193,36 +216,52 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
     /**
-     * Pick an icon for a file according to its name.
+     * TODO
      *
-     * @param fileName file name
-     * @return icon resource id
+     * @param file file
      */
-    public int pickIcon(String fileName) {
+    public void setIconAndType(File file) {
+        if (file.isDirectory()) {
+            icon = R.drawable.ic_folder;
+            type = context.getString(R.string.type_folder);
+            return;
+        }
+        String fileName = file.getName();
         // extract extension string from file name
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length() - 2).toLowerCase();
         if (textExtensions.contains(extension)) {
-            return R.drawable.ic_txt;
+            icon = R.drawable.ic_txt;
+            type = context.getString(R.string.type_text);
         } else if (imageExtensions.contains(extension)) {
-            return R.drawable.ic_image;
+            icon = R.drawable.ic_image;
+            type = context.getString(R.string.type_image);
         } else if (videoExtensions.contains(extension)) {
-            return R.drawable.ic_video;
+            icon = R.drawable.ic_video;
+            type = context.getString(R.string.type_video);
         } else if (audioExtensions.contains(extension)) {
-            return R.drawable.ic_audio;
+            icon = R.drawable.ic_audio;
+            type = context.getString(R.string.type_audio);
         } else if (zipExtensions.contains(extension)) {
-            return R.drawable.ic_zip;
+            icon = R.drawable.ic_zip;
+            type = context.getString(R.string.type_zip);
         } else if (apkExtensions.contains(extension)) {
-            return R.drawable.ic_apk;
+            icon = R.drawable.ic_apk;
+            type = context.getString(R.string.type_apk);
         } else if (docExtensions.contains(extension)) {
-            return R.drawable.ic_doc;
+            icon = R.drawable.ic_doc;
+            type = context.getString(R.string.type_doc);
         } else if (pptExtensions.contains(extension)) {
-            return R.drawable.ic_ppt;
+            icon = R.drawable.ic_ppt;
+            type = context.getString(R.string.type_ppt);
         } else if (xlsExtensions.contains(extension)) {
-            return R.drawable.ic_xls;
+            icon = R.drawable.ic_xls;
+            type = context.getString(R.string.type_xls);
         } else if (pdfExtensions.contains(extension)) {
-            return R.drawable.ic_pdf;
+            icon = R.drawable.ic_pdf;
+            type = context.getString(R.string.type_pdf);
         } else {
-            return R.drawable.ic_file;
+            icon = R.drawable.ic_file;
+            type = context.getString(R.string.type_other);
         }
     }
 }

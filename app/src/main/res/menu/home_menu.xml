@@ -3,10 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_sort"
-        android:orderInCategory="1"
-        android:title="@string/menu_sort" />
+        android:title="@string/menu_sort"
+        android:orderInCategory="1" />
+    <item
+        android:id="@+id/menu_order"
+        android:title="@string/menu_order"
+        android:orderInCategory="2" />
     <item
         android:id="@+id/menu_property"
         android:title="@string/menu_property"
-        android:orderInCategory="2" />
+        android:orderInCategory="3" />
 </menu>

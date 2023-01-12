@@ -25,7 +25,7 @@
             android:id="@+id/tvFileName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
+            android:layout_gravity="start|top"
             android:layout_marginStart="80dp"
             android:layout_marginEnd="50dp"
             android:singleLine="true"
@@ -38,7 +38,7 @@
             android:id="@+id/tvFileProperty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+            android:layout_gravity="bottom|start"
             android:layout_marginStart="80dp"
             android:text="2018-03-30 05:24"
             android:textAlignment="viewStart"
@@ -57,7 +57,8 @@
             android:layout_height="20dp"
             android:layout_gravity="center_vertical|end"
             android:layout_marginEnd="10dp"
-            app:srcCompat="@drawable/ic_enter"
+            android:rotation="180"
+            app:srcCompat="@drawable/ic_back"
             app:tint="?colorSecondary" />
 
         <TextView

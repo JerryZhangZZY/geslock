@@ -31,6 +31,8 @@ public class MyDefaultPref {
 
     // files
     private static final int sort = 0;
+    private static final int order = 0;
+    private static final int property = 0;
 
     public static void init() {
         defaultValues.put("icon", icon);
@@ -44,6 +46,9 @@ public class MyDefaultPref {
         defaultValues.put("overshoot", overshoot);
         defaultValues.put("sm-ratio", smRatio);
         defaultValues.put("tm-ratio", tmRatio);
+        defaultValues.put("sort", sort);
+        defaultValues.put("order", order);
+        defaultValues.put("property", property);
     }
 
     public static boolean getDefaultBoolean(String key) {
@@ -94,6 +99,9 @@ public class MyDefaultPref {
         editor.putFloat("overshoot", overshoot);
         editor.putFloat("sm-ratio", smRatio);
         editor.putFloat("tm-ratio", tmRatio);
+        editor.putInt("sort", sort);
+        editor.putInt("order", order);
+        editor.putInt("property", property);
         editor.commit();
     }
 }
