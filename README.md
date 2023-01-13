@@ -22,15 +22,19 @@ An Android app that protects sensitive files on mobile phones using secret multi
 ## Screenshots
 
 <div align="center">
-  <img width="250" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-home.png?raw=true" />
-  <img width="250" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-rocker.png?raw=true" />
-  <img width="250" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-edit.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.1/home.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.1/home-rocker.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.1/home-edit.png?raw=true" />
 </div>
 
 <div align="center">
-  <img width="250" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-settings.png?raw=true" />
-  <img width="250" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/geslock-1.0-theme:language.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.1/home-menu.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.1/home-sheet_property.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/settings.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/settings-dark&zh.png?raw=true" />
 </div>
+
+
 
 ## Work Plan (Gantt Chart)
 
