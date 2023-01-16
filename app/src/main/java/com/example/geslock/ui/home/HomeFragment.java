@@ -676,10 +676,14 @@ public class HomeFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     public void handleBack() {
         if (!rootDir.equals(currentParent)) {
+            // back to parent folder
             currentParent = currentParent.getParentFile();
             assert currentParent != null;
             currentFiles = currentParent.listFiles();
             refresh();
+        } else {
+            // quit app
+            activity.finishAffinity();
         }
     }
 
