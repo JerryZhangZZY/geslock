@@ -7,7 +7,7 @@
             <solid
                 android:color="?cardBackgroundColor"/>
             <corners
-                android:radius="15dp" />
+                android:radius="@dimen/corner_radius" />
             <padding
                 android:left="25dp"
                 android:right="25dp" />

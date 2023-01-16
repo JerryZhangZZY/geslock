@@ -19,6 +19,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.text.style.ImageSpan;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -252,7 +253,7 @@ public class HomeFragment extends Fragment {
             }
         });
         // show edit dialog when long clicked
-        myAdapter.setOnItemLongClickListener(((view, position) -> dialogEdit(position, activity)));
+        myAdapter.setOnItemLongClickListener(((view, position) -> dialogEdit(position)));
         recyclerFileList.setAdapter(myAdapter);
 
         // set floating action buttons
@@ -275,7 +276,7 @@ public class HomeFragment extends Fragment {
 
         fabAddFolder.setOnClickListener(view -> {
             // create a new folder
-            dialogNewFolder(activity);
+            dialogNewFolder();
             switchFabs();
         });
 
@@ -358,10 +359,8 @@ public class HomeFragment extends Fragment {
 
     /**
      * The dialog of creating new folder.
-     *
-     * @param activity current activity
      */
-    public void dialogNewFolder(Activity activity) {
+    public void dialogNewFolder() {
         final EditText editText = new EditText(activity);
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
         editText.setHint(R.string.new_folder_hint);
@@ -410,9 +409,8 @@ public class HomeFragment extends Fragment {
      * The dialog of editing a file/folder
      *
      * @param position position of the file/folder to be edited
-     * @param activity current activity
      */
-    public void dialogEdit(int position, Activity activity) {
+    public void dialogEdit(int position) {
         final String[] options = {(String) activity.getText(R.string.edit_file_rename), (String) activity.getText(R.string.edit_file_delete)};
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setIcon(getItemIcon(position))
@@ -420,10 +418,10 @@ public class HomeFragment extends Fragment {
                 .setItems(options, (dialogInterface, i) -> {
                     switch (i) {
                         case 0:
-                            dialogRename(position, activity);
+                            dialogRename(position);
                             break;
                         case 1:
-                            dialogDeleteConfirm(position, activity);
+                            dialogDeleteConfirm(position);
                             break;
                     }
                 }).create();
@@ -435,9 +433,8 @@ public class HomeFragment extends Fragment {
      * The dialog of renaming a file/folder.
      *
      * @param position position of the file/folder to be renamed
-     * @param activity current activity
      */
-    public void dialogRename(int position, Activity activity) {
+    public void dialogRename(int position) {
         String currentName = getItemName(position);
         File file = currentFiles[position];
         final EditText editText = new EditText(activity);
@@ -509,9 +506,8 @@ public class HomeFragment extends Fragment {
      * The dialog of confirming a deletion of a file/folder.
      *
      * @param position position of the file/folder to be renamed
-     * @param activity current activity
      */
-    public void dialogDeleteConfirm(int position, Activity activity) {
+    public void dialogDeleteConfirm(int position) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setIcon(getItemIcon(position))
                 .setTitle(getItemName(position))

@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.cardview.widget.CardView;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
@@ -77,6 +79,7 @@ public class RockerDialog extends Dialog {
     private final ImageView cross;
     private final Button btnPositive;
     private final Button btnNegative;
+    private final ImageButton btnQuestion;
     private final TextView tvPasswordHint;
 
     private final int red_200;
@@ -94,7 +97,7 @@ public class RockerDialog extends Dialog {
         // set dialog
         this.setContentView(R.layout.dialog_rocker);
         this.getWindow().setBackgroundDrawableResource(R.drawable.rocker_dialog_background);
-        setDialogSize();
+        calculateDialogSize();
         this.getWindow().setLayout(dialogSize[0], dialogSize[1]);
 
         // set icon selection
@@ -123,6 +126,7 @@ public class RockerDialog extends Dialog {
         cross = this.findViewById(R.id.cross);
         btnPositive = this.findViewById(R.id.btnRockerPositive);
         btnNegative = this.findViewById(R.id.btnRockerNegative);
+        btnQuestion = this.findViewById(R.id.btnQuestion);
         tvPasswordHint = this.findViewById(R.id.tvPasswordHint);
 
         // get colors
@@ -577,14 +581,26 @@ public class RockerDialog extends Dialog {
         // set password text box animation
         tvPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 int length = charSequence.length();
                 if (length > 0) {
-                    if (length > MAX_PASSWORD_LENGTH) {
+                    // password entered
+                    if (length == 1 && !btnPositive.isEnabled()) {
+                        // hide hint
+                        tvPasswordHint.startAnimation(fadeAnimation);
+                        tvPasswordHint.setVisibility(View.INVISIBLE);
+                        // show password box
+                        cardPassword.startAnimation(appearAnimation);
+                        cardPassword.setVisibility(View.VISIBLE);
+                        // enable ok button
+                        btnPositive.animate().alpha(1).setDuration(ANIM_DURATION_100);
+                        btnPositive.setEnabled(true);
+                        // hide question button
+                        btnQuestion.animate().alpha(0).setDuration(ANIM_DURATION_100);
+                        btnQuestion.setEnabled(false);
+                    } else if (length > MAX_PASSWORD_LENGTH) {
                         // limit password length
                         cardToRedAnimation.start();
                         new Handler().postDelayed(() -> {
@@ -596,33 +612,22 @@ public class RockerDialog extends Dialog {
                             }
                         }, ANIM_DURATION_50);
                     }
-                    if (cardPassword.getVisibility() != View.VISIBLE) {
-                        cardPassword.startAnimation(appearAnimation);
-                        cardPassword.setVisibility(View.VISIBLE);
-                    }
-                    if (!btnPositive.isEnabled()) {
-                        btnPositive.animate().alpha(1).setDuration(ANIM_DURATION_100);
-                        btnPositive.setEnabled(true);
-                    }
-                    if (tvPasswordHint.getVisibility() != View.INVISIBLE) {
-                        tvPasswordHint.startAnimation(fadeAnimation);
-                        tvPasswordHint.setVisibility(View.INVISIBLE);
-                    }
                 } else {
-                    if (cardPassword.getVisibility() != View.INVISIBLE) {
-                        cardPassword.startAnimation(fadeAnimation);
-                        cardPassword.setVisibility(View.INVISIBLE);
-                    }
-                    if (btnPositive.isEnabled()) {
-                        btnPositive.animate().alpha(.5F).setDuration(ANIM_DURATION_100);
-                        btnPositive.setEnabled(false);
-                    }
-                    if (tvPasswordHint.getVisibility() != View.VISIBLE) {
-                        new Handler().postDelayed(() -> {
-                            tvPasswordHint.startAnimation(appearAnimation);
-                            tvPasswordHint.setVisibility(View.VISIBLE);
-                        }, ANIM_DURATION_100);
-                    }
+                    // password cleared
+                    // hide password box
+                    cardPassword.startAnimation(fadeAnimation);
+                    cardPassword.setVisibility(View.INVISIBLE);
+                    // disable ok button
+                    btnPositive.animate().alpha(.5F).setDuration(ANIM_DURATION_100);
+                    btnPositive.setEnabled(false);
+                    // show hint
+                    new Handler().postDelayed(() -> {
+                        tvPasswordHint.startAnimation(appearAnimation);
+                        tvPasswordHint.setVisibility(View.VISIBLE);
+                    }, ANIM_DURATION_100);
+                    // show question button
+                    btnQuestion.animate().alpha(1).setDuration(ANIM_DURATION_100);
+                    btnQuestion.setEnabled(true);
                 }
                 int currentWidth = tvPassword.getWidth();
                 tvPassword.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -636,19 +641,43 @@ public class RockerDialog extends Dialog {
                 lengthAnimator.setDuration(ANIM_DURATION_100);
                 lengthAnimator.start();
             }
-
             @Override
-            public void afterTextChanged(Editable editable) {
-            }
+            public void afterTextChanged(Editable editable) {}
         });
 
         Objects.requireNonNull(btnNegative).setOnClickListener(v -> this.dismiss());
+
+        // user guide
+        Objects.requireNonNull(btnQuestion).setOnClickListener(v -> dialogGuide());
+
+        // show gesture guide on first launch
+        if (pref.getBoolean("first-launch", MyDefaultPref.getDefaultBoolean("first-launch"))) {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                dialogGuide();
+                pref.edit().putBoolean("first-launch", false).apply();
+            }, 500);
+        }
+    }
+
+    /**
+     * The dialog of gesture guide.
+     */
+    public void dialogGuide() {
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setIcon(AppCompatResources.getDrawable(activity, R.drawable.ic_guide))
+                .setTitle(activity.getText(R.string.guide_title))
+                .setView(R.layout.dialog_guide)
+                .setPositiveButton(R.string.finish, (dialog0, which) -> dialog0.dismiss()).create();
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.rocker_dialog_background);
+        dialog.show();
+        dialog.getWindow().setLayout(dialogSize[0], ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(activity.getColor(R.color.yellow_500));
     }
 
     /**
      * Calculate dialog size and set params.
      */
-    public void setDialogSize() {
+    public void calculateDialogSize() {
         int maxWidth = MyPixelConverter.dpToPx(400, activity);
         float widthPercentage = .9F;
         float widthHeightRatio = .7F;
@@ -744,12 +773,9 @@ public class RockerDialog extends Dialog {
             });
             shakeAnimation.start();
         } else {
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    textFromRedAnimation.start();
-                    tvPassword.setText(null);
-                }
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                textFromRedAnimation.start();
+                tvPassword.setText(null);
             }, 500);
         }
         MyVibrator.shake(activity);

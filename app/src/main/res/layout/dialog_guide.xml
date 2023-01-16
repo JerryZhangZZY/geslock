@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="30dp">
+
+    <ImageView
+        android:id="@+id/imgGuideTap"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="-3dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_guide_tap" />
+
+    <TextView
+        android:id="@+id/tvGuideTap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="23dp"
+        android:text="@string/guide_tap"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imgGuideTap"
+        app:layout_constraintStart_toEndOf="@+id/imgGuideTap"
+        app:layout_constraintTop_toTopOf="@+id/imgGuideTap" />
+
+    <ImageView
+        android:id="@+id/imgGuideSwipe"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgGuideTap"
+        app:layout_constraintWidth_percent="0.2"
+        app:srcCompat="@drawable/ic_guide_swipe" />
+
+    <TextView
+        android:id="@+id/tvGuideSwipe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:text="@string/guide_swipe"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imgGuideSwipe"
+        app:layout_constraintStart_toEndOf="@+id/imgGuideSwipe"
+        app:layout_constraintTop_toTopOf="@+id/imgGuideSwipe" />
+
+    <ImageView
+        android:id="@+id/imgGuideScroll"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgGuideSwipe"
+        app:srcCompat="@drawable/ic_guide_scroll" />
+
+    <TextView
+        android:id="@+id/tvGuideScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:text="@string/guide_scroll"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imgGuideScroll"
+        app:layout_constraintStart_toEndOf="@+id/imgGuideScroll"
+        app:layout_constraintTop_toTopOf="@+id/imgGuideScroll" />
+
+    <ImageView
+        android:id="@+id/imgGuidePinch"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgGuideScroll"
+        app:srcCompat="@drawable/ic_guide_pinch" />
+
+    <TextView
+        android:id="@+id/tvGuidePinch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="@string/guide_pinch"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imgGuidePinch"
+        app:layout_constraintStart_toEndOf="@+id/imgGuidePinch"
+        app:layout_constraintTop_toTopOf="@+id/imgGuidePinch" />
+
+    <ImageView
+        android:id="@+id/imgGuideUnpinch"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgGuidePinch"
+        app:layout_constraintWidth_percent="0.2"
+        app:srcCompat="@drawable/ic_guide_unpinch" />
+
+    <TextView
+        android:id="@+id/tvGuideUnpinch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="@string/guide_unpinch"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imgGuideUnpinch"
+        app:layout_constraintStart_toEndOf="@+id/imgGuideUnpinch"
+        app:layout_constraintTop_toTopOf="@+id/imgGuideUnpinch" />
+</androidx.constraintlayout.widget.ConstraintLayout>

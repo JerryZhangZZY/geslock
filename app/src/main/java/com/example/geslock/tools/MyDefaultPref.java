@@ -34,6 +34,8 @@ public class MyDefaultPref {
     private static final int order = 0;
     private static final int property = 0;
 
+    private static final boolean firstLaunch = true;
+
     public static void init() {
         defaultValues.put("icon", icon);
         defaultValues.put("cross", cross);
@@ -49,6 +51,7 @@ public class MyDefaultPref {
         defaultValues.put("sort", sort);
         defaultValues.put("order", order);
         defaultValues.put("property", property);
+        defaultValues.put("first-launch", firstLaunch);
     }
 
     public static boolean getDefaultBoolean(String key) {
@@ -102,6 +105,7 @@ public class MyDefaultPref {
         editor.putInt("sort", sort);
         editor.putInt("order", order);
         editor.putInt("property", property);
+        editor.putBoolean("first-launch", firstLaunch);
         editor.commit();
     }
 }

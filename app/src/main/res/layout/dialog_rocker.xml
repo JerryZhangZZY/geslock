@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.encryption.EncryptionFragment">
+    android:layout_height="match_parent">
 
     <Button
         android:id="@+id/btnRockerPositive"
@@ -20,7 +19,7 @@
         android:text="@string/ok"
         android:textColor="?android:textColorTertiary"
         android:textSize="16sp"
-        app:cornerRadius="10dp"
+        app:cornerRadius="13dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnRockerNegative" />
@@ -37,10 +36,22 @@
         android:text="@string/cancel"
         android:textColor="?android:textColorTertiary"
         android:textSize="16sp"
-        app:cornerRadius="10dp"
+        app:cornerRadius="13dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnRockerPositive"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnQuestion"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@null"
+        android:padding="7dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_question"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/selector_light_gray_on_click" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayoutCross"
@@ -157,7 +168,7 @@
                 android:background="@android:color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_backspace"
-                app:tint="@color/selector_gray_on_click" />
+                app:tint="@color/selector_dark_gray_on_click" />
 
         </LinearLayout>
 
