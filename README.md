@@ -1,13 +1,15 @@
+<br />
+
 <p align="center">
   <img width="200" src="https://raw.githubusercontent.com/JerryZhangZZY/album/main/geslock/ic_launcher_small.png">
 </p>
 
-# GesLock
+<h1 align="center">GesLock</h1>
 
 ![android](https://img.shields.io/badge/Android-7.0%2B-green)
 ![api](https://img.shields.io/badge/API-31%2B-yellow)
 
-An Android app that protects sensitive files on mobile phones using secret multi-finger gestures.
+Geslock is an Android app that protects sensitive files on mobile phones using secret multi-finger gestures.
 
 ## Features
 
