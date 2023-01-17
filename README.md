@@ -34,7 +34,9 @@ An Android app that protects sensitive files on mobile phones using secret multi
   <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/settings-dark&zh.png?raw=true" />
 </div>
 
+## Support
 
+- [GitHub Wiki](https://github.com/JerryZhangZZY/geslock/wiki)
 
 ## Work Plan (Gantt Chart)
 
