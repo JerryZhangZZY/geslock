@@ -284,15 +284,20 @@ public class HomeFragment extends Fragment {
             Uri uri = data.getData();
             String name = Objects.requireNonNull(DocumentFile.fromSingleUri(activity, uri)).getName();
             String destPath = currentParent.getPath() + "/" + name + "gl";
-
-            // TODO rename
-
+            // handle condition of a same name
+            while (new File(destPath).exists()) {
+                assert name != null;
+                int index = name.lastIndexOf(".");
+                name = name.substring(0, index) + "_1" + name.substring(index);
+                destPath = currentParent.getPath() + "/" + name + "gl";
+            }
             RockerDialog encryptionDialog = new RockerDialog(activity);
+            String finalDestPath = destPath;
             encryptionDialog.getBtnPositive().setOnClickListener(v -> {
                 // get password from dialog
                 String key = encryptionDialog.getPassword();
                 // run encryption and generate file
-                MyAES.encryptFile(uri, destPath, key, activity);
+                MyAES.encryptFile(uri, finalDestPath, key, activity);
                 // refresh
                 currentFiles = currentParent.listFiles();
                 refresh();
