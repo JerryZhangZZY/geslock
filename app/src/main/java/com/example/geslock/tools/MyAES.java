@@ -1,5 +1,6 @@
 package com.example.geslock.tools;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -48,9 +49,6 @@ public class MyAES {
      * @param activity activity
      */
     public static void encryptFile(Uri srcUri, String destPath, String key, Activity activity) {
-
-        // TODO return boolean indicating the result
-
         if (new File(destPath).exists()) {
             return;
         }
@@ -74,78 +72,90 @@ public class MyAES {
         }
     }
 
+//    /**
+//     * Decrypt a file and export to the given path.
+//     *
+//     * @param sourceFile the file to be decrypted
+//     * @param destPath   file exporting path
+//     * @param key        AES secret key
+//     * @return null: decryption failed
+//     */
+//    public static File decryptFile(File sourceFile, String destPath, String key) {
+//        File file = new File(destPath);
+//        if (!deleteFile(file)) return null;
+//        try {
+//            FileInputStream inputStream = new FileInputStream(sourceFile);
+//            Cipher cipher = initFileAESCipher(key, Cipher.DECRYPT_MODE);
+//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//            CipherOutputStream cipherOutputStream = new CipherOutputStream(byteArrayOutputStream, cipher);
+//            FileOutputStream fileOutputStream = new FileOutputStream(destPath);
+//            int len;
+//            assert cipher != null;
+//            byte[] firstBlockBuffer = new byte[cipher.getBlockSize()];
+//            byte[] buffer = new byte[BUFFER_LENGTH];
+//            boolean checked = false;
+//
+//            // decrypted the first block which the check included
+//            len = inputStream.read(firstBlockBuffer);
+//            if (len >= 0) {
+//                cipherOutputStream.write(firstBlockBuffer, 0, len);
+//            } else {
+//                return null;
+//            }
+//
+//            // continue decryption with conventional buffer size
+//            while ((len = inputStream.read(buffer)) >= 0) {
+//                cipherOutputStream.write(buffer, 0, len);
+//                // check password correctness
+//                if (!checkPassword(checked, byteArrayOutputStream)) {
+//                    if (!deleteFile(file)) return null;
+//                    return null;
+//                } else {
+//                    checked = true;
+//                }
+//                // write file from byte array stream and clear that byte array stream
+//                byteArrayOutputStream.writeTo(fileOutputStream);
+//                byteArrayOutputStream.reset();
+//            }
+//            // finish cipher stream
+//            cipherOutputStream.flush();
+//            cipherOutputStream.close();
+//            // handle remained data
+//            if (!checkPassword(checked, byteArrayOutputStream)) {
+//                if (!deleteFile(file)) return null;
+//                return null;
+//            }
+//            byteArrayOutputStream.writeTo(fileOutputStream);
+//            fileOutputStream.flush();
+//            fileOutputStream.close();
+//            closeStream(inputStream);
+//            return file;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+
     /**
-     * Decrypt a file and export to the given path.
-     *
-     * @param sourceFile the file to be decrypted
-     * @param destPath   file exporting path
-     * @param key        AES secret key
-     * @return null: decryption failed
+     * An async task that tries to encrypt and open a file
      */
-    public static File decryptFile(File sourceFile, String destPath, String key) {
-        File file = new File(destPath);
-        if (!deleteFile(file)) return null;
-        try {
-            FileInputStream inputStream = new FileInputStream(sourceFile);
-            Cipher cipher = initFileAESCipher(key, Cipher.DECRYPT_MODE);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            CipherOutputStream cipherOutputStream = new CipherOutputStream(byteArrayOutputStream, cipher);
-            FileOutputStream fileOutputStream = new FileOutputStream(destPath);
-            int len;
-            assert cipher != null;
-            byte[] firstBlockBuffer = new byte[cipher.getBlockSize()];
-            byte[] buffer = new byte[BUFFER_LENGTH];
-            boolean checked = false;
-
-            // decrypted the first block which the check included
-            len = inputStream.read(firstBlockBuffer);
-            if (len >= 0) {
-                cipherOutputStream.write(firstBlockBuffer, 0, len);
-            } else {
-                return null;
-            }
-
-            // continue decryption with conventional buffer size
-            while ((len = inputStream.read(buffer)) >= 0) {
-                cipherOutputStream.write(buffer, 0, len);
-                // check password correctness
-                if (!checkPassword(checked, byteArrayOutputStream)) {
-                    if (!deleteFile(file)) return null;
-                    return null;
-                } else {
-                    checked = true;
-                }
-                // write file from byte array stream and clear that byte array stream
-                byteArrayOutputStream.writeTo(fileOutputStream);
-                byteArrayOutputStream.reset();
-            }
-            // finish cipher stream
-            cipherOutputStream.flush();
-            cipherOutputStream.close();
-            // handle remained data
-            if (!checkPassword(checked, byteArrayOutputStream)) {
-                if (!deleteFile(file)) return null;
-                return null;
-            }
-            byteArrayOutputStream.writeTo(fileOutputStream);
-            fileOutputStream.flush();
-            fileOutputStream.close();
-            closeStream(inputStream);
-            return file;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public static class DecryptTask extends AsyncTask<Void, Integer, File> {
+        @SuppressLint("StaticFieldLeak")
+        private final Activity activity;
         private final File sourceFile;
         private final String destPath;
         private final String key;
-        private final Activity activity;
         private ProgressDialog progressDialog;
-        private RockerDialog decryptionDialog;
+        private final RockerDialog decryptionDialog;
+        private boolean done = false;
 
+        /**
+         * @param activity activity
+         * @param sourceFile the file to be decrypted
+         * @param destPath file exporting path
+         * @param key AES secret key
+         * @param decryptionDialog decryption dialog
+         */
         public DecryptTask(Activity activity, File sourceFile, String destPath, String key, RockerDialog decryptionDialog) {
             this.activity = activity;
             this.sourceFile = sourceFile;
@@ -159,10 +169,17 @@ public class MyAES {
             super.onPreExecute();
             progressDialog = new ProgressDialog(activity);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setCancelable(false);
             progressDialog.setMessage("Decrypting file...");
             progressDialog.setIndeterminate(false);
             progressDialog.setMax(100);
             progressDialog.setProgress(0);
+            // hide progress bar until 200ms
+            new Handler().postDelayed(() -> {
+                if (!done) {
+                    progressDialog.show();
+                }
+            }, 200);
         }
 
         @Override
@@ -207,6 +224,7 @@ public class MyAES {
                     byteArrayOutputStream.writeTo(fileOutputStream);
                     byteArrayOutputStream.reset();
 
+                    // calculate progress
                     bytesRead += BUFFER_LENGTH;
                     progress = (int) (bytesRead * 100 / fileSize);
                     publishProgress(progress);
@@ -233,15 +251,13 @@ public class MyAES {
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            if (!progressDialog.isShowing()) {
-                progressDialog.show();
-            }
             progressDialog.setProgress(values[0]);
         }
 
         @Override
         protected void onPostExecute(File plainFile) {
             super.onPostExecute(plainFile);
+            done = true;
             progressDialog.dismiss();
             if (plainFile == null) {
                 decryptionDialog.handleWrongPassword();

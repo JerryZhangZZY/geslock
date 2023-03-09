@@ -5,21 +5,21 @@ import static android.app.Activity.RESULT_OK;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.text.style.ImageSpan;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -39,7 +39,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -59,7 +58,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 public class HomeFragment extends Fragment {
 
@@ -224,10 +222,7 @@ public class HomeFragment extends Fragment {
                         cacheDir.mkdir();
                     }
                     String destPath = cacheDir.getPath() + "/" + file.getName().substring(0, file.getName().length() - 2);
-
-
                     new MyAES.DecryptTask(activity, file, destPath, key, decryptionDialog).execute();
-
                 });
                 decryptionDialog.show();
             } else {
@@ -296,12 +291,44 @@ public class HomeFragment extends Fragment {
             encryptionDialog.getBtnPositive().setOnClickListener(v -> {
                 // get password from dialog
                 String key = encryptionDialog.getPassword();
-                // run encryption and generate file
-                MyAES.encryptFile(uri, finalDestPath, key, activity);
-                // refresh
-                currentFiles = currentParent.listFiles();
-                refresh();
-                encryptionDialog.dismiss();
+
+                class EncryptTask extends AsyncTask<Void, Void, Void> {
+                    public ProgressDialog progressDialog;
+                    boolean done = false;
+
+                    @Override
+                    protected void onPreExecute() {
+                        super.onPreExecute();
+                        progressDialog = new ProgressDialog(activity);
+                        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        progressDialog.setMessage("Encrypting file...");
+                        progressDialog.setCancelable(false);
+                        // hide progress bar until 200ms
+                        new Handler().postDelayed(() -> {
+                            if (!done) {
+                                progressDialog.show();
+                            }
+                        }, 200);
+                    }
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        MyAES.encryptFile(uri, finalDestPath, key, activity);
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void v) {
+                        super.onPostExecute(v);
+                        done = true;
+                        progressDialog.dismiss();
+                        encryptionDialog.dismiss();
+                        // refresh
+                        currentFiles = currentParent.listFiles();
+                        refresh();
+                    }
+                }
+                new EncryptTask().execute();
             });
             encryptionDialog.show();
         }
