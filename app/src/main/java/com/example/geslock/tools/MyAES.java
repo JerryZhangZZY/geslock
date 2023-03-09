@@ -1,7 +1,16 @@
 package com.example.geslock.tools;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Handler;
+
+import androidx.core.content.FileProvider;
+
+import com.example.geslock.ui.home.RockerDialog;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -126,6 +135,132 @@ public class MyAES {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static class DecryptTask extends AsyncTask<Void, Integer, File> {
+        private final File sourceFile;
+        private final String destPath;
+        private final String key;
+        private final Activity activity;
+        private ProgressDialog progressDialog;
+        private RockerDialog decryptionDialog;
+
+        public DecryptTask(Activity activity, File sourceFile, String destPath, String key, RockerDialog decryptionDialog) {
+            this.activity = activity;
+            this.sourceFile = sourceFile;
+            this.destPath = destPath;
+            this.key = key;
+            this.decryptionDialog = decryptionDialog;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(activity);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setMessage("Decrypting file...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setMax(100);
+            progressDialog.setProgress(0);
+        }
+
+        @Override
+        protected File doInBackground(Void... voids) {
+            File file = new File(destPath);
+            if (!deleteFile(file)) return null;
+            try {
+                FileInputStream inputStream = new FileInputStream(sourceFile);
+                Cipher cipher = initFileAESCipher(key, Cipher.DECRYPT_MODE);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                CipherOutputStream cipherOutputStream = new CipherOutputStream(byteArrayOutputStream, cipher);
+                FileOutputStream fileOutputStream = new FileOutputStream(destPath);
+                int len;
+                assert cipher != null;
+                byte[] firstBlockBuffer = new byte[cipher.getBlockSize()];
+                byte[] buffer = new byte[BUFFER_LENGTH];
+                boolean checked = false;
+
+                // decrypted the first block which the check included
+                len = inputStream.read(firstBlockBuffer);
+                if (len >= 0) {
+                    cipherOutputStream.write(firstBlockBuffer, 0, len);
+                } else {
+                    return null;
+                }
+
+                long fileSize = sourceFile.length();
+                long bytesRead = cipher.getBlockSize();
+                int progress;
+
+                // continue decryption with conventional buffer size
+                while ((len = inputStream.read(buffer)) >= 0) {
+                    cipherOutputStream.write(buffer, 0, len);
+                    // check password correctness
+                    if (!checkPassword(checked, byteArrayOutputStream)) {
+                        if (!deleteFile(file)) return null;
+                        return null;
+                    } else {
+                        checked = true;
+                    }
+                    // write file from byte array stream and clear that byte array stream
+                    byteArrayOutputStream.writeTo(fileOutputStream);
+                    byteArrayOutputStream.reset();
+
+                    bytesRead += BUFFER_LENGTH;
+                    progress = (int) (bytesRead * 100 / fileSize);
+                    publishProgress(progress);
+                }
+                // finish cipher stream
+                cipherOutputStream.flush();
+                cipherOutputStream.close();
+                // handle remained data
+                if (!checkPassword(checked, byteArrayOutputStream)) {
+                    if (!deleteFile(file)) return null;
+                    return null;
+                }
+                byteArrayOutputStream.writeTo(fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                closeStream(inputStream);
+                return file;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            if (!progressDialog.isShowing()) {
+                progressDialog.show();
+            }
+            progressDialog.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(File plainFile) {
+            super.onPostExecute(plainFile);
+            progressDialog.dismiss();
+            if (plainFile == null) {
+                decryptionDialog.handleWrongPassword();
+            } else {
+                // share the decrypted file with a third-party app
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Uri uri;
+                uri = FileProvider.getUriForFile(activity, "com.example.geslock.fileprovider", plainFile);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(uri);
+                try {
+                    activity.startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    intent.setType("*/*");
+                    activity.startActivity(intent);
+                }
+                decryptionDialog.dismiss();
+            }
         }
     }
 

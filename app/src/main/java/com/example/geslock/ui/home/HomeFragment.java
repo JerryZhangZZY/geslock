@@ -59,6 +59,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class HomeFragment extends Fragment {
 
@@ -223,25 +224,10 @@ public class HomeFragment extends Fragment {
                         cacheDir.mkdir();
                     }
                     String destPath = cacheDir.getPath() + "/" + file.getName().substring(0, file.getName().length() - 2);
-                    File plainFile = MyAES.decryptFile(file, destPath, key);
-                    if (plainFile == null) {
-                        decryptionDialog.handleWrongPassword();
-                    } else {
-                        // share the decrypted file with a third-party app
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        Uri uri;
-                        uri = FileProvider.getUriForFile(activity, "com.example.geslock.fileprovider", plainFile);
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.setData(uri);
-                        try {
-                            activity.startActivity(intent);
-                        } catch (ActivityNotFoundException e) {
-                            intent.setType("*/*");
-                            activity.startActivity(intent);
-                        }
-                        decryptionDialog.dismiss();
-                    }
+
+
+                    new MyAES.DecryptTask(activity, file, destPath, key, decryptionDialog).execute();
+
                 });
                 decryptionDialog.show();
             } else {
