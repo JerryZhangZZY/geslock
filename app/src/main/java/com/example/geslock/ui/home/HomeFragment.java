@@ -299,10 +299,12 @@ public class HomeFragment extends Fragment {
                     @Override
                     protected void onPreExecute() {
                         super.onPreExecute();
-                        progressDialog = new ProgressDialog(activity);
+                        progressDialog = new ProgressDialog(activity, R.style.progressDialogStyle);
                         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        progressDialog.setMessage("Encrypting file...");
+                        progressDialog.setTitle(activity.getString(R.string.progress_encryption));
+                        progressDialog.setMessage(activity.getString(R.string.progress_encryption_message));
                         progressDialog.setCancelable(false);
+                        progressDialog.getWindow().setBackgroundDrawableResource(R.drawable.general_dialog_background);
                         // hide progress bar until 200ms
                         new Handler().postDelayed(() -> {
                             if (!done) {

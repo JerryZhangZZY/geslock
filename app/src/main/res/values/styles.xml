@@ -82,4 +82,8 @@
     <style name="popupMenuStyle" parent="Widget.AppCompat.PopupMenu">
         <item name="android:textSize">18sp</item>
     </style>
+
+    <style name="progressDialogStyle" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="colorAccent">?colorSecondary</item>
+    </style>
 </resources>

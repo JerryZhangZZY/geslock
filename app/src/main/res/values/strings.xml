@@ -111,4 +111,8 @@
     <string name="guide_scroll">Scroll</string>
     <string name="guide_pinch">Pinch</string>
     <string name="guide_unpinch">Unpinch</string>
+
+    <string name="progress_encryption">Encrypting file…</string>
+    <string name="progress_encryption_message">Please wait</string>
+    <string name="progress_decryption">Decrypting file…</string>
 </resources>

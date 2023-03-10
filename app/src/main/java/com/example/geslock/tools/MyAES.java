@@ -11,6 +11,7 @@ import android.os.Handler;
 
 import androidx.core.content.FileProvider;
 
+import com.example.geslock.R;
 import com.example.geslock.ui.home.RockerDialog;
 
 import java.io.ByteArrayInputStream;
@@ -72,70 +73,6 @@ public class MyAES {
         }
     }
 
-//    /**
-//     * Decrypt a file and export to the given path.
-//     *
-//     * @param sourceFile the file to be decrypted
-//     * @param destPath   file exporting path
-//     * @param key        AES secret key
-//     * @return null: decryption failed
-//     */
-//    public static File decryptFile(File sourceFile, String destPath, String key) {
-//        File file = new File(destPath);
-//        if (!deleteFile(file)) return null;
-//        try {
-//            FileInputStream inputStream = new FileInputStream(sourceFile);
-//            Cipher cipher = initFileAESCipher(key, Cipher.DECRYPT_MODE);
-//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//            CipherOutputStream cipherOutputStream = new CipherOutputStream(byteArrayOutputStream, cipher);
-//            FileOutputStream fileOutputStream = new FileOutputStream(destPath);
-//            int len;
-//            assert cipher != null;
-//            byte[] firstBlockBuffer = new byte[cipher.getBlockSize()];
-//            byte[] buffer = new byte[BUFFER_LENGTH];
-//            boolean checked = false;
-//
-//            // decrypted the first block which the check included
-//            len = inputStream.read(firstBlockBuffer);
-//            if (len >= 0) {
-//                cipherOutputStream.write(firstBlockBuffer, 0, len);
-//            } else {
-//                return null;
-//            }
-//
-//            // continue decryption with conventional buffer size
-//            while ((len = inputStream.read(buffer)) >= 0) {
-//                cipherOutputStream.write(buffer, 0, len);
-//                // check password correctness
-//                if (!checkPassword(checked, byteArrayOutputStream)) {
-//                    if (!deleteFile(file)) return null;
-//                    return null;
-//                } else {
-//                    checked = true;
-//                }
-//                // write file from byte array stream and clear that byte array stream
-//                byteArrayOutputStream.writeTo(fileOutputStream);
-//                byteArrayOutputStream.reset();
-//            }
-//            // finish cipher stream
-//            cipherOutputStream.flush();
-//            cipherOutputStream.close();
-//            // handle remained data
-//            if (!checkPassword(checked, byteArrayOutputStream)) {
-//                if (!deleteFile(file)) return null;
-//                return null;
-//            }
-//            byteArrayOutputStream.writeTo(fileOutputStream);
-//            fileOutputStream.flush();
-//            fileOutputStream.close();
-//            closeStream(inputStream);
-//            return file;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
     /**
      * An async task that tries to encrypt and open a file
      */
@@ -167,13 +104,14 @@ public class MyAES {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(activity);
+            progressDialog = new ProgressDialog(activity, R.style.progressDialogStyle);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progressDialog.setCancelable(false);
-            progressDialog.setMessage("Decrypting file...");
+            progressDialog.setTitle(activity.getString(R.string.progress_decryption));
             progressDialog.setIndeterminate(false);
             progressDialog.setMax(100);
             progressDialog.setProgress(0);
+            progressDialog.getWindow().setBackgroundDrawableResource(R.drawable.general_dialog_background);
             // hide progress bar until 200ms
             new Handler().postDelayed(() -> {
                 if (!done) {

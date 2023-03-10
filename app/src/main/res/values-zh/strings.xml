@@ -105,4 +105,8 @@
     <string name="guide_scroll">滚动</string>
     <string name="guide_pinch">捏合</string>
     <string name="guide_unpinch">展开</string>
+
+    <string name="progress_encryption">文件加密中…</string>
+    <string name="progress_encryption_message">请稍后</string>
+    <string name="progress_decryption">文件解密中…</string>
 </resources>

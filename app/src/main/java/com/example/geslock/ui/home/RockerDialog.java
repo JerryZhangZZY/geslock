@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +95,7 @@ public class RockerDialog extends Dialog {
 
         // set dialog
         this.setContentView(R.layout.dialog_rocker);
-        this.getWindow().setBackgroundDrawableResource(R.drawable.rocker_dialog_background);
+        this.getWindow().setBackgroundDrawableResource(R.drawable.general_dialog_background);
         calculateDialogSize();
         this.getWindow().setLayout(dialogSize[0], dialogSize[1]);
 
@@ -668,7 +667,7 @@ public class RockerDialog extends Dialog {
                 .setTitle(activity.getText(R.string.guide_title))
                 .setView(R.layout.dialog_guide)
                 .setPositiveButton(R.string.finish, (dialog0, which) -> dialog0.dismiss()).create();
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.rocker_dialog_background);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.general_dialog_background);
         dialog.show();
         dialog.getWindow().setLayout(dialogSize[0], ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(activity.getColor(R.color.yellow_500));
