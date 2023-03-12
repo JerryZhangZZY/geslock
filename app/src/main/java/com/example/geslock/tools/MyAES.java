@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.FileProvider;
 
 import com.example.geslock.R;
@@ -105,12 +106,14 @@ public class MyAES {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(activity, R.style.progressDialogStyle);
+            progressDialog = new ProgressDialog(activity);
+            progressDialog.setProgressDrawable(AppCompatResources.getDrawable(activity, R.drawable.round_progressbar));
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progressDialog.setCancelable(false);
             progressDialog.setTitle(activity.getString(R.string.progress_decryption));
             progressDialog.setIndeterminate(false);
-            progressDialog.setMax(100);
+            progressDialog.setMax(1000);
+            progressDialog.setProgressNumberFormat(null);
             progressDialog.setProgress(0);
             progressDialog.getWindow().setBackgroundDrawableResource(R.drawable.general_dialog_background);
             try {
@@ -170,7 +173,7 @@ public class MyAES {
 
                     // calculate progress
                     bytesRead += BUFFER_LENGTH;
-                    progress = (int) (bytesRead * 100 / fileSize);
+                    progress = (int) (bytesRead * 1000 / fileSize);
                     publishProgress(progress);
                 }
                 // finish cipher stream
