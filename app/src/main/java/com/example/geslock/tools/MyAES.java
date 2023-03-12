@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -112,6 +113,11 @@ public class MyAES {
             progressDialog.setMax(100);
             progressDialog.setProgress(0);
             progressDialog.getWindow().setBackgroundDrawableResource(R.drawable.general_dialog_background);
+            try {
+                progressDialog.setIcon(activity.getPackageManager().getApplicationIcon("com.example.geslock"));
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             // hide progress bar until 200ms
             new Handler().postDelayed(() -> {
                 if (!done) {

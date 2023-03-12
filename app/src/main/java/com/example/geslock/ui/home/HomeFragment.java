@@ -305,6 +305,11 @@ public class HomeFragment extends Fragment {
                         progressDialog.setMessage(activity.getString(R.string.progress_encryption_message));
                         progressDialog.setCancelable(false);
                         progressDialog.getWindow().setBackgroundDrawableResource(R.drawable.general_dialog_background);
+                        try {
+                            progressDialog.setIcon(activity.getPackageManager().getApplicationIcon("com.example.geslock"));
+                        } catch (PackageManager.NameNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
                         // hide progress bar until 200ms
                         new Handler().postDelayed(() -> {
                             if (!done) {
