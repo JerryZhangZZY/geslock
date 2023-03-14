@@ -73,6 +73,7 @@
     <string name="reset">Reset settings</string>
     <string name="reset_title">Reset all settings?</string>
     <string name="file_name_exist">File name already exist</string>
+    <string name="file_name_invalid">Invalid file name</string>
 
     <string name="menu_sort">Sort by…</string>
     <string name="menu_order">Sort order…</string>

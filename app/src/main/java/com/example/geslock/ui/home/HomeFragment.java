@@ -130,6 +130,8 @@ public class HomeFragment extends Fragment {
         }
         cacheDir = activity.getExternalCacheDir();
 
+        folderKeys.push(null);
+
         // set animations
         ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
         ANIM_DURATION_200 = MyAnimationScaler.getDuration(200, activity);
@@ -529,6 +531,8 @@ public class HomeFragment extends Fragment {
                     if (rename(file, newName)) {
                         currentFiles = currentParent.listFiles();
                         refresh();
+                    } else {
+                        MyToastMaker.make(String.valueOf(activity.getText(R.string.file_name_exist)), activity);
                     }
                     dialog0.dismiss();
                 }).create();
