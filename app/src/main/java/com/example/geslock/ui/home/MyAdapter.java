@@ -225,7 +225,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public void setIconAndType(File file) {
         String fileName = file.getName();
         if (file.isDirectory()) {
-            if (MyNameFormatter.isLocked(fileName)) {
+            if (MyNameFormatter.isLockedFolder(fileName)) {
                 icon = R.drawable.ic_folder_locked;
                 type = context.getString(R.string.type_folder_locked);
             } else {

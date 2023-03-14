@@ -13,14 +13,22 @@ public abstract class MyNameFormatter {
         return name;
     }
 
-    public static boolean isLocked(String name) {
+    public static boolean isLockedFolder(String name) {
         return name.startsWith(LOCKED_FOLDER_MARK);
     }
 
-    public static String getCheck(String name) {
+    public static String parseCheck(String name) {
         try {
             name = name.substring(6, 30);
         } catch (Exception ignored) {}
         return name;
+    }
+
+    /**
+     * @param name file name
+     * @return prefix = mark + check
+     */
+    public static String parsePrefix(String name) {
+        return name.substring(0, 30);
     }
 }

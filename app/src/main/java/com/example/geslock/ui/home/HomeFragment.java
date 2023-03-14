@@ -242,7 +242,7 @@ public class HomeFragment extends Fragment {
 
 
             } else {
-                if (!MyNameFormatter.isLocked(fileName)) {
+                if (!MyNameFormatter.isLockedFolder(fileName)) {
                     // plain folder
                     folderKeys.push(null);
                     // enter the clicked folder
@@ -253,7 +253,7 @@ public class HomeFragment extends Fragment {
                     decryptionDialog.getBtnPositive().setOnClickListener(v -> {
                         String password = decryptionDialog.getPassword();
                         try {
-                            if (Objects.equals(MyAES.decryptString(MyNameFormatter.getCheck(fileName), password), "[CHECK]")) {
+                            if (Objects.equals(MyAES.decryptString(MyNameFormatter.parseCheck(fileName), password), "[CHECK]")) {
                                 folderKeys.push(password);
                                 handleEnter(file);
                                 decryptionDialog.dismiss();
@@ -528,6 +528,10 @@ public class HomeFragment extends Fragment {
                 .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
                 .setPositiveButton(R.string.rename_ok, (dialog0, which) -> {
                     String newName = editText.getText().toString() + (file.isFile() ? "gl" : "");
+                    String fileName = file.getName();
+                    if (MyNameFormatter.isLockedFolder(fileName)) {
+                        newName = MyNameFormatter.parsePrefix(file.getName()) + newName;
+                    }
                     if (rename(file, newName)) {
                         currentFiles = currentParent.listFiles();
                         refresh();
