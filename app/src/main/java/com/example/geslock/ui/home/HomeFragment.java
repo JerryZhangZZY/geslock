@@ -63,6 +63,8 @@ import java.util.Stack;
 
 public class HomeFragment extends Fragment {
 
+    private final String CHECK = "CHECK";
+
     private Activity activity;
     private SharedPreferences pref;
 
@@ -255,7 +257,7 @@ public class HomeFragment extends Fragment {
                     decryptionDialog.getBtnPositive().setOnClickListener(v -> {
                         String password = decryptionDialog.getPassword();
                         try {
-                            if (Objects.equals(MyAES.decryptString(MyNameFormatter.parseCheck(fileName), password), "[CHECK]")) {
+                            if (Objects.equals(MyAES.decryptString(MyNameFormatter.parseCheck(fileName), password), CHECK)) {
                                 folderKeys.push(password);
                                 handleEnter(file);
                                 decryptionDialog.dismiss();
@@ -299,6 +301,12 @@ public class HomeFragment extends Fragment {
         fabAddFolder.setOnClickListener(view -> {
             // create a new folder
             dialogNewFolder();
+            switchFabs();
+        });
+
+        fabAddLockedFolder.setOnClickListener(v -> {
+            // create a new locked folder
+            dialogNewLockedFolder();
             switchFabs();
         });
 
@@ -438,10 +446,79 @@ public class HomeFragment extends Fragment {
                 .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
                 .setPositiveButton(R.string.ok, (dialog0, which) -> {
                     String folderName = editText.getText().toString();
-                    newFolder(folderName);
+                    if (newFolder(folderName)) {
+                        currentFiles = currentParent.listFiles();
+                        refresh();
+                    } else {
+                        MyToastMaker.make(String.valueOf(activity.getText(R.string.file_name_invalid)), activity);
+                    }
+                    dialog0.dismiss();
+                }).create();
+        setDialogBackground(dialog);
+        dialog.show();
+        Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().isEmpty()) {
+                    btnPositive.setTextColor(gray_500);
+                    btnPositive.setClickable(false);
+                } else {
+                    btnPositive.setTextColor(yellow_500);
+                    btnPositive.setClickable(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+        btnPositive.setTextColor(gray_500);
+        btnPositive.setClickable(false);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(yellow_500);
+    }
+
+    public void dialogNewLockedFolder() {
+        final EditText editText = new EditText(activity);
+        editText.setInputType(InputType.TYPE_CLASS_TEXT);
+        editText.setHint(R.string.new_folder_hint);
+        editText.setPadding(70, 30, 70, 30);
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setIcon(R.drawable.ic_folder_locked)
+                .setTitle(R.string.new_locked_folder)
+                .setView(editText)
+                .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
+                .setPositiveButton(R.string.ok, (dialog0, which) -> {
+                    dialog0.dismiss();
+                    RockerDialog encryptionDialog = new RockerDialog(activity);
+                    encryptionDialog.getBtnPositive().setOnClickListener(v -> {
+                        String key = encryptionDialog.getPassword();
+                        String folderName = MyNameFormatter.concat(MyAES.encryptString(CHECK, key), editText.getText().toString());
+                        File file = new File(currentParent.getPath() + "/" + folderName);
+                        if (file.exists()) {
+                            MyToastMaker.make((String) activity.getText(R.string.new_folder_exists), activity);
+                        } else {
+                            newFolder(folderName);
+                            encryptionDialog.dismiss();
+                        }
                     currentFiles = currentParent.listFiles();
                     refresh();
-                    dialog0.dismiss();
+                    });
+                    encryptionDialog.show();
+
+
+
+//                        File file = new File(currentParent.getPath() + "/" + folderName);
+//        if (file.exists()) {
+//            MyToastMaker.make((String) activity.getText(R.string.new_folder_exists), activity);
+//        } else {}
+
+//                    currentFiles = currentParent.listFiles();
+//                    refresh();
                 }).create();
         setDialogBackground(dialog);
         dialog.show();
@@ -540,7 +617,7 @@ public class HomeFragment extends Fragment {
                         currentFiles = currentParent.listFiles();
                         refresh();
                     } else {
-                        MyToastMaker.make(String.valueOf(activity.getText(R.string.file_name_exist)), activity);
+                        MyToastMaker.make(String.valueOf(activity.getText(R.string.file_name_invalid)), activity);
                     }
                     dialog0.dismiss();
                 }).create();

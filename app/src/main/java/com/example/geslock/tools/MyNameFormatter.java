@@ -31,4 +31,8 @@ public abstract class MyNameFormatter {
     public static String parsePrefix(String name) {
         return name.substring(0, 30);
     }
+
+    public static String concat(String check, String folderName) {
+        return LOCKED_FOLDER_MARK + check + folderName;
+    }
 }
