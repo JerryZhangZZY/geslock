@@ -57,6 +57,7 @@
 
     <string name="new_file">Upload file</string>
     <string name="new_folder">New folder</string>
+    <string name="new_locked_folder">New locked folder</string>
     <string name="new_folder_hint">Folder name</string>
     <string name="new_folder_exists">Folder exists</string>
 
@@ -94,6 +95,7 @@
     <string name="property_null">Don\'t show</string>
 
     <string name="type_folder">Folder</string>
+    <string name="type_folder_locked">Locked folder</string>
     <string name="type_text">Text file</string>
     <string name="type_image">Image</string>
     <string name="type_video">Video</string>
@@ -105,7 +107,6 @@
     <string name="type_xls">Microsoft Excel</string>
     <string name="type_pdf">Portable document</string>
     <string name="type_other">Other type</string>
-    <string name="type_folder_locked">Locked folder</string>
 
     <string name="guide_title">Gesture Guide</string>
     <string name="guide_tap">Tap</string>

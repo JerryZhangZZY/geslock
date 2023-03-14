@@ -51,6 +51,7 @@
 
     <string name="new_file">上传文件</string>
     <string name="new_folder">新建文件夹</string>
+    <string name="new_locked_folder">新建加密文件夹</string>
     <string name="new_folder_hint">文件夹名称</string>
     <string name="new_folder_exists">文件夹存在</string>
 
@@ -88,6 +89,7 @@
     <string name="property_null">不显示</string>
 
     <string name="type_folder">文件夹</string>
+    <string name="type_folder_locked">加密文件夹</string>
     <string name="type_text">文本</string>
     <string name="type_image">图像</string>
     <string name="type_video">视频</string>
@@ -99,7 +101,6 @@
     <string name="type_xls">微软Excel表格</string>
     <string name="type_pdf">便携式文档</string>
     <string name="type_other">其他格式</string>
-    <string name="type_folder_locked">加密文件夹</string>
 
     <string name="guide_title">手势指南</string>
     <string name="guide_tap">点击</string>

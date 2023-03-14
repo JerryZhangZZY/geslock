@@ -85,8 +85,10 @@ public class HomeFragment extends Fragment {
     private FloatingActionButton fabAdd;
     private FloatingActionButton fabAddFile;
     private FloatingActionButton fabAddFolder;
+    private FloatingActionButton fabAddLockedFolder;
     private TextView tvNewFile;
     private TextView tvNewFolder;
+    private TextView tvNewLockedFolder;
     private ImageView imgEmpty;
     private TextView tvEmpty;
 
@@ -278,8 +280,10 @@ public class HomeFragment extends Fragment {
         fabAdd = activity.findViewById(R.id.fabAdd);
         fabAddFile = activity.findViewById(R.id.fabAddFile);
         fabAddFolder = activity.findViewById(R.id.fabAddFolder);
+        fabAddLockedFolder = activity.findViewById(R.id.fabAddLockedFolder);
         tvNewFile = activity.findViewById(R.id.tvNewFile);
         tvNewFolder = activity.findViewById(R.id.tvNewFolder);
+        tvNewLockedFolder = activity.findViewById(R.id.tvNewLockedFolder);
 
         fabAdd.setOnClickListener(view -> switchFabs());
 
@@ -780,13 +784,17 @@ public class HomeFragment extends Fragment {
         if (!addClicked) {
             fabAddFile.setVisibility(View.VISIBLE);
             fabAddFolder.setVisibility(View.VISIBLE);
+            fabAddLockedFolder.setVisibility(View.VISIBLE);
             tvNewFile.setVisibility(View.VISIBLE);
             tvNewFolder.setVisibility(View.VISIBLE);
+            tvNewLockedFolder.setVisibility(View.VISIBLE);
         } else {
             fabAddFile.setVisibility(View.GONE);
             fabAddFolder.setVisibility(View.GONE);
+            fabAddLockedFolder.setVisibility(View.GONE);
             tvNewFile.setVisibility(View.GONE);
             tvNewFolder.setVisibility(View.GONE);
+            tvNewLockedFolder.setVisibility(View.GONE);
         }
     }
 
@@ -798,14 +806,18 @@ public class HomeFragment extends Fragment {
             fabAdd.startAnimation(animRotateOpen);
             fabAddFile.startAnimation(animFromBottom);
             fabAddFolder.startAnimation(animFromBottom);
+            fabAddLockedFolder.startAnimation(animFromBottom);
             tvNewFile.startAnimation(animFromBottom);
             tvNewFolder.startAnimation(animFromBottom);
+            tvNewLockedFolder.startAnimation(animFromBottom);
         } else {
             fabAdd.startAnimation(animRotateClose);
             fabAddFile.startAnimation(animToBottom);
             fabAddFolder.startAnimation(animToBottom);
+            fabAddLockedFolder.startAnimation(animToBottom);
             tvNewFile.startAnimation(animToBottom);
             tvNewFolder.startAnimation(animToBottom);
+            tvNewLockedFolder.startAnimation(animToBottom);
         }
     }
 
@@ -816,9 +828,11 @@ public class HomeFragment extends Fragment {
         if (!addClicked) {
             fabAddFile.setClickable(true);
             fabAddFolder.setClickable(true);
+            fabAddLockedFolder.setClickable(true);
         } else {
             fabAddFile.setClickable(false);
             fabAddFolder.setClickable(false);
+            fabAddLockedFolder.setClickable(false);
         }
     }
 
