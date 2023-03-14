@@ -728,6 +728,7 @@ public class HomeFragment extends Fragment {
         currentFiles = sortFiles();
         myList.clear();
         Collections.addAll(myList, currentFiles);
+        myAdapter.setFolderLocked(folderKeys.peek() != null);
         myAdapter.notifyDataSetChanged();
         recyclerFileList.scheduleLayoutAnimation();
 
