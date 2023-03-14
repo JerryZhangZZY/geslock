@@ -255,12 +255,9 @@ public class MyAES {
 
     public static String encryptString(String data, String secretKey) {
         try {
-            //创建密码器
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            //初始化为加密密码器
             cipher.init(Cipher.ENCRYPT_MODE, getSecretKey(secretKey));
             byte[] encryptByte = cipher.doFinal(data.getBytes(CHARSET_UTF8));
-            // 将加密以后的数据进行 Base64 编码
             return base64Encode(encryptByte);
         } catch (Exception e) {
             handleException(e);
@@ -272,9 +269,7 @@ public class MyAES {
         try {
             byte[] data = base64Decode(base64Data);
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            //设置为解密模式
             cipher.init(Cipher.DECRYPT_MODE, getSecretKey(secretKey));
-            //执行解密操作
             byte[] result = cipher.doFinal(data);
             return new String(result, CHARSET_UTF8);
         } catch (Exception e) {
@@ -284,11 +279,13 @@ public class MyAES {
     }
 
     public static String base64Encode(byte[] data) {
-        return Base64.encodeToString(data, Base64.NO_WRAP);
+        // replace '/' with '-' to prevent invalid folder name
+        return Base64.encodeToString(data, Base64.NO_WRAP).replace('/', '-');
     }
 
     public static byte[] base64Decode(String data) {
-        return Base64.decode(data, Base64.NO_WRAP);
+        // recover '/' from '-'
+        return Base64.decode(data.replace('-', '/'), Base64.NO_WRAP);
     }
 
     private static void handleException(Exception e) {

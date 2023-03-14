@@ -335,58 +335,86 @@ public class HomeFragment extends Fragment {
                 name = name.substring(0, index) + "_1" + name.substring(index);
                 destPath = currentParent.getPath() + "/" + name + "gl";
             }
-            RockerDialog encryptionDialog = new RockerDialog(activity);
             String finalDestPath = destPath;
-            encryptionDialog.getBtnPositive().setOnClickListener(v -> {
-                // get password from dialog
-                String key = encryptionDialog.getPassword();
+            if (folderKeys.peek() == null)  {
+                // in plain folder
+                RockerDialog encryptionDialog = new RockerDialog(activity);
+                encryptionDialog.getBtnPositive().setOnClickListener(v -> {
+                    // get password from dialog
+                    String key = encryptionDialog.getPassword();
+                    new EncryptTask(uri, finalDestPath, key, encryptionDialog).execute();
+                });
+                encryptionDialog.show();
+            } else {
+                // in locked folders
+                new EncryptTask(uri, finalDestPath, folderKeys.peek()).execute();
+            }
+        }
+    }
 
-                class EncryptTask extends AsyncTask<Void, Void, Void> {
-                    public ProgressDialog progressDialog;
-                    boolean done = false;
+    public class EncryptTask extends AsyncTask<Void, Void, Void> {
+        private ProgressDialog progressDialog;
+        private boolean done = false;
+        private final Uri uri;
+        private final String destPath;
+        private final String key;
+        private final RockerDialog encryptionDialog;
 
-                    @Override
-                    protected void onPreExecute() {
-                        super.onPreExecute();
-                        progressDialog = new ProgressDialog(activity, R.style.progressDialogStyle);
-                        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        progressDialog.setTitle(activity.getString(R.string.progress_encryption));
-                        progressDialog.setMessage(activity.getString(R.string.progress_encryption_message));
-                        progressDialog.setCancelable(false);
-                        progressDialog.getWindow().setBackgroundDrawableResource(R.drawable.general_dialog_background);
-                        try {
-                            progressDialog.setIcon(activity.getPackageManager().getApplicationIcon("com.example.geslock"));
-                        } catch (PackageManager.NameNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        // hide progress bar until 200ms
-                        new Handler().postDelayed(() -> {
-                            if (!done) {
-                                progressDialog.show();
-                            }
-                        }, 200);
-                    }
+        public EncryptTask(Uri uri, String destPath, String key, RockerDialog encryptionDialog) {
+            super();
+            this.uri = uri;
+            this.destPath = destPath;
+            this.key = key;
+            this.encryptionDialog = encryptionDialog;
+        }
 
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        MyAES.encryptFile(uri, finalDestPath, key, activity);
-                        return null;
-                    }
+        public EncryptTask(Uri uri, String destPath, String key) {
+            super();
+            this.uri = uri;
+            this.destPath = destPath;
+            this.key = key;
+            this.encryptionDialog = null;
+        }
 
-                    @Override
-                    protected void onPostExecute(Void v) {
-                        super.onPostExecute(v);
-                        done = true;
-                        progressDialog.dismiss();
-                        encryptionDialog.dismiss();
-                        // refresh
-                        currentFiles = currentParent.listFiles();
-                        refresh();
-                    }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(activity, R.style.progressDialogStyle);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setTitle(activity.getString(R.string.progress_encryption));
+            progressDialog.setMessage(activity.getString(R.string.progress_encryption_message));
+            progressDialog.setCancelable(false);
+            progressDialog.getWindow().setBackgroundDrawableResource(R.drawable.general_dialog_background);
+            try {
+                progressDialog.setIcon(activity.getPackageManager().getApplicationIcon("com.example.geslock"));
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            // hide progress bar until 200ms
+            new Handler().postDelayed(() -> {
+                if (!done) {
+                    progressDialog.show();
                 }
-                new EncryptTask().execute();
-            });
-            encryptionDialog.show();
+            }, 200);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            MyAES.encryptFile(uri, destPath, key, activity);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            super.onPostExecute(v);
+            done = true;
+            progressDialog.dismiss();
+            if (encryptionDialog != null) {
+                encryptionDialog.dismiss();
+            }
+            // refresh
+            currentFiles = currentParent.listFiles();
+            refresh();
         }
     }
 
@@ -502,11 +530,13 @@ public class HomeFragment extends Fragment {
                         if (file.exists()) {
                             MyToastMaker.make((String) activity.getText(R.string.new_folder_exists), activity);
                         } else {
-                            newFolder(folderName);
+                            if (!newFolder(folderName)) {
+                                MyToastMaker.make("Error", activity);
+                            }
                             encryptionDialog.dismiss();
                         }
-                    currentFiles = currentParent.listFiles();
-                    refresh();
+                        currentFiles = currentParent.listFiles();
+                        refresh();
                     });
                     encryptionDialog.show();
 
