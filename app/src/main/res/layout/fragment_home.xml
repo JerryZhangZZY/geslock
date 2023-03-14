@@ -106,27 +106,55 @@
         app:layout_constraintEnd_toEndOf="@+id/fabAddFile"
         app:srcCompat="@drawable/ic_new_folder" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddLockedFolder"
+        style="@style/fabStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/fabAddFolder"
+        app:layout_constraintEnd_toEndOf="@id/fabAddFolder"
+        app:srcCompat="@drawable/ic_new_locked_folder" />
+
     <TextView
         android:id="@+id/tvNewFile"
         style="@style/fabTextStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/new_file"
+        android:textAlignment="viewEnd"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/fabAddFile"
-        app:layout_constraintEnd_toStartOf="@+id/fabAddFile"
+        app:layout_constraintEnd_toEndOf="@id/tvNewFolder"
+        app:layout_constraintStart_toStartOf="@id/tvNewFolder"
         app:layout_constraintTop_toTopOf="@+id/fabAddFile" />
 
     <TextView
         android:id="@+id/tvNewFolder"
         style="@style/fabTextStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/new_folder"
+        android:textAlignment="viewEnd"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/fabAddFolder"
-        app:layout_constraintEnd_toStartOf="@+id/fabAddFolder"
+        app:layout_constraintEnd_toEndOf="@id/tvNewLockedFolder"
+        app:layout_constraintStart_toStartOf="@id/tvNewLockedFolder"
         app:layout_constraintTop_toTopOf="@+id/fabAddFolder" />
+
+    <TextView
+        android:id="@+id/tvNewLockedFolder"
+        style="@style/fabTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="-35dp"
+        android:text="@string/new_locked_folder"
+        android:textAlignment="viewEnd"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/fabAddLockedFolder"
+        app:layout_constraintEnd_toStartOf="@+id/fabAddLockedFolder"
+        app:layout_constraintTop_toTopOf="@id/fabAddLockedFolder" />
 
     <TextView
         android:id="@+id/tvEmpty"

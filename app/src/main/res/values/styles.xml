@@ -50,7 +50,7 @@
     </style>
     <style name="fabTextStyle">
         <item name="android:layout_marginTop">-5dp</item>
-        <item name="android:layout_marginEnd">-25dp</item>
+
         <item name="android:textAlignment">textEnd</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Large</item>
         <item name="android:textColor">?colorSecondary</item>

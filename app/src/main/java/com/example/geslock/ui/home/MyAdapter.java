@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geslock.R;
 import com.example.geslock.tools.MyDefaultPref;
+import com.example.geslock.tools.MyNameFormatter;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -50,6 +51,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private MyViewHolder.OnItemClickListener clickListener;
     private MyViewHolder.OnItemLongClickListener longClickListener;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+    private boolean folderLocked = false;
 
     public MyAdapter(Context context, List<File> list) {
         this.context = context;
@@ -83,7 +85,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             myViewHolder.imgEnter.setVisibility(View.INVISIBLE);
             myViewHolder.tvItemCount.setVisibility(View.INVISIBLE);
         } else {
-            myViewHolder.tvFileName.setText(file.getName());
+            String name = MyNameFormatter.parseFolderName(file.getName());
+            myViewHolder.tvFileName.setText(name);
             myViewHolder.imgEnter.setVisibility(View.VISIBLE);
             if (itemCount) {
                 myViewHolder.tvItemCount.setText(String.valueOf(Objects.requireNonNull(file.list()).length));
@@ -95,6 +98,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         // set file property
         setProperty(myViewHolder.tvFileProperty, file);
+    }
+
+    public void setFolderLocked(boolean locked) {
+        this.folderLocked = locked;
     }
 
     /**
@@ -221,46 +228,51 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
      * @param file file
      */
     public void setIconAndType(File file) {
+        String fileName = file.getName();
         if (file.isDirectory()) {
-            icon = R.drawable.ic_folder;
-            type = context.getString(R.string.type_folder);
+            if (MyNameFormatter.isLockedFolder(fileName)) {
+                icon = R.drawable.ic_folder_locked;
+                type = context.getString(R.string.type_folder_locked);
+            } else {
+                icon = R.drawable.ic_folder;
+                type = context.getString(R.string.type_folder);
+            }
             return;
         }
-        String fileName = file.getName();
         // extract extension string from file name
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length() - 2).toLowerCase();
         if (textExtensions.contains(extension)) {
-            icon = R.drawable.ic_txt;
+            icon = (folderLocked ? R.drawable.ic_txt : R.drawable.ic_txt_locked);
             type = context.getString(R.string.type_text);
         } else if (imageExtensions.contains(extension)) {
-            icon = R.drawable.ic_image;
+            icon = (folderLocked ? R.drawable.ic_image : R.drawable.ic_image_locked);
             type = context.getString(R.string.type_image);
         } else if (videoExtensions.contains(extension)) {
-            icon = R.drawable.ic_video;
+            icon = (folderLocked ? R.drawable.ic_video : R.drawable.ic_video_locked);
             type = context.getString(R.string.type_video);
         } else if (audioExtensions.contains(extension)) {
-            icon = R.drawable.ic_audio;
+            icon = (folderLocked ? R.drawable.ic_audio : R.drawable.ic_audio_locked);
             type = context.getString(R.string.type_audio);
         } else if (zipExtensions.contains(extension)) {
-            icon = R.drawable.ic_zip;
+            icon = (folderLocked ? R.drawable.ic_zip : R.drawable.ic_zip_locked);
             type = context.getString(R.string.type_zip);
         } else if (apkExtensions.contains(extension)) {
-            icon = R.drawable.ic_apk;
+            icon = (folderLocked ? R.drawable.ic_apk : R.drawable.ic_apk_locked);
             type = context.getString(R.string.type_apk);
         } else if (docExtensions.contains(extension)) {
-            icon = R.drawable.ic_doc;
+            icon = (folderLocked ? R.drawable.ic_doc : R.drawable.ic_doc_locked);
             type = context.getString(R.string.type_doc);
         } else if (pptExtensions.contains(extension)) {
-            icon = R.drawable.ic_ppt;
+            icon = (folderLocked ? R.drawable.ic_ppt : R.drawable.ic_ppt_locked);
             type = context.getString(R.string.type_ppt);
         } else if (xlsExtensions.contains(extension)) {
-            icon = R.drawable.ic_xls;
+            icon = (folderLocked ? R.drawable.ic_xls : R.drawable.ic_xls_locked);
             type = context.getString(R.string.type_xls);
         } else if (pdfExtensions.contains(extension)) {
-            icon = R.drawable.ic_pdf;
+            icon = (folderLocked ? R.drawable.ic_pdf : R.drawable.ic_pdf_locked);
             type = context.getString(R.string.type_pdf);
         } else {
-            icon = R.drawable.ic_file;
+            icon = (folderLocked ? R.drawable.ic_file : R.drawable.ic_file_locked);
             type = context.getString(R.string.type_other);
         }
     }

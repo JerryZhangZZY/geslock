@@ -57,6 +57,7 @@
 
     <string name="new_file">Upload file</string>
     <string name="new_folder">New folder</string>
+    <string name="new_locked_folder">New locked folder</string>
     <string name="new_folder_hint">Folder name</string>
     <string name="new_folder_exists">Folder exists</string>
 
@@ -73,6 +74,7 @@
     <string name="reset">Reset settings</string>
     <string name="reset_title">Reset all settings?</string>
     <string name="file_name_exist">File name already exist</string>
+    <string name="file_name_invalid">Invalid file name</string>
 
     <string name="menu_sort">Sort by…</string>
     <string name="menu_order">Sort order…</string>
@@ -93,6 +95,7 @@
     <string name="property_null">Don\'t show</string>
 
     <string name="type_folder">Folder</string>
+    <string name="type_folder_locked">Locked folder</string>
     <string name="type_text">Text file</string>
     <string name="type_image">Image</string>
     <string name="type_video">Video</string>

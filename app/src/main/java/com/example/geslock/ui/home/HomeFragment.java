@@ -48,6 +48,7 @@ import com.example.geslock.R;
 import com.example.geslock.tools.MyAES;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyDefaultPref;
+import com.example.geslock.tools.MyNameFormatter;
 import com.example.geslock.tools.MyPixelConverter;
 import com.example.geslock.tools.MyToastMaker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -58,8 +59,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Stack;
 
 public class HomeFragment extends Fragment {
+
+    private final String CHECK = "CHECK";
 
     private Activity activity;
     private SharedPreferences pref;
@@ -74,6 +78,8 @@ public class HomeFragment extends Fragment {
     private MyAdapter myAdapter;
     private final List<File> myList = new ArrayList<>();
 
+    private final Stack<String> folderKeys = new Stack<>();
+
     private Button btnBack;
     private TextView tvPath;
     private ImageButton btnMenu;
@@ -81,8 +87,10 @@ public class HomeFragment extends Fragment {
     private FloatingActionButton fabAdd;
     private FloatingActionButton fabAddFile;
     private FloatingActionButton fabAddFolder;
+    private FloatingActionButton fabAddLockedFolder;
     private TextView tvNewFile;
     private TextView tvNewFolder;
+    private TextView tvNewLockedFolder;
     private ImageView imgEmpty;
     private TextView tvEmpty;
 
@@ -125,6 +133,8 @@ public class HomeFragment extends Fragment {
             rootDir.mkdir();
         }
         cacheDir = activity.getExternalCacheDir();
+
+        folderKeys.push(null);
 
         // set animations
         ANIM_DURATION_100 = MyAnimationScaler.getDuration(100, activity);
@@ -212,25 +222,54 @@ public class HomeFragment extends Fragment {
         myAdapter = new MyAdapter(activity, myList);
         myAdapter.setOnItemClickListener((view, position) -> {
             File file = currentFiles[position];
+            String fileName = file.getName();
             if (file.isFile()) {
                 // handle decryption when clicked on a file
-                // set the decryption dialog
-                RockerDialog decryptionDialog = new RockerDialog(activity);
-                decryptionDialog.getBtnPositive().setOnClickListener(v -> {
-                    String key = decryptionDialog.getPassword();
-                    if (!cacheDir.exists()) {
-                        cacheDir.mkdir();
-                    }
-                    String destPath = cacheDir.getPath() + "/" + file.getName().substring(0, file.getName().length() - 2);
-                    new MyAES.DecryptTask(activity, file, destPath, key, decryptionDialog).execute();
-                });
-                decryptionDialog.show();
+                if (!cacheDir.exists()) {
+                    cacheDir.mkdir();
+                }
+                String destPath = cacheDir.getPath() + "/" + fileName.substring(0, file.getName().length() - 2);
+                String folderKey = getNearestFolderKey();
+                if (folderKey == null) {
+                    // under plain folder
+                    // set the decryption dialog
+                    RockerDialog decryptionDialog = new RockerDialog(activity);
+                    decryptionDialog.getBtnPositive().setOnClickListener(v -> {
+                        String key = decryptionDialog.getPassword();
+                        new MyAES.DecryptTask(activity, file, destPath, key, decryptionDialog).execute();
+                    });
+                    decryptionDialog.show();
+                } else {
+                    // under locked folder
+                    new MyAES.DecryptTask(activity, file, destPath, folderKey).execute();
+                }
             } else {
-                // enter the clicked folder
-                File[] files = currentFiles[position].listFiles();
-                currentParent = currentFiles[position];
-                currentFiles = files;
-                refresh();
+                if (!MyNameFormatter.isLockedFolder(fileName)) {
+                    // plain folder
+                    folderKeys.push(null);
+                    // enter the clicked folder
+                    handleEnter(file);
+                } else {
+                    // locked folder
+                    RockerDialog decryptionDialog = new RockerDialog(activity);
+                    decryptionDialog.getBtnPositive().setOnClickListener(v -> {
+                        String password = decryptionDialog.getPassword();
+                        try {
+                            if (Objects.equals(MyAES.decryptString(MyNameFormatter.parseCheck(fileName), password), CHECK)) {
+                                folderKeys.push(password);
+                                handleEnter(file);
+                                decryptionDialog.dismiss();
+                            } else {
+                                decryptionDialog.handleWrongPassword();
+                            }
+                        } catch (Exception e) {
+                            decryptionDialog.handleWrongPassword();
+                        }
+
+                    });
+                    decryptionDialog.show();
+                }
+
             }
         });
         // show edit dialog when long clicked
@@ -241,8 +280,10 @@ public class HomeFragment extends Fragment {
         fabAdd = activity.findViewById(R.id.fabAdd);
         fabAddFile = activity.findViewById(R.id.fabAddFile);
         fabAddFolder = activity.findViewById(R.id.fabAddFolder);
+        fabAddLockedFolder = activity.findViewById(R.id.fabAddLockedFolder);
         tvNewFile = activity.findViewById(R.id.tvNewFile);
         tvNewFolder = activity.findViewById(R.id.tvNewFolder);
+        tvNewLockedFolder = activity.findViewById(R.id.tvNewLockedFolder);
 
         fabAdd.setOnClickListener(view -> switchFabs());
 
@@ -258,6 +299,12 @@ public class HomeFragment extends Fragment {
         fabAddFolder.setOnClickListener(view -> {
             // create a new folder
             dialogNewFolder();
+            switchFabs();
+        });
+
+        fabAddLockedFolder.setOnClickListener(v -> {
+            // create a new locked folder
+            dialogNewLockedFolder();
             switchFabs();
         });
 
@@ -286,58 +333,87 @@ public class HomeFragment extends Fragment {
                 name = name.substring(0, index) + "_1" + name.substring(index);
                 destPath = currentParent.getPath() + "/" + name + "gl";
             }
-            RockerDialog encryptionDialog = new RockerDialog(activity);
             String finalDestPath = destPath;
-            encryptionDialog.getBtnPositive().setOnClickListener(v -> {
-                // get password from dialog
-                String key = encryptionDialog.getPassword();
+            String folderKey = getNearestFolderKey();
+            if (folderKey == null)  {
+                // in plain folder
+                RockerDialog encryptionDialog = new RockerDialog(activity);
+                encryptionDialog.getBtnPositive().setOnClickListener(v -> {
+                    // get password from dialog
+                    String key = encryptionDialog.getPassword();
+                    new EncryptTask(uri, finalDestPath, key, encryptionDialog).execute();
+                });
+                encryptionDialog.show();
+            } else {
+                // in locked folders
+                new EncryptTask(uri, finalDestPath, folderKey).execute();
+            }
+        }
+    }
 
-                class EncryptTask extends AsyncTask<Void, Void, Void> {
-                    public ProgressDialog progressDialog;
-                    boolean done = false;
+    public class EncryptTask extends AsyncTask<Void, Void, Void> {
+        private ProgressDialog progressDialog;
+        private boolean done = false;
+        private final Uri uri;
+        private final String destPath;
+        private final String key;
+        private final RockerDialog encryptionDialog;
 
-                    @Override
-                    protected void onPreExecute() {
-                        super.onPreExecute();
-                        progressDialog = new ProgressDialog(activity, R.style.progressDialogStyle);
-                        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        progressDialog.setTitle(activity.getString(R.string.progress_encryption));
-                        progressDialog.setMessage(activity.getString(R.string.progress_encryption_message));
-                        progressDialog.setCancelable(false);
-                        progressDialog.getWindow().setBackgroundDrawableResource(R.drawable.general_dialog_background);
-                        try {
-                            progressDialog.setIcon(activity.getPackageManager().getApplicationIcon("com.example.geslock"));
-                        } catch (PackageManager.NameNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        // hide progress bar until 200ms
-                        new Handler().postDelayed(() -> {
-                            if (!done) {
-                                progressDialog.show();
-                            }
-                        }, 200);
-                    }
+        public EncryptTask(Uri uri, String destPath, String key, RockerDialog encryptionDialog) {
+            super();
+            this.uri = uri;
+            this.destPath = destPath;
+            this.key = key;
+            this.encryptionDialog = encryptionDialog;
+        }
 
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        MyAES.encryptFile(uri, finalDestPath, key, activity);
-                        return null;
-                    }
+        public EncryptTask(Uri uri, String destPath, String key) {
+            super();
+            this.uri = uri;
+            this.destPath = destPath;
+            this.key = key;
+            this.encryptionDialog = null;
+        }
 
-                    @Override
-                    protected void onPostExecute(Void v) {
-                        super.onPostExecute(v);
-                        done = true;
-                        progressDialog.dismiss();
-                        encryptionDialog.dismiss();
-                        // refresh
-                        currentFiles = currentParent.listFiles();
-                        refresh();
-                    }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(activity, R.style.progressDialogStyle);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setTitle(activity.getString(R.string.progress_encryption));
+            progressDialog.setMessage(activity.getString(R.string.progress_encryption_message));
+            progressDialog.setCancelable(false);
+            progressDialog.getWindow().setBackgroundDrawableResource(R.drawable.general_dialog_background);
+            try {
+                progressDialog.setIcon(activity.getPackageManager().getApplicationIcon("com.example.geslock"));
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            // hide progress bar until 200ms
+            new Handler().postDelayed(() -> {
+                if (!done) {
+                    progressDialog.show();
                 }
-                new EncryptTask().execute();
-            });
-            encryptionDialog.show();
+            }, 200);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            MyAES.encryptFile(uri, destPath, key, activity);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            super.onPostExecute(v);
+            done = true;
+            progressDialog.dismiss();
+            if (encryptionDialog != null) {
+                encryptionDialog.dismiss();
+            }
+            // refresh
+            currentFiles = currentParent.listFiles();
+            refresh();
         }
     }
 
@@ -397,10 +473,81 @@ public class HomeFragment extends Fragment {
                 .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
                 .setPositiveButton(R.string.ok, (dialog0, which) -> {
                     String folderName = editText.getText().toString();
-                    newFolder(folderName);
-                    currentFiles = currentParent.listFiles();
-                    refresh();
+                    if (newFolder(folderName)) {
+                        currentFiles = currentParent.listFiles();
+                        refresh();
+                    } else {
+                        MyToastMaker.make(String.valueOf(activity.getText(R.string.file_name_invalid)), activity);
+                    }
                     dialog0.dismiss();
+                }).create();
+        setDialogBackground(dialog);
+        dialog.show();
+        Button btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().isEmpty()) {
+                    btnPositive.setTextColor(gray_500);
+                    btnPositive.setClickable(false);
+                } else {
+                    btnPositive.setTextColor(yellow_500);
+                    btnPositive.setClickable(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+        btnPositive.setTextColor(gray_500);
+        btnPositive.setClickable(false);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(yellow_500);
+    }
+
+    public void dialogNewLockedFolder() {
+        final EditText editText = new EditText(activity);
+        editText.setInputType(InputType.TYPE_CLASS_TEXT);
+        editText.setHint(R.string.new_folder_hint);
+        editText.setPadding(70, 30, 70, 30);
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setIcon(R.drawable.ic_folder_locked)
+                .setTitle(R.string.new_locked_folder)
+                .setView(editText)
+                .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
+                .setPositiveButton(R.string.ok, (dialog0, which) -> {
+                    dialog0.dismiss();
+                    RockerDialog encryptionDialog = new RockerDialog(activity);
+                    encryptionDialog.getBtnPositive().setOnClickListener(v -> {
+                        String key = encryptionDialog.getPassword();
+                        String folderName = MyNameFormatter.concat(MyAES.encryptString(CHECK, key), editText.getText().toString());
+                        File file = new File(currentParent.getPath() + "/" + folderName);
+                        if (file.exists()) {
+                            MyToastMaker.make((String) activity.getText(R.string.new_folder_exists), activity);
+                        } else {
+                            if (!newFolder(folderName)) {
+                                MyToastMaker.make("Error", activity);
+                            }
+                            encryptionDialog.dismiss();
+                        }
+                        currentFiles = currentParent.listFiles();
+                        refresh();
+                    });
+                    encryptionDialog.show();
+
+
+
+//                        File file = new File(currentParent.getPath() + "/" + folderName);
+//        if (file.exists()) {
+//            MyToastMaker.make((String) activity.getText(R.string.new_folder_exists), activity);
+//        } else {}
+
+//                    currentFiles = currentParent.listFiles();
+//                    refresh();
                 }).create();
         setDialogBackground(dialog);
         dialog.show();
@@ -491,9 +638,15 @@ public class HomeFragment extends Fragment {
                 .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
                 .setPositiveButton(R.string.rename_ok, (dialog0, which) -> {
                     String newName = editText.getText().toString() + (file.isFile() ? "gl" : "");
+                    String fileName = file.getName();
+                    if (MyNameFormatter.isLockedFolder(fileName)) {
+                        newName = MyNameFormatter.parsePrefix(file.getName()) + newName;
+                    }
                     if (rename(file, newName)) {
                         currentFiles = currentParent.listFiles();
                         refresh();
+                    } else {
+                        MyToastMaker.make(String.valueOf(activity.getText(R.string.file_name_invalid)), activity);
                     }
                     dialog0.dismiss();
                 }).create();
@@ -565,15 +718,16 @@ public class HomeFragment extends Fragment {
                 btnBack.setText(title);
             } else {
                 assert parent != null;
-                btnBack.setText(parent.getName());
+                btnBack.setText(MyNameFormatter.parseFolderName(parent.getName()));
             }
-            tvPath.setText(currentParent.getName());
+            tvPath.setText(MyNameFormatter.parseFolderName(currentParent.getName()));
         }
 
         // refresh recycler view
         currentFiles = sortFiles();
         myList.clear();
         Collections.addAll(myList, currentFiles);
+        myAdapter.setFolderLocked(getNearestFolderKey() != null);
         myAdapter.notifyDataSetChanged();
         recyclerFileList.scheduleLayoutAnimation();
 
@@ -697,6 +851,7 @@ public class HomeFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     public void handleBack() {
         if (!rootDir.equals(currentParent)) {
+            folderKeys.pop();
             // back to parent folder
             currentParent = currentParent.getParentFile();
             assert currentParent != null;
@@ -706,6 +861,17 @@ public class HomeFragment extends Fragment {
             // quit app
             activity.finishAffinity();
         }
+    }
+
+    /**
+     * Enter the directory
+     * @param file directory to be entered
+     */
+    public void handleEnter(File file) {
+        File[] files = file.listFiles();
+        currentParent = file;
+        currentFiles = files;
+        refresh();
     }
 
     /**
@@ -725,13 +891,17 @@ public class HomeFragment extends Fragment {
         if (!addClicked) {
             fabAddFile.setVisibility(View.VISIBLE);
             fabAddFolder.setVisibility(View.VISIBLE);
+            fabAddLockedFolder.setVisibility(View.VISIBLE);
             tvNewFile.setVisibility(View.VISIBLE);
             tvNewFolder.setVisibility(View.VISIBLE);
+            tvNewLockedFolder.setVisibility(View.VISIBLE);
         } else {
             fabAddFile.setVisibility(View.GONE);
             fabAddFolder.setVisibility(View.GONE);
+            fabAddLockedFolder.setVisibility(View.GONE);
             tvNewFile.setVisibility(View.GONE);
             tvNewFolder.setVisibility(View.GONE);
+            tvNewLockedFolder.setVisibility(View.GONE);
         }
     }
 
@@ -743,14 +913,18 @@ public class HomeFragment extends Fragment {
             fabAdd.startAnimation(animRotateOpen);
             fabAddFile.startAnimation(animFromBottom);
             fabAddFolder.startAnimation(animFromBottom);
+            fabAddLockedFolder.startAnimation(animFromBottom);
             tvNewFile.startAnimation(animFromBottom);
             tvNewFolder.startAnimation(animFromBottom);
+            tvNewLockedFolder.startAnimation(animFromBottom);
         } else {
             fabAdd.startAnimation(animRotateClose);
             fabAddFile.startAnimation(animToBottom);
             fabAddFolder.startAnimation(animToBottom);
+            fabAddLockedFolder.startAnimation(animToBottom);
             tvNewFile.startAnimation(animToBottom);
             tvNewFolder.startAnimation(animToBottom);
+            tvNewLockedFolder.startAnimation(animToBottom);
         }
     }
 
@@ -761,9 +935,11 @@ public class HomeFragment extends Fragment {
         if (!addClicked) {
             fabAddFile.setClickable(true);
             fabAddFolder.setClickable(true);
+            fabAddLockedFolder.setClickable(true);
         } else {
             fabAddFile.setClickable(false);
             fabAddFolder.setClickable(false);
+            fabAddLockedFolder.setClickable(false);
         }
     }
 
@@ -835,5 +1011,19 @@ public class HomeFragment extends Fragment {
         // replace the space placeholder with icon
         builder.setSpan(imageSpan, 0, 1, 0);
         menuItem.setTitle(builder);
+    }
+
+    /**
+     * Get the nearest locked folder's key
+     * @return key or null
+     */
+    public String getNearestFolderKey() {
+        for (int i = folderKeys.size() - 1; i > 0; i--) {
+            String key = folderKeys.get(i);
+            if (key != null) {
+                return key;
+            }
+        }
+        return null;
     }
 }
