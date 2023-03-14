@@ -229,7 +229,7 @@ public class HomeFragment extends Fragment {
                     cacheDir.mkdir();
                 }
                 String destPath = cacheDir.getPath() + "/" + fileName.substring(0, file.getName().length() - 2);
-                String folderKey = folderKeys.peek();
+                String folderKey = getNearestFolderKey();
                 if (folderKey == null) {
                     // under plain folder
                     // set the decryption dialog
@@ -243,8 +243,6 @@ public class HomeFragment extends Fragment {
                     // under locked folder
                     new MyAES.DecryptTask(activity, file, destPath, folderKey).execute();
                 }
-
-
             } else {
                 if (!MyNameFormatter.isLockedFolder(fileName)) {
                     // plain folder
@@ -336,7 +334,8 @@ public class HomeFragment extends Fragment {
                 destPath = currentParent.getPath() + "/" + name + "gl";
             }
             String finalDestPath = destPath;
-            if (folderKeys.peek() == null)  {
+            String folderKey = getNearestFolderKey();
+            if (folderKey == null)  {
                 // in plain folder
                 RockerDialog encryptionDialog = new RockerDialog(activity);
                 encryptionDialog.getBtnPositive().setOnClickListener(v -> {
@@ -347,7 +346,7 @@ public class HomeFragment extends Fragment {
                 encryptionDialog.show();
             } else {
                 // in locked folders
-                new EncryptTask(uri, finalDestPath, folderKeys.peek()).execute();
+                new EncryptTask(uri, finalDestPath, folderKey).execute();
             }
         }
     }
@@ -728,7 +727,7 @@ public class HomeFragment extends Fragment {
         currentFiles = sortFiles();
         myList.clear();
         Collections.addAll(myList, currentFiles);
-        myAdapter.setFolderLocked(folderKeys.peek() != null);
+        myAdapter.setFolderLocked(getNearestFolderKey() != null);
         myAdapter.notifyDataSetChanged();
         recyclerFileList.scheduleLayoutAnimation();
 
@@ -1012,5 +1011,19 @@ public class HomeFragment extends Fragment {
         // replace the space placeholder with icon
         builder.setSpan(imageSpan, 0, 1, 0);
         menuItem.setTitle(builder);
+    }
+
+    /**
+     * Get the nearest locked folder's key
+     * @return key or null
+     */
+    public String getNearestFolderKey() {
+        for (int i = folderKeys.size() - 1; i > 0; i--) {
+            String key = folderKeys.get(i);
+            if (key != null) {
+                return key;
+            }
+        }
+        return null;
     }
 }
