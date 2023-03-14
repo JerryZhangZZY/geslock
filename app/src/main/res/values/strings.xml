@@ -104,6 +104,7 @@
     <string name="type_xls">Microsoft Excel</string>
     <string name="type_pdf">Portable document</string>
     <string name="type_other">Other type</string>
+    <string name="type_folder_locked">Locked folder</string>
 
     <string name="guide_title">Gesture Guide</string>
     <string name="guide_tap">Tap</string>

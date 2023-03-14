@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geslock.R;
 import com.example.geslock.tools.MyDefaultPref;
+import com.example.geslock.tools.MyNameFormatter;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -83,7 +84,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             myViewHolder.imgEnter.setVisibility(View.INVISIBLE);
             myViewHolder.tvItemCount.setVisibility(View.INVISIBLE);
         } else {
-            myViewHolder.tvFileName.setText(file.getName());
+            String name = MyNameFormatter.parseFolderName(file.getName());
+            myViewHolder.tvFileName.setText(name);
             myViewHolder.imgEnter.setVisibility(View.VISIBLE);
             if (itemCount) {
                 myViewHolder.tvItemCount.setText(String.valueOf(Objects.requireNonNull(file.list()).length));
@@ -221,12 +223,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
      * @param file file
      */
     public void setIconAndType(File file) {
+        String fileName = file.getName();
         if (file.isDirectory()) {
-            icon = R.drawable.ic_folder;
-            type = context.getString(R.string.type_folder);
+            if (MyNameFormatter.isLocked(fileName)) {
+                icon = R.drawable.ic_folder_locked;
+                type = context.getString(R.string.type_folder_locked);
+            } else {
+                icon = R.drawable.ic_folder;
+                type = context.getString(R.string.type_folder);
+            }
             return;
         }
-        String fileName = file.getName();
         // extract extension string from file name
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length() - 2).toLowerCase();
         if (textExtensions.contains(extension)) {

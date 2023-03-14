@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Base64;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.FileProvider;
@@ -27,10 +28,15 @@ import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -101,6 +107,20 @@ public class MyAES {
             this.destPath = destPath;
             this.key = key;
             this.decryptionDialog = decryptionDialog;
+        }
+
+        /**
+         * @param activity activity
+         * @param sourceFile the file to be decrypted
+         * @param destPath file exporting path
+         * @param key AES secret key
+         */
+        public DecryptTask(Activity activity, File sourceFile, String destPath, String key) {
+            this.activity = activity;
+            this.sourceFile = sourceFile;
+            this.destPath = destPath;
+            this.key = key;
+            this.decryptionDialog = null;
         }
 
         @Override
@@ -207,7 +227,11 @@ public class MyAES {
             done = true;
             progressDialog.dismiss();
             if (plainFile == null) {
-                decryptionDialog.handleWrongPassword();
+                if (decryptionDialog != null) {
+                    decryptionDialog.handleWrongPassword();
+                } else {
+                    MyToastMaker.make("Error", activity);
+                }
             } else {
                 // share the decrypted file with a third-party app
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -222,9 +246,53 @@ public class MyAES {
                     intent.setType("*/*");
                     activity.startActivity(intent);
                 }
-                decryptionDialog.dismiss();
+                if (decryptionDialog != null) {
+                    decryptionDialog.dismiss();
+                }
             }
         }
+    }
+
+    public static String encryptString(String data, String secretKey) {
+        try {
+            //创建密码器
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            //初始化为加密密码器
+            cipher.init(Cipher.ENCRYPT_MODE, getSecretKey(secretKey));
+            byte[] encryptByte = cipher.doFinal(data.getBytes(CHARSET_UTF8));
+            // 将加密以后的数据进行 Base64 编码
+            return base64Encode(encryptByte);
+        } catch (Exception e) {
+            handleException(e);
+        }
+        return null;
+    }
+
+    public static String decryptString(String base64Data, String secretKey) {
+        try {
+            byte[] data = base64Decode(base64Data);
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            //设置为解密模式
+            cipher.init(Cipher.DECRYPT_MODE, getSecretKey(secretKey));
+            //执行解密操作
+            byte[] result = cipher.doFinal(data);
+            return new String(result, CHARSET_UTF8);
+        } catch (Exception e) {
+            handleException(e);
+        }
+        return null;
+    }
+
+    public static String base64Encode(byte[] data) {
+        return Base64.encodeToString(data, Base64.NO_WRAP);
+    }
+
+    public static byte[] base64Decode(String data) {
+        return Base64.decode(data, Base64.NO_WRAP);
+    }
+
+    private static void handleException(Exception e) {
+        e.printStackTrace();
     }
 
     /**

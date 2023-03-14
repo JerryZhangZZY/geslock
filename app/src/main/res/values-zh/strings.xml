@@ -98,6 +98,7 @@
     <string name="type_xls">微软Excel表格</string>
     <string name="type_pdf">便携式文档</string>
     <string name="type_other">其他格式</string>
+    <string name="type_folder_locked">加密文件夹</string>
 
     <string name="guide_title">手势指南</string>
     <string name="guide_tap">点击</string>

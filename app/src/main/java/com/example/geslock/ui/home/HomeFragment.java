@@ -48,6 +48,7 @@ import com.example.geslock.R;
 import com.example.geslock.tools.MyAES;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyDefaultPref;
+import com.example.geslock.tools.MyNameFormatter;
 import com.example.geslock.tools.MyPixelConverter;
 import com.example.geslock.tools.MyToastMaker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -58,6 +59,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Stack;
 
 public class HomeFragment extends Fragment {
 
@@ -73,6 +75,8 @@ public class HomeFragment extends Fragment {
     private final String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private MyAdapter myAdapter;
     private final List<File> myList = new ArrayList<>();
+
+    private final Stack<String> folderKeys = new Stack<>();
 
     private Button btnBack;
     private TextView tvPath;
@@ -212,25 +216,56 @@ public class HomeFragment extends Fragment {
         myAdapter = new MyAdapter(activity, myList);
         myAdapter.setOnItemClickListener((view, position) -> {
             File file = currentFiles[position];
+            String fileName = file.getName();
             if (file.isFile()) {
                 // handle decryption when clicked on a file
-                // set the decryption dialog
-                RockerDialog decryptionDialog = new RockerDialog(activity);
-                decryptionDialog.getBtnPositive().setOnClickListener(v -> {
-                    String key = decryptionDialog.getPassword();
-                    if (!cacheDir.exists()) {
-                        cacheDir.mkdir();
-                    }
-                    String destPath = cacheDir.getPath() + "/" + file.getName().substring(0, file.getName().length() - 2);
-                    new MyAES.DecryptTask(activity, file, destPath, key, decryptionDialog).execute();
-                });
-                decryptionDialog.show();
+                if (!cacheDir.exists()) {
+                    cacheDir.mkdir();
+                }
+                String destPath = cacheDir.getPath() + "/" + fileName.substring(0, file.getName().length() - 2);
+                String folderKey = folderKeys.peek();
+                if (folderKey == null) {
+                    // under plain folder
+                    // set the decryption dialog
+                    RockerDialog decryptionDialog = new RockerDialog(activity);
+                    decryptionDialog.getBtnPositive().setOnClickListener(v -> {
+                        String key = decryptionDialog.getPassword();
+                        new MyAES.DecryptTask(activity, file, destPath, key, decryptionDialog).execute();
+                    });
+                    decryptionDialog.show();
+                } else {
+                    // under locked folder
+                    new MyAES.DecryptTask(activity, file, destPath, folderKey).execute();
+                }
+
+
             } else {
-                // enter the clicked folder
-                File[] files = currentFiles[position].listFiles();
-                currentParent = currentFiles[position];
-                currentFiles = files;
-                refresh();
+                if (!MyNameFormatter.isLocked(fileName)) {
+                    // plain folder
+                    folderKeys.push(null);
+                    // enter the clicked folder
+                    handleEnter(file);
+                } else {
+                    // locked folder
+                    RockerDialog decryptionDialog = new RockerDialog(activity);
+                    decryptionDialog.getBtnPositive().setOnClickListener(v -> {
+                        String password = decryptionDialog.getPassword();
+                        try {
+                            if (Objects.equals(MyAES.decryptString(MyNameFormatter.getCheck(fileName), password), "[CHECK]")) {
+                                folderKeys.push(password);
+                                handleEnter(file);
+                                decryptionDialog.dismiss();
+                            } else {
+                                decryptionDialog.handleWrongPassword();
+                            }
+                        } catch (Exception e) {
+                            decryptionDialog.handleWrongPassword();
+                        }
+
+                    });
+                    decryptionDialog.show();
+                }
+
             }
         });
         // show edit dialog when long clicked
@@ -565,9 +600,9 @@ public class HomeFragment extends Fragment {
                 btnBack.setText(title);
             } else {
                 assert parent != null;
-                btnBack.setText(parent.getName());
+                btnBack.setText(MyNameFormatter.parseFolderName(parent.getName()));
             }
-            tvPath.setText(currentParent.getName());
+            tvPath.setText(MyNameFormatter.parseFolderName(currentParent.getName()));
         }
 
         // refresh recycler view
@@ -697,6 +732,7 @@ public class HomeFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     public void handleBack() {
         if (!rootDir.equals(currentParent)) {
+            folderKeys.pop();
             // back to parent folder
             currentParent = currentParent.getParentFile();
             assert currentParent != null;
@@ -706,6 +742,17 @@ public class HomeFragment extends Fragment {
             // quit app
             activity.finishAffinity();
         }
+    }
+
+    /**
+     * Enter the directory
+     * @param file directory to be entered
+     */
+    public void handleEnter(File file) {
+        File[] files = file.listFiles();
+        currentParent = file;
+        currentFiles = files;
+        refresh();
     }
 
     /**
