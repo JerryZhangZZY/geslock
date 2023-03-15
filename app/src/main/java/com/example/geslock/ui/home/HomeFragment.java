@@ -82,6 +82,7 @@ public class HomeFragment extends Fragment {
 
     private Button btnBack;
     private TextView tvPath;
+    private ImageView imgUnlock;
     private ImageButton btnMenu;
     private RecyclerView recyclerFileList;
     private FloatingActionButton fabAdd;
@@ -158,6 +159,7 @@ public class HomeFragment extends Fragment {
         recyclerFileList.setLayoutAnimation(animRecyclerLayout);
 
         tvPath = activity.findViewById(R.id.tvPath);
+        imgUnlock = activity.findViewById(R.id.imgUnlock);
 
         // set menu
         btnMenu = activity.findViewById(R.id.btnMenu);
@@ -721,6 +723,13 @@ public class HomeFragment extends Fragment {
                 btnBack.setText(MyNameFormatter.parseFolderName(parent.getName()));
             }
             tvPath.setText(MyNameFormatter.parseFolderName(currentParent.getName()));
+        }
+
+        // refresh unlock icon
+        if (getNearestFolderKey() != null) {
+            imgUnlock.setVisibility(View.VISIBLE);
+        } else {
+            imgUnlock.setVisibility(View.INVISIBLE);
         }
 
         // refresh recycler view

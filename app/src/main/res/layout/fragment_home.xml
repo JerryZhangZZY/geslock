@@ -49,6 +49,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/imgUnlock"
+            android:layout_width="18sp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvPath"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_unlock"
+            app:tint="?android:attr/titleTextColor" />
+
         <ImageButton
             android:id="@+id/btnMenu"
             android:layout_width="0dp"
