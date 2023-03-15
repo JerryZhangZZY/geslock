@@ -24,17 +24,19 @@ GesLock is an Android app that protects sensitive files on mobile phones using s
 ## Screenshots
 
 <div align="center">
-  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.1/home.png?raw=true" />
-  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.1/home-rocker.png?raw=true" />
-  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.1/home-edit.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/3.0/home.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/3.0/home-folder.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/3.0/home-rocker.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/3.0/home-guide.png?raw=true" />
 </div>
 
 <div align="center">
-  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.1/home-menu.png?raw=true" />
-  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.1/home-sheet_property.png?raw=true" />
-  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/settings.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/3.0/home-edit.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/3.0/home-menu.png?raw=true" />
+  <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/3.0/home-sheet_property.png?raw=true" />
   <img width="180" src="https://github.com/JerryZhangZZY/album/blob/main/geslock/1.0/settings-dark&zh.png?raw=true" />
 </div>
+
 
 ## Support
 
