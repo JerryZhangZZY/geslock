@@ -18,10 +18,15 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -60,6 +65,7 @@ public class SettingsFragment extends Fragment {
     private Switch switchItemCount;
     private Spinner spinnerTheme;
     private Spinner spinnerLanguage;
+    private TextView tvAbout;
     private TextView tvUpdate;
     private Spinner spinnerTravel;
     private Switch switchVibration;
@@ -212,6 +218,34 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
+        });
+
+        tvAbout = activity.findViewById(R.id.tvAbout);
+        tvAbout.setOnClickListener(v -> {
+            AlertDialog dialog = new AlertDialog.Builder(activity)
+                    .setTitle(activity.getString(R.string.app_name))
+                    .setMessage(activity.getString(R.string.about_message))
+                    .setNegativeButton(R.string.cancel, (dialog0, which) -> dialog0.dismiss())
+                    .setPositiveButton(R.string.about_repo, (dialog0, which) -> {
+                        String url = "https://github.com/JerryZhangZZY/geslock";
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        try {
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            MyToastMaker.make(activity.getString(R.string.error), activity);
+                        }
+                        dialog0.dismiss();
+                    }).create();
+            try {
+                dialog.setIcon(activity.getPackageManager().getApplicationIcon("com.example.geslock"));
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_dialog_background);
+            dialog.show();
+            int yellow_500 = activity.getColor(R.color.yellow_500);
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(yellow_500);
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(yellow_500);
         });
 
         tvUpdate = activity.findViewById(R.id.tvUpdate);

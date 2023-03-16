@@ -16,6 +16,7 @@
     <string name="settings_entry_cross">Show cross</string>
     <string name="settings_entry_theme">Theme</string>
     <string name="settings_entry_language">Language</string>
+    <string name="settings_entry_about">About GesLock</string>
     <string name="settings_entry_update">Check update</string>
     <string name="settings_entry_current">Current: v</string>
     <string name="settings_entry_show_item_count">Show number of items in folders</string>
@@ -78,6 +79,18 @@
     <string name="rename_ok">Rename</string>
     <string name="delete_ok">Delete</string>
     <string name="password_hint">Please enter gestures</string>
+    <string name="about_repo" translatable="false">GitHub</string>
+    <string name="about_message">
+        GesLock is an Android app that protects sensitive files on mobile phones using secret multi-finger gestures.\n\n
+        Features\n
+        - Intuitive password interaction\n
+        - Supports 11 gestures\n
+        - AES CBC PKCS5Padding\n
+        - File management system\n
+        - Customizable\n
+        - Fine animations and haptic\n
+        - Dark mode\n\n
+        More information in GitHub repository.</string>
 
     <string name="menu_sort">Sort by…</string>
     <string name="menu_order">Sort order…</string>
