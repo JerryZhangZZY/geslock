@@ -532,7 +532,7 @@ public class HomeFragment extends Fragment {
                             MyToastMaker.make((String) activity.getText(R.string.new_folder_exists), activity);
                         } else {
                             if (!newFolder(folderName)) {
-                                MyToastMaker.make("Error", activity);
+                                MyToastMaker.make(activity.getString(R.string.error), activity);
                             }
                             encryptionDialog.dismiss();
                         }

@@ -15,9 +15,17 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.TypefaceSpan;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +42,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.geslock.BuildConfig;
 import com.example.geslock.R;
 import com.example.geslock.tools.MyAnimationScaler;
 import com.example.geslock.tools.MyDefaultPref;
@@ -53,6 +62,7 @@ public class SettingsFragment extends Fragment {
     private Switch switchItemCount;
     private Spinner spinnerTheme;
     private Spinner spinnerLanguage;
+    private TextView tvUpdate;
     private Spinner spinnerTravel;
     private Switch switchVibration;
     private Spinner spinnerAnimation;
@@ -203,6 +213,34 @@ public class SettingsFragment extends Fragment {
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+        tvUpdate = activity.findViewById(R.id.tvUpdate);
+        String strUpdate = activity.getString(R.string.settings_entry_update);
+        String strVersion = activity.getString(R.string.settings_entry_current) + BuildConfig.VERSION_NAME;
+        int strUpdateLength = strUpdate.length();
+        TypedValue colorMainValue = new TypedValue();
+        TypedValue colorSubValue = new TypedValue();
+        activity.getTheme().resolveAttribute(android.R.attr.textColorPrimary, colorMainValue, true);
+        activity.getTheme().resolveAttribute(android.R.attr.subtitleTextColor, colorSubValue, true);
+        SpannableString strUpdateAndVersion = new SpannableString(strUpdate + " (" + strVersion + ")");
+        ForegroundColorSpan colorMain = new ForegroundColorSpan(colorMainValue.data);
+        ForegroundColorSpan colorSub = new ForegroundColorSpan(colorSubValue.data);
+        strUpdateAndVersion.setSpan(colorMain, 0, strUpdateLength - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        strUpdateAndVersion.setSpan(colorSub, strUpdateLength, strUpdateAndVersion.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        strUpdateAndVersion.setSpan(new AbsoluteSizeSpan(12, true), strUpdateLength, strUpdateAndVersion.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvUpdate.setText(strUpdateAndVersion);
+        tvUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "https://github.com/JerryZhangZZY/geslock/releases";
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                try {
+                    startActivity(intent);
+                } catch (Exception e) {
+                    MyToastMaker.make(activity.getString(R.string.error), activity);
+                }
             }
         });
 

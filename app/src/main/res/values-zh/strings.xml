@@ -16,6 +16,8 @@
     <string name="settings_entry_cross">显示十字架</string>
     <string name="settings_entry_theme">主题</string>
     <string name="settings_entry_language">语言</string>
+    <string name="settings_entry_update">检查更新</string>
+    <string name="settings_entry_current">当前: v</string>
     <string name="settings_entry_show_item_count">显示文件夹内项目数量</string>
     <string name="settings_entry_travel">摇杆行程</string>
     <string name="settings_entry_vibration">触感反馈</string>
@@ -23,6 +25,7 @@
     <string name="settings_entry_overshoot">动画超调量</string>
     <string name="settings_entry_smratio">旋转-移动比</string>
     <string name="settings_entry_tmratio">双指手势判别比</string>
+    <string name="settings_entry_reset">重置设置</string>
 
     <string name="spinner_theme_1">浅色</string>
     <string name="spinner_theme_2">深色</string>
@@ -59,15 +62,16 @@
     <string name="cancel">取消</string>
     <string name="finish">完成</string>
 
+    <string name="error">错误！</string>
+    <string name="file_name_invalid">文件名不可用</string>
+
     <string name="edit_file_rename">重命名</string>
     <string name="edit_file_delete">删除</string>
+    <string name="reset_title">重置所有设置？</string>
     <string name="rename_hint">新名称</string>
     <string name="rename_ok">重命名</string>
     <string name="delete_ok">删除</string>
     <string name="password_hint">请输入手势</string>
-    <string name="reset">重置设置</string>
-    <string name="reset_title">重置所有设置？</string>
-    <string name="file_name_invalid">文件名不可用</string>
 
     <string name="menu_sort">排序方式…</string>
     <string name="menu_order">排序方向…</string>
