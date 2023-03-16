@@ -540,16 +540,6 @@ public class HomeFragment extends Fragment {
                         refresh();
                     });
                     encryptionDialog.show();
-
-
-
-//                        File file = new File(currentParent.getPath() + "/" + folderName);
-//        if (file.exists()) {
-//            MyToastMaker.make((String) activity.getText(R.string.new_folder_exists), activity);
-//        } else {}
-
-//                    currentFiles = currentParent.listFiles();
-//                    refresh();
                 }).create();
         setDialogBackground(dialog);
         dialog.show();
@@ -839,12 +829,7 @@ public class HomeFragment extends Fragment {
                 break;
             case 2:
                 // sort by size
-                comparator = new Comparator<File>() {
-                    @Override
-                    public int compare(File f1, File f2) {
-                        return (int) (MyAdapter.getFileSize(f1) - MyAdapter.getFileSize(f2));
-                    }
-                };
+                comparator = (f1, f2) -> (int) (MyAdapter.getFileSize(f1) - MyAdapter.getFileSize(f2));
                 break;
             default:
                 // sort by name
