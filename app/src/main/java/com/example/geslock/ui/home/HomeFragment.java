@@ -642,9 +642,9 @@ public class HomeFragment extends Fragment {
                     String newName = editText.getText().toString() + (file.isFile() ? "gl" : "");
                     String fileName = file.getName();
                     if (MyNameFormatter.isLockedFolder(fileName)) {
-                        newName = MyNameFormatter.parsePrefix(file.getName()) + newName;
+                        newName = MyNameFormatter.parsePrefix(fileName) + newName;
                     }
-                    if (rename(file, newName)) {
+                    if (rename(file, fileName, newName)) {
                         currentFiles = currentParent.listFiles();
                         refresh();
                     } else {
@@ -789,16 +789,25 @@ public class HomeFragment extends Fragment {
      * Rename a file/folder.
      *
      * @param file    file/folder to be renamed
+     * @param oldName old name
      * @param newName new name
      * @return renaming result
      */
-    public boolean rename(File file, String newName) {
-        File newFile = new File(file.getParent() + "/" + newName);
-        if (newFile.exists()) {
-            MyToastMaker.make(String.valueOf(activity.getText(R.string.file_name_exist)), activity);
+    public boolean rename(File file, String oldName, String newName) {
+        if (oldName.equalsIgnoreCase(newName)) {
+            // only change case
+            File tmpFile = new File(file.getParent() + "/" + oldName + "{]tmp[}");
+            if (file.renameTo(tmpFile)) {
+                return tmpFile.renameTo(new File(file.getParent() + "/" + newName));
+            }
             return false;
         } else {
-            return file.renameTo(new File(file.getParent() + "/" + newName));
+            File newFile = new File(file.getParent() + "/" + newName);
+            if (newFile.exists()) {
+                return false;
+            } else {
+                return file.renameTo(new File(file.getParent() + "/" + newName));
+            }
         }
     }
 
