@@ -67,7 +67,6 @@
     <string name="password_hint">请输入手势</string>
     <string name="reset">重置设置</string>
     <string name="reset_title">重置所有设置？</string>
-    <string name="file_name_exist">文件名已存在</string>
     <string name="file_name_invalid">文件名不可用</string>
 
     <string name="menu_sort">排序方式…</string>

@@ -5,18 +5,6 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_home">
 
-<!--    <fragment-->
-<!--        android:id="@+id/navigation_encryption"-->
-<!--        android:name="com.example.geslock.ui.encryption.EncryptionFragment"-->
-<!--        android:label="@string/title_encryption"-->
-<!--        tools:layout="@layout/dialog_rocker" />-->
-
-<!--    <fragment-->
-<!--        android:id="@+id/navigation_decryption"-->
-<!--        android:name="com.example.geslock.ui.decryption.DecryptionFragment"-->
-<!--        android:label="@string/title_decryption"-->
-<!--        tools:layout="@layout/fragment_decryption" />-->
-
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.geslock.ui.home.HomeFragment"
