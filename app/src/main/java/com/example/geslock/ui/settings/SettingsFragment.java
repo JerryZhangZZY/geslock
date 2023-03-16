@@ -15,7 +15,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,7 +22,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.TypefaceSpan;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -231,16 +229,13 @@ public class SettingsFragment extends Fragment {
         strUpdateAndVersion.setSpan(colorSub, strUpdateLength, strUpdateAndVersion.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         strUpdateAndVersion.setSpan(new AbsoluteSizeSpan(12, true), strUpdateLength, strUpdateAndVersion.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         tvUpdate.setText(strUpdateAndVersion);
-        tvUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String url = "https://github.com/JerryZhangZZY/geslock/releases";
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                try {
-                    startActivity(intent);
-                } catch (Exception e) {
-                    MyToastMaker.make(activity.getString(R.string.error), activity);
-                }
+        tvUpdate.setOnClickListener(v -> {
+            String url = "https://github.com/JerryZhangZZY/geslock/releases";
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            try {
+                startActivity(intent);
+            } catch (Exception e) {
+                MyToastMaker.make(activity.getString(R.string.error), activity);
             }
         });
 
