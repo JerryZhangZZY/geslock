@@ -6,8 +6,9 @@
 
 <h1 align="center">GesLock</h1>
 
-![android](https://img.shields.io/badge/Android-7.0%2B-green)
-![api](https://img.shields.io/badge/API-31%2B-yellow)
+![android](https://img.shields.io/badge/Android-8.0%2B-green)
+![api](https://img.shields.io/badge/API-26%2B-yellow)
+![downloads](https://img.shields.io/github/downloads/JerryZhangZZY/geslock/total?style=social)
 
 GesLock is an Android app that protects sensitive files on mobile phones using secret multi-finger gestures.
 
