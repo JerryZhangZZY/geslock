@@ -49,10 +49,6 @@
     <string name="smratio_description">(0–1) 单指和双指拖动时摇杆的移动距离比例</string>
     <string name="tmratio_description">(0–0.1) 判别缩放还是双指拖移时手指移动距离占交互界面最短边的比例</string>
 
-    <string name="no_permission">请给予权限</string>
-
-    <string name="empty">无项目</string>
-
     <string name="new_file">上传文件</string>
     <string name="new_folder">新建文件夹</string>
     <string name="new_locked_folder">新建加密文件夹</string>
@@ -62,10 +58,12 @@
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="finish">完成</string>
+    <string name="retain">保留</string>
 
+    <string name="no_permission">请给予权限</string>
+    <string name="empty">无项目</string>
     <string name="error">错误！</string>
     <string name="file_name_invalid">文件名不可用</string>
-
     <string name="edit_file_rename">重命名</string>
     <string name="edit_file_delete">删除</string>
     <string name="reset_title">重置所有设置？</string>
@@ -84,6 +82,10 @@
         - 精致的动画和触觉反馈\n
         - 深色模式\n\n
         更多请见 GitHub 仓库。</string>
+    <string name="delete_origin_title">删除原始文件？</string>
+    <string name="delete_origin_message">您的文件已被成功加密，强烈建议您删除原始文件。</string>
+    <string name="delete_origin_success">原始文件已删除</string>
+    <string name="delete_origin_failed">原始文件删除失败！</string>
 
     <string name="menu_sort">排序方式…</string>
     <string name="menu_order">排序方向…</string>

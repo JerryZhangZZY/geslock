@@ -5,6 +5,7 @@ import static android.app.Activity.RESULT_OK;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -291,7 +292,7 @@ public class HomeFragment extends Fragment {
 
         fabAddFile.setOnClickListener(view -> {
             // open system file manager to upload a file
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.setType("*/*");
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             startActivityForResult(Intent.createChooser(intent, ""), 1);
@@ -416,6 +417,8 @@ public class HomeFragment extends Fragment {
             // refresh
             currentFiles = currentParent.listFiles();
             refresh();
+            // ask user to delete origin file
+            dialogDeleteOrigin(uri);
         }
     }
 
@@ -695,6 +698,36 @@ public class HomeFragment extends Fragment {
     }
 
     /**
+     * The dialog of deleting or retaining the origin plain file
+     *
+     * @param uri uri of the file to be deleted
+     */
+    public void dialogDeleteOrigin(Uri uri) {
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle(activity.getString(R.string.delete_origin_title))
+                .setMessage(activity.getString(R.string.delete_origin_message))
+                .setCancelable(false)
+                .setNegativeButton(R.string.retain, (dialog0, which) -> dialog0.dismiss())
+                .setPositiveButton(R.string.delete_ok, (dialog0, which) -> {
+                    if (deleteFile(uri)) {
+                        MyToastMaker.make(activity.getString(R.string.delete_origin_success), activity);
+                    } else {
+                        MyToastMaker.make(activity.getString(R.string.delete_origin_failed), activity);
+                    }
+                    dialog0.dismiss();
+                }).create();
+        try {
+            dialog.setIcon(activity.getPackageManager().getApplicationIcon("com.example.geslock"));
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        setDialogBackground(dialog);
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(yellow_500);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(red_500);
+    }
+
+    /**
      * Refresh path bar, recycler view and empty sign.
      */
     @SuppressLint("NotifyDataSetChanged")
@@ -760,19 +793,33 @@ public class HomeFragment extends Fragment {
     /**
      * Delete a file/folder.
      *
-     * @param dirFile file/folder to be deleted
+     * @param file file/folder to be deleted
      * @return deletion result
      */
-    public boolean deleteFile(File dirFile) {
-        if (!dirFile.exists()) {
+    public boolean deleteFile(File file) {
+        if (!file.exists()) {
             return true;
         }
-        if (dirFile.isDirectory()) {
-            for (File file : Objects.requireNonNull(dirFile.listFiles())) {
-                deleteFile(file);
+        if (file.isDirectory()) {
+            for (File file0 : Objects.requireNonNull(file.listFiles())) {
+                deleteFile(file0);
             }
         }
-        return dirFile.delete();
+        return file.delete();
+    }
+
+    /**
+     * Delete a file/folder from an uri.
+     *
+     * @param uri file/folder to be deleted
+     * @return deletion result
+     */
+    public boolean deleteFile(Uri uri) {
+        DocumentFile fileToDelete = DocumentFile.fromSingleUri(activity, uri);
+        if (fileToDelete != null) {
+            return fileToDelete.delete();
+        }
+        return false;
     }
 
     /**

@@ -55,23 +55,21 @@
     <string name="edittext_smratio_hint" translatable="false">0.2</string>
     <string name="edittext_tmratio_hint" translatable="false">0.04</string>
 
-    <string name="no_permission">Please grant the permission</string>
-
-    <string name="empty">No items</string>
-
     <string name="new_file">Upload file</string>
     <string name="new_folder">New folder</string>
     <string name="new_locked_folder">New locked folder</string>
-    <string name="new_folder_hint">Folder name</string>
-    <string name="new_folder_exists">Folder exists</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="finish">Finish</string>
+    <string name="retain">Retain</string>
 
+    <string name="empty">No items</string>
+    <string name="no_permission">Please grant the permission</string>
+    <string name="new_folder_hint">Folder name</string>
+    <string name="new_folder_exists">Folder exists</string>
     <string name="error">Error!</string>
     <string name="file_name_invalid">Invalid file name</string>
-
     <string name="edit_file_rename">Rename</string>
     <string name="edit_file_delete">Delete</string>
     <string name="reset_title">Reset all settings?</string>
@@ -91,6 +89,10 @@
         - Fine animations and haptic\n
         - Dark mode\n\n
         More information in GitHub repository.</string>
+    <string name="delete_origin_title">Delete original file?</string>
+    <string name="delete_origin_message">Your file has been successfully encrypted and you are strongly advised to delete the original file.</string>
+    <string name="delete_origin_success">Original file deleted</string>
+    <string name="delete_origin_failed">Original file delete failed!</string>
 
     <string name="menu_sort">Sort by…</string>
     <string name="menu_order">Sort order…</string>
