@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace 'com.example.geslock'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.example.geslock"
-        minSdk 24
-        targetSdk 32
+        minSdk 26
+        targetSdk 33
         versionCode 3
-        versionName "3.1"
+        versionName "3.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
