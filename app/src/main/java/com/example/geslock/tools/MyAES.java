@@ -171,6 +171,7 @@ public class MyAES {
                 long fileSize = sourceFile.length();
                 long bytesRead = cipher.getBlockSize();
                 int progress;
+                int count = 0;
 
                 // continue decryption with conventional buffer size
                 while ((len = inputStream.read(buffer)) >= 0) {
@@ -186,10 +187,15 @@ public class MyAES {
                     byteArrayOutputStream.writeTo(fileOutputStream);
                     byteArrayOutputStream.reset();
 
-                    // calculate progress
-                    bytesRead += BUFFER_LENGTH;
-                    progress = (int) (bytesRead * 1000 / fileSize);
-                    publishProgress(progress);
+                    // calculate progress every 10 cycles
+                    // boost performance significantly
+                    count++;
+                    if (count == 100) {
+                        bytesRead += BUFFER_LENGTH;
+                        progress = (int) (bytesRead * 100000 / fileSize);
+                        publishProgress(progress);
+                        count = 0;
+                    }
                 }
                 // finish cipher stream
                 cipherOutputStream.flush();
